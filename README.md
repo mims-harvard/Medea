@@ -68,7 +68,7 @@ uv pip install -U huggingface_hub
 huggingface-cli login  # Enter your token
 brew install git-lfs  # macOS, or: sudo apt-get install git-lfs (Linux)
 git lfs install
-git clone https://huggingface.co/datasets/psui3905/MedeaDB
+git clone https://huggingface.co/datasets/mims-harvard/MedeaDB
 ```
 
 **📚 Detailed guide**: See [docs/QUICKSTART.md](docs/QUICKSTART.md)
