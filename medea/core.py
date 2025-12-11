@@ -22,28 +22,28 @@ except ImportError:
 
 def experiment_analysis(
     query: str, 
-    research_plan_agent, 
-    analysis_agent
+    research_planning_module, 
+    analysis_module
 ) -> tuple:
     """
     Execute research planning and code analysis using the agent system.
     
     Args:
         query: User's research question
-        research_plan_agent: Agent for generating research plans
-        analysis_agent: Agent for generating and executing in-silico experiments
+        research_planning_module: Agent for generating research plans
+        analysis_module: Agent for generating and executing in-silico experiments
         
     Returns:
         Tuple of (research_plan_text, analysis_response)
         
     Example:
         >>> from medea import experiment_analysis, ResearchPlanning, Analysis
-        >>> research_plan_agent = ResearchPlanning(...)
-        >>> analysis_agent = Analysis(...)
+        >>> research_planning_module = ResearchPlanning(...)
+        >>> analysis_module = Analysis(...)
         >>> plan, result = experiment_analysis(
         ...     "Which gene is the best therapeutic target for RA?",
-        ...     research_plan_agent,
-        ...     analysis_agent
+        ...     research_planning_module,
+        ...     analysis_module
         ... )
     """
     from .agents.utils import Proposal
@@ -53,7 +53,7 @@ def experiment_analysis(
     research_plan_taskpack = TaskPackage(instruction=str(research_plan_task_dict))
     
     try: 
-        research_plan_response = research_plan_agent(research_plan_taskpack)
+        research_plan_response = research_planning_module(research_plan_taskpack)
     except Exception as e:
         print(f"Research plan agent call failed: {e}", flush=True)
         return "None", "None"
@@ -67,7 +67,7 @@ def experiment_analysis(
         analysis_taskpack = TaskPackage(instruction=str(analysis_task_dict))
         
         try:
-            analysis_response = analysis_agent(analysis_taskpack)
+            analysis_response = analysis_module(analysis_taskpack)
         except Exception as e:
             print(f"Analysis agent call failed: {e}", flush=True)
             return research_plan_text, "None"
@@ -77,14 +77,14 @@ def experiment_analysis(
 
 def literature_reasoning(
     query: str, 
-    literature_reason_agent
+    literature_module
 ) -> Any:
     """
     Execute literature-based reasoning using the agent system.
     
     Args:
         query: User's research question
-        literature_reason_agent: Agent for literature search and reasoning
+        literature_module: Agent for literature search and reasoning
         
     Returns:
         Reasoning response from the agent
@@ -101,7 +101,7 @@ def literature_reasoning(
     reason_taskpack = TaskPackage(instruction=str(task_dict))
 
     try:
-        reasoning_response = literature_reason_agent(reason_taskpack)
+        reasoning_response = literature_module(reason_taskpack)
     except Exception as e:
         print(f"Reasoning agent call failed: {e}", flush=True)
         reasoning_response = "None"
@@ -159,9 +159,9 @@ def medea(
     Args:
         user_instruction: User's research question/instruction
         experiment_instruction: Optional additional experiment context and instructions (default: None)
-        research_plan_agent: Agent for generating research plans (default: None)
-        analysis_agent: Agent for in-silico experiment analysis (default: None)
-        literature_reason_agent: Agent for literature-based reasoning (default: None)
+        research_planning_module: Agent for generating research plans (default: None)
+        analysis_module: Agent for in-silico experiment analysis (default: None)
+        literature_module: Agent for literature-based reasoning (default: None)
         debate_rounds: Number of panel discussion rounds (default: 2)
         panelist_llms: List of LLM models for panel discussion (default: None)
         include_backbone_llm: Include backbone LLM in panel (default: True)
