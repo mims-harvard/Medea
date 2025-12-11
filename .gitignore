@@ -33,7 +33,6 @@ agent.log
 medea_env.yml
 test.py
 celltype.csv
-*.txt
 text2.py
 
 evaluation/.DS_Store

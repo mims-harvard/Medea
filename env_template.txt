@@ -1,0 +1,81 @@
+# Medea AI Environment Configuration Template
+# Copy this content to a file named .env in your project root and fill in your values
+
+# ============================================================================
+# REQUIRED: Database Path
+# ============================================================================
+# Path to your MedeaDB directory containing embeddings, datasets, and models
+MEDEADB_PATH=/path/to/your/MedeaDB
+
+# Legacy alias (for backward compatibility)
+# PRISMDB_PATH=/path/to/your/MedeaDB
+
+# ============================================================================
+# REQUIRED: LLM Configuration
+# ============================================================================
+# Primary LLM model for agents
+# Examples: gpt-4o, claude-3-5-sonnet-20241022, gemini-2.0-flash-exp, deepseek-r1:671b
+BACKBONE_LLM=gpt-4o
+
+# Random seed for reproducibility
+SEED=42
+
+# ============================================================================
+# REQUIRED: API Keys (at least one provider)
+# ============================================================================
+# OpenRouter API (recommended - provides access to multiple models)
+OPENROUTER_API_KEY=your-openrouter-api-key-here
+
+# OR Azure OpenAI (alternative)
+AZURE_OPENAI_API_KEY=your-azure-api-key-here
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_API_VERSION=2024-10-21
+
+# OR Google Gemini (alternative)
+GEMINI_API_KEY=your-gemini-api-key-here
+GEMINI_MODEL=gemini-2.0-flash-exp
+
+# OR Anthropic Claude (alternative)
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+
+# OR NVIDIA DeepSeek R1 (alternative)
+NVIDIA_DEEPSEEK_ENDPOINT=https://your-nvidia-endpoint.com/v1
+NVIDIA_DEEPSEEK_API_KEY=your-nvidia-deepseek-api-key-here
+
+# ============================================================================
+# REQUIRED: Additional LLM Settings
+# ============================================================================
+# LLM for paraphrasing queries (defaults to BACKBONE_LLM if not set)
+PARAPHRASER_LLM=gpt-4o
+
+# LLM for judging paper relevance (defaults to BACKBONE_LLM if not set)
+PAPER_JUDGE_LLM=gpt-4o
+
+# LLM for evaluation judgments (optional)
+EVALUATION_JUDGE_LLM=gpt-4o
+
+# LLM provider name for display purposes
+LLM_PROVIDER_NAME=OpenRouter
+
+# Use OpenRouter for API calls (true/false)
+USE_OPENROUTER=true
+
+# ============================================================================
+# OPTIONAL: Azure OpenAI Model-specific API Versions
+# ============================================================================
+# O1_MINI_API_VERSION=2025-03-01-preview
+# O3_MINI_API_VERSION=2025-03-01-preview
+# O4_MINI_API_VERSION=2025-03-01-preview
+
+# ============================================================================
+# OPTIONAL: OpenRouter Attribution
+# ============================================================================
+# OPENROUTER_SITE_URL=https://your-site.com
+# OPENROUTER_SITE_NAME=Your App Name
+
+# ============================================================================
+# OPTIONAL: Hugging Face Cache
+# ============================================================================
+# HF_HOME=~/.cache/huggingface
+
