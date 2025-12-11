@@ -1,0 +1,121 @@
+gene a,gene b,cell line,interaction
+PLK1,KDM5C,CAL33,synthetic lethality
+TET2,KIF11,CAL33,synthetic lethality
+GNAQ,PRMT5,CAL33,synthetic lethality
+SMARCA2,RAD17,CAL33,synthetic lethality
+MSH6,ERCC4,CAL33,synthetic lethality
+ERCC3,KMT2D,CAL33,synthetic lethality
+CHEK1,UBA2,CAL33,synthetic lethality
+GEN1,RAD17,CAL33,synthetic lethality
+MSH2,POLD1,CAL33,synthetic lethality
+WRN,CHEK1,CAL33,synthetic lethality
+TOP1,HDAC1,CAL33,synthetic lethality
+TOP1,SMYD2,CAL33,synthetic lethality
+MSH2,KIFC1,CAL33,synthetic lethality
+FGFR2,BAP1,CAL33,synthetic lethality
+FBXW7,KIF11,CAL33,synthetic lethality
+ERCC2,MYC,CAL33,synthetic lethality
+UBR5,FBXW7,CAL33,synthetic lethality
+RNF4,EIF1AX,CAL33,synthetic lethality
+CDKN2A,XRCC3,CAL33,synthetic lethality
+BAP1,SIRT1,CAL33,synthetic lethality
+FANCD2,POLG,CAL33,synthetic lethality
+STK11,REV3L,CAL33,synthetic lethality
+TIPARP,MLH1,CAL33,synthetic lethality
+NEK1,MRE11,CAL33,synthetic lethality
+BRCA1,BLM,CAL33,synthetic lethality
+RAD51,PTEN,CAL33,synthetic lethality
+HSP90AA1,ERCC1,CAL33,synthetic lethality
+TIPARP,RAD17,CAL33,synthetic lethality
+PIK3CA,APEX1,CAL33,synthetic lethality
+CDC7,ATM,CAL33,synthetic lethality
+WRN,SMARCA4,CAL33,synthetic lethality
+SETD2,POLH,CAL33,synthetic lethality
+NOTCH1,SMARCA2,CAL33,synthetic lethality
+BRD9,MYC,CAL33,synthetic lethality
+RNF4,ATR,CAL33,synthetic lethality
+SETD2,PARP6,CAL33,synthetic lethality
+NEK1,MSH2,CAL33,synthetic lethality
+TTN,POLD1,CAL33,synthetic lethality
+AKT1,MYC,CAL33,synthetic lethality
+DUT,KDM5C,CAL33,synthetic lethality
+PLK1,RB1,CAL33,non-sl
+SHPRH,KDM5C,CAL33,non-sl
+UBE2A,TET2,CAL33,non-sl
+KIF11,MRE11,CAL33,non-sl
+EXO1,GNAQ,CAL33,non-sl
+PRMT5,NOTCH1,CAL33,non-sl
+SMARCA2,MUTYH,CAL33,non-sl
+PIF1,RAD17,CAL33,non-sl
+UBE2I,MSH6,CAL33,non-sl
+ERCC4,CREBBP,CAL33,non-sl
+ERCC3,CASP8,CAL33,non-sl
+RAD52,KMT2D,CAL33,non-sl
+TP53BP1,CHEK1,CAL33,non-sl
+UBA2,BRCA2,CAL33,non-sl
+GEN1,SETD2,CAL33,non-sl
+SETD7,RAD17,CAL33,non-sl
+PARP3,MSH2,CAL33,non-sl
+POLD1,NF1,CAL33,non-sl
+WRN,DCC,CAL33,non-sl
+PIK3CA,CHEK1,CAL33,non-sl
+TOP1,RAD50,CAL33,non-sl
+HDAC1,RUNX1,CAL33,non-sl
+TOP1,RAD54B,CAL33,non-sl
+SMYD2,GNAS,CAL33,non-sl
+UBE2B,MSH2,CAL33,non-sl
+KIFC1,SF3B1,CAL33,non-sl
+FGFR2,POLE,CAL33,non-sl
+POLQ,BAP1,CAL33,non-sl
+PRKDC,FBXW7,CAL33,non-sl
+KIF11,SF3B1,CAL33,non-sl
+ERCC2,MSH2,CAL33,non-sl
+ZC3HAV1,MYC,CAL33,non-sl
+UBR5,SETD2,CAL33,non-sl
+PRKACA,FBXW7,CAL33,non-sl
+RNF4,CREBBP,CAL33,non-sl
+LIG4,EIF1AX,CAL33,non-sl
+CDK4,CDKN2A,CAL33,non-sl
+XRCC3,CHEK2,CAL33,non-sl
+CARM1,BAP1,CAL33,non-sl
+SIRT1,SF3B1,CAL33,non-sl
+PRKACA,FANCD2,CAL33,non-sl
+POLG,NF1,CAL33,non-sl
+LIG1,STK11,CAL33,non-sl
+REV3L,BRCA2,CAL33,non-sl
+TIPARP,MSH6,CAL33,non-sl
+EED,MLH1,CAL33,non-sl
+NEK1,NOTCH1,CAL33,non-sl
+UHRF1,MRE11,CAL33,non-sl
+UNG,BRCA1,CAL33,non-sl
+BLM,BRCA2,CAL33,non-sl
+RAD51,CREBBP,CAL33,non-sl
+PARP15,PTEN,CAL33,non-sl
+HSP90AA1,CREBBP,CAL33,non-sl
+WEE1,ERCC1,CAL33,non-sl
+TIPARP,MYC,CAL33,non-sl
+SAE1,RAD17,CAL33,non-sl
+CHD2,PIK3CA,CAL33,non-sl
+HDAC6,APEX1,CAL33,non-sl
+CDC7,CDKN2A,CAL33,non-sl
+INO80,ATM,CAL33,non-sl
+WRN,ERCC1,CAL33,non-sl
+LIG1,SMARCA4,CAL33,non-sl
+LIG1,SETD2,CAL33,non-sl
+POLH,NF2,CAL33,non-sl
+PRKDC,NOTCH1,CAL33,non-sl
+SMARCA2,NBN,CAL33,non-sl
+BRD9,NPM1,CAL33,non-sl
+SRC,MYC,CAL33,non-sl
+RNF4,DCC,CAL33,non-sl
+UBR5,ATR,CAL33,non-sl
+WEE1,SETD2,CAL33,non-sl
+PARP6,CDKN2A,CAL33,non-sl
+NEK1,CREBBP,CAL33,non-sl
+SETD7,MSH2,CAL33,non-sl
+PARP16,TTN,CAL33,non-sl
+POLD1,NF2,CAL33,non-sl
+AKT1,NF2,CAL33,non-sl
+PARP15,MYC,CAL33,non-sl
+DUT,CDKN2A,CAL33,non-sl
+PARP16,KDM5C,CAL33,non-sl

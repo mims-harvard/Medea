@@ -1,0 +1,172 @@
+gene a,gene b,cell line,interaction
+MUTYH,AURKA,A427,synthetic lethality
+CTNNB1,MSH2,A427,synthetic lethality
+POLE,CREBBP,A427,synthetic lethality
+FBH1,SF3B1,A427,synthetic lethality
+POLQ,FBXW7,A427,synthetic lethality
+PIK3CA,VEGFA,A427,synthetic lethality
+PARP12,ARID1A,A427,synthetic lethality
+POLH,APEX1,A427,synthetic lethality
+SHPRH,ARID1A,A427,synthetic lethality
+FBH1,POLE,A427,synthetic lethality
+SMARCA2,CHEK2,A427,synthetic lethality
+KMT2D,CDK4,A427,synthetic lethality
+RB1,SAE1,A427,synthetic lethality
+CASP8,PARP11,A427,synthetic lethality
+SF3B1,DGKA,A427,synthetic lethality
+HLTF,MYC,A427,synthetic lethality
+CTNNB1,VHL,A427,synthetic lethality
+MRE11,CDK7,A427,synthetic lethality
+MLH1,REV3L,A427,synthetic lethality
+KDM1A,NF2,A427,synthetic lethality
+EGFR,PRMT5,A427,synthetic lethality
+SMARCA2,FANCM,A427,synthetic lethality
+RAD18,MYC,A427,synthetic lethality
+UBE2I,TP53,A427,synthetic lethality
+GNAQ,SF3B1,A427,synthetic lethality
+EED,CHEK2,A427,synthetic lethality
+HDAC6,RUNX1,A427,synthetic lethality
+PARG,PTEN,A427,synthetic lethality
+POLK,RUNX1,A427,synthetic lethality
+UHRF1,PARP1,A427,synthetic lethality
+TMEM173,TOP1,A427,synthetic lethality
+PARP10,CHEK2,A427,synthetic lethality
+FBXW7,ERCC4,A427,synthetic lethality
+POLH,BAP1,A427,synthetic lethality
+SRC,EIF1AX,A427,synthetic lethality
+XRCC1,SMARCA2,A427,synthetic lethality
+BAP1,PARP6,A427,synthetic lethality
+RNF8,BAP1,A427,synthetic lethality
+AURKA,NBN,A427,synthetic lethality
+ERCC1,LIG3,A427,synthetic lethality
+BRD7,FANCM,A427,synthetic lethality
+TTN,SAE1,A427,synthetic lethality
+CREBBP,REV3L,A427,synthetic lethality
+PRKDC,GNAQ,A427,synthetic lethality
+MLH1,MUS81,A427,synthetic lethality
+BRCA2,SHPRH,A427,synthetic lethality
+ERBB2,SF3B1,A427,synthetic lethality
+APC,MTOR,A427,synthetic lethality
+KAT5,TTN,A427,synthetic lethality
+TET2,XRCC6,A427,synthetic lethality
+FANCD2,KIF11,A427,synthetic lethality
+RAD54B,DGKA,A427,synthetic lethality
+NOTCH1,RNF8,A427,synthetic lethality
+SF3B1,FEN1,A427,synthetic lethality
+MSH6,PARP3,A427,synthetic lethality
+GNAQ,TDP2,A427,synthetic lethality
+RAD54B,EIF1AX,A427,synthetic lethality
+PRMT3,MUTYH,A427,non-sl
+AURKA,EIF1AX,A427,non-sl
+CTNNB1,APC,A427,non-sl
+SRC,MSH2,A427,non-sl
+POLE,RUNX1,A427,non-sl
+NEK2,CREBBP,A427,non-sl
+FBH1,VHL,A427,non-sl
+INO80,SF3B1,A427,non-sl
+POLQ,MUTYH,A427,non-sl
+TDP2,FBXW7,A427,non-sl
+REV3L,PIK3CA,A427,non-sl
+VEGFA,RUNX1,A427,non-sl
+PARP12,APC,A427,non-sl
+POLH,ARID1A,A427,non-sl
+POLH,KMT2D,A427,non-sl
+POLD1,APEX1,A427,non-sl
+SHPRH,MUTYH,A427,non-sl
+PARP15,ARID1A,A427,non-sl
+FBH1,RAD54B,A427,non-sl
+POLH,POLE,A427,non-sl
+SMARCA2,GATA3,A427,non-sl
+ADA,CHEK2,A427,non-sl
+SMO,KMT2D,A427,non-sl
+CDK4,RUNX1,A427,non-sl
+POLL,RB1,A427,non-sl
+SAE1,FANCM,A427,non-sl
+PIF1,CASP8,A427,non-sl
+PARP11,APC,A427,non-sl
+MYC,SF3B1,A427,non-sl
+DGKA,GATA3,A427,non-sl
+HLTF,RUNX1,A427,non-sl
+POLL,MYC,A427,non-sl
+CTNNB1,APEX1,A427,non-sl
+PARP4,VHL,A427,non-sl
+PRMT5,MRE11,A427,non-sl
+CDK7,MSH6,A427,non-sl
+PARP10,MLH1,A427,non-sl
+REV3L,MRE11,A427,non-sl
+KDM1A,APC,A427,non-sl
+PARP16,NF2,A427,non-sl
+RNF168,EGFR,A427,non-sl
+PRMT5,RUNX1,A427,non-sl
+SMARCA2,GNAQ,A427,non-sl
+VEGFA,FANCM,A427,non-sl
+RAD18,VHL,A427,non-sl
+PARP12,MYC,A427,non-sl
+UBE2I,NOTCH1,A427,non-sl
+PARP14,TP53,A427,non-sl
+TDP1,GNAQ,A427,non-sl
+NEK1,SF3B1,A427,non-sl
+EED,APC,A427,non-sl
+PBRM1,CHEK2,A427,non-sl
+HDAC6,APC,A427,non-sl
+PARP1,RUNX1,A427,non-sl
+PARG,SMARCA4,A427,non-sl
+NEK2,PTEN,A427,non-sl
+POLK,RECQL4,A427,non-sl
+TDP2,RUNX1,A427,non-sl
+UHRF1,SF3B1,A427,non-sl
+PARP1,TET2,A427,non-sl
+TMEM173,APC,A427,non-sl
+UBE2A,TOP1,A427,non-sl
+PARP10,VHL,A427,non-sl
+PIF1,CHEK2,A427,non-sl
+TIPARP,FBXW7,A427,non-sl
+ERCC4,APC,A427,non-sl
+POLH,FANCM,A427,non-sl
+PARP16,BAP1,A427,non-sl
+SRC,APC,A427,non-sl
+MPHOSPH8,EIF1AX,A427,non-sl
+TDP1,XRCC1,A427,non-sl
+SMARCA2,RECQL4,A427,non-sl
+REV3L,BAP1,A427,non-sl
+PARP6,NF1,A427,non-sl
+RNF8,EGFR,A427,non-sl
+VRK1,BAP1,A427,non-sl
+AURKA,GATA3,A427,non-sl
+RAD18,NBN,A427,non-sl
+USP1,ERCC1,A427,non-sl
+LIG3,MSH2,A427,non-sl
+BRD7,RECQL4,A427,non-sl
+MAP2K1,FANCM,A427,non-sl
+CASP8,TTN,A427,non-sl
+SAE1,FAT1,A427,non-sl
+NRAS,CREBBP,A427,non-sl
+REV3L,RUNX1,A427,non-sl
+PRKDC,NF1,A427,non-sl
+SRC,GNAQ,A427,non-sl
+PARP11,MLH1,A427,non-sl
+MUS81,RB1,A427,non-sl
+CDK1,BRCA2,A427,non-sl
+SHPRH,NBN,A427,non-sl
+ERBB2,TTN,A427,non-sl
+REV1,SF3B1,A427,non-sl
+PARP1,APC,A427,non-sl
+MTOR,PDE4D,A427,non-sl
+KAT5,SETD2,A427,non-sl
+MTOR,TTN,A427,non-sl
+MUS81,TET2,A427,non-sl
+XRCC6,SETD2,A427,non-sl
+TIPARP,FANCD2,A427,non-sl
+KIF11,SF3B1,A427,non-sl
+JAK2,RAD54B,A427,non-sl
+DGKA,GNAQ,A427,non-sl
+NRAS,NOTCH1,A427,non-sl
+RNF8,ERCC1,A427,non-sl
+RECQL4,SF3B1,A427,non-sl
+FEN1,FBXW7,A427,non-sl
+PARP14,MSH6,A427,non-sl
+PARP3,APC,A427,non-sl
+DNMT1,GNAQ,A427,non-sl
+TDP2,SMAD4,A427,non-sl
+KAT5,RAD54B,A427,non-sl
+MET,EIF1AX,A427,non-sl

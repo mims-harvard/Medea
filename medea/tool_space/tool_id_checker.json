@@ -1,0 +1,221 @@
+[
+    {
+        "tool": ["load_disease_targets"],
+        "associated_id_checker": [
+            {
+                "checker_name": "disease_name_checker",
+                "description": "Validates whether a given disease name is recognized by the OpenTarget API and has associated activated targets for the specified cell type.",
+                "input_params": [
+                    {
+                        "param_name": "disease_name",
+                        "param_type": "str",
+                        "required": true,
+                        "allow_empty": false,
+                        "description": "The name of the disease to validate (e.g., 'rheumatoid arthritis'). This parameter is used to check if the disease is recognized by the OpenTarget API. MUST NOT be empty or null."
+                    }
+                ],
+                "returns": "True if the specified disease name is recognized by the OpenTarget API; otherwise, False."
+            }
+        ]
+    },
+    {
+        "tool": [
+            "load_pinnacle_ppi"
+        ],
+        "associated_id_checker": 
+        [
+            {
+                "checker_name": "context_avalibility_checker",
+                "description": "Validates whether the cell type and model context are available. If gene_list is provided, also validates whether those genes have embeddings available. This checker supports two modes: (1) Discovery mode - validates context only when discovering genes from disease targets; (2) Validation mode - validates specific genes when analyzing known targets.",
+                "input_params": [
+                    {
+                        "param_name": "disease_name",
+                        "param_type": "str",
+                        "required": true,
+                        "allow_empty": false,
+                        "description": "The name of the disease to validate (e.g., 'rheumatoid arthritis'). MUST NOT be empty or null."
+                    },
+                    {
+                        "param_name": "cell_type",
+                        "param_type": "str",
+                        "required": true,
+                        "allow_empty": false,
+                        "allow_null": false,
+                        "description": "The name of the cell type to check for gene availability (e.g., 'b_cell'). MUST NOT be empty, null, or None as the checker explicitly validates against None values."
+                    },
+                    {
+                        "param_name": "gene_list",
+                        "param_type": "list[str]",
+                        "required": false,
+                        "allow_empty": true,
+                        "allow_null": true,
+                        "min_length": 0,
+                        "description": "Optional. A list of gene names to validate for embedding availability (e.g., ['EGFR', 'CDK4', 'BRCA1']). If empty or null, only disease and cell_type context will be validated (useful for discovery workflows). If provided with genes, validates embedding availability for those specific genes."
+                    },
+                    {
+                        "param_name": "model_name",
+                        "param_type": "str",
+                        "required": true,
+                        "allow_empty": false,
+                        "allowed_values": ["scgpt", "pinnacle"],
+                        "default": "scgpt",
+                        "description": "The name of the model mentioned in the proposal to use for validation. MUST be either 'scgpt' or 'pinnacle'. Case-insensitive."
+                    }
+                ],
+                "returns": "True if the disease and cell_type context are valid. If gene_list is provided, also validates embedding availability for those genes; otherwise, skips gene validation."
+            }
+        ]
+    },
+    {
+        "tool": [
+            "humanbase_ppi_retrieve",
+            "humanbase_analyze_tissue_coexpression",
+            "humanbase_analyze_tissue_protein_interactions", 
+            "humanbase_analyze_tissue_transcription_regulation",
+            "humanbase_analyze_tissue_microrna_regulation",
+            "humanbase_analyze_tissue_perturbation_outcomes",
+            "humanbase_analyze_comprehensive_tissue_network"
+        ],
+        "associated_id_checker":
+        [
+            {
+                "checker_name": "humanbase_context_checker",
+                "description": "Validates whether the tissue context is valid for HumanBase analysis functions. If gene_list is provided, also validates those genes. This checker supports two modes: (1) Discovery mode - validates tissue only when discovering gene networks; (2) Validation mode - validates specific genes and tissue when analyzing known targets.",
+                "input_params": [
+                    {
+                        "param_name": "gene_list",
+                        "param_type": "list[str]",
+                        "required": false,
+                        "allow_empty": true,
+                        "allow_null": true,
+                        "min_length": 0,
+                        "description": "Optional. A list of gene names to validate for HumanBase analysis. Supports official gene symbols and common aliases (e.g., ['PPARA', 'CPT1A', 'ACOX1']). If empty or null, only tissue context will be validated (useful when discovering gene networks or when genes will be obtained from disease targets). If provided with genes, validates those specific genes."
+                    },
+                    {
+                        "param_name": "tissue",
+                        "param_type": "str",
+                        "required": true,
+                        "allow_empty": false,
+                        "description": "The name of the tissue context to validate (e.g., 'brain', 'heart', 'liver', 'blood', 'muscle', 'kidney'). Must match HumanBase supported tissue contexts. MUST NOT be empty."
+                    },
+                    {
+                        "param_name": "top_n",
+                        "param_type": "int",
+                        "required": false,
+                        "default": 5,
+                        "description": "Optional parameter for limiting results. Defaults to 5 if not specified. IMPORTANT: top_n > 10 would be time-consuming and not recommended."
+                    }
+                ],
+                "returns": "True if the tissue context is valid. If gene_list is provided, also validates those genes; otherwise, skips gene validation. Returns detailed information about any invalid genes or unsupported tissues found."
+            }
+        ]
+    },
+    {
+        "tool": [
+            "analyze_pathway_interaction", 
+            "analyze_reactome_interaction", 
+            "analyze_hallmark_interaction",
+            "analyze_function_interaction",
+            "analyze_process_interaction",
+            "analyze_comprehensive_interaction"
+        ],
+        "associated_id_checker":
+        [
+            {
+                "checker_name": "enrichr_gene_name_checker",
+                "description": "Validates whether the queried gene names are valid official gene symbols that can be processed by Enrichr-based functions. This checker verifies gene name recognition through MyGene.info API and ensures compatibility with Enrichr databases. Supports discovery mode when gene_list is empty (genes will come from upstream tools like disease targets).",
+                "input_params": [
+                    {
+                        "param_name": "gene_list",
+                        "param_type": "list[str]",
+                        "required": false,
+                        "allow_empty": true,
+                        "allow_null": true,
+                        "min_length": 0,
+                        "description": "Optional. A list of gene names to validate for Enrichr compatibility. Supports official gene symbols, aliases, and common gene identifiers (e.g., ['TP53', 'MDM2', 'EGFR']). If empty or null, skips gene validation (useful when genes will be obtained from disease targets or other sources)."
+                    }
+                ],
+                "returns": "True if validation is skipped (empty gene_list) or if all gene names in the list are valid and can be processed by Enrichr-based analysis tools; otherwise, False. Returns detailed information about any invalid gene names found."
+            }
+        ]
+    },
+    {
+        "tool": ["compass_predict"],
+        "associated_id_checker": [
+        {
+            "checker_name": "concept_name_checker",
+            "description": "Use this checker only if the query specifically references certain concept keys from Compass for further analysis. It validates whether those concept keys are recognized and available within Compass.",
+            "input_params": [
+                {
+                    "param_name": "user_query",
+                    "param_type": "str",
+                    "required": true,
+                    "allow_empty": false,
+                    "description": "The exact user query as originally provided by the user. Copy and paste the full query without modifications. MUST NOT be empty."
+                },
+                {
+                    "param_name": "concept_names",
+                    "param_type": "list[str]",
+                    "required": true,
+                    "allow_empty": false,
+                    "min_length": 1,
+                    "description": "A list of concept names to validate against Compass's predefined concepts. MUST contain at least one concept name."
+                },
+                {
+                    "param_name": "attempt",
+                    "param_type": "int",
+                    "required": false,
+                    "default": 3,
+                    "description": "Number of retry attempts for LLM validation. Defaults to 3 if not specified."
+                }
+            ],
+            "returns": "True if all provided concept names exist in Compass; otherwise, False."
+        }
+        ]
+    },
+    {
+        "tool": ["TranscriptformerEmbeddingTool"],
+        "associated_id_checker": [
+            {
+                "checker_name": "transcriptformer_context_checker",
+                "description": "Validates the context for the TranscriptformerEmbeddingTool. If the context is invalid, it uses the user_query to intelligently suggest a valid alternative.",
+                "input_params": [
+                    {
+                        "param_name": "user_query",
+                        "param_type": "str",
+                        "required": true,
+                        "description": "The user's original query, used to infer the best context."
+                    },
+                    {
+                        "param_name": "state",
+                        "param_type": "str",
+                        "required": false,
+                        "allow_null": true,
+                        "description": "The disease state context (e.g., 'control', 'disease'). Can not be empty or null/None."
+                    },
+                    {
+                        "param_name": "cell_type",
+                        "param_type": "str",
+                        "required": true,
+                        "description": "The cell type context (e.g., 'b_cell')."
+                    },
+                    {
+                        "param_name": "gene_names",
+                        "param_type": "list[str]",
+                        "required": false,
+                        "allow_null": true,
+                        "description": "A list of gene identifiers (symbols or Ensembl IDs). Can be None if not specified."
+                    },
+                    {
+                        "param_name": "disease",
+                        "param_type": "str",
+                        "required": false,
+                        "allow_null": true,
+                        "description": "The name of the disease to load embeddings for. Can not be empty or null/None."
+                    }
+                ],
+                "returns": "True if the context is valid, False otherwise. If False, a message with a suggested valid context is returned."
+            }
+        ]
+    }
+]

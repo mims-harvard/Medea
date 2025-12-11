@@ -1,0 +1,281 @@
+disease,celltype,candidate_genes,y
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['ACTN4', 'MT-ND3', 'POU2F1', 'CA12', 'ADNP']",MT-ND3
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CCDC26', 'HAS2', 'NDUFB2', 'THBD', 'AANAT']",NDUFB2
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['AP1M1', 'RPL29P4', 'NDUFB10', 'CD6', 'CD207']",NDUFB10
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CYB5R1', 'TOP2A', 'PHPT1', 'VPREB1', 'ST6GALNAC2']",TOP2A
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CDK4', 'CCR2', 'TLN2', 'APC2', 'GAL3ST1']",CDK4
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['TUBB', 'PPM1D', 'HIP1R', 'ZNF317', 'TLCD1']",TUBB
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['NDUFB3', 'IL34', 'PABPN1', 'GAL3ST3', 'SNX24']",NDUFB3
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CETP', 'HLA-DRB1', 'RHBG', 'LCT', 'TARDBP']",HLA-DRB1
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['ILF2', 'RBX1', 'NRSN2', 'TXN2', 'FECH']",RBX1
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CLDND2', 'PKN3', 'NDUFA6', 'NOTCH4', 'DUS2']",NDUFA6
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['LCK', 'WNK2', 'MAP4K3', 'FAM135A', 'NBEA']",LCK
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['AKR7A3', 'NME1', 'PECR', 'TYK2', 'SCN8A']",TYK2
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['FKBP1A', 'CDH15', 'DPYSL2', 'ELOVL6', 'IGLV3-25']",FKBP1A
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['TAFA1', 'LAG3', 'RHOH', 'ICAM1', 'FAHD1']",LAG3
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['TCHP', 'MDH1B', 'DRD5', 'ZNF804A', 'NDUFS6']",NDUFS6
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['TAX1BP1', 'NDUFB9', 'USH1G', 'VGF', 'CYTOR']",NDUFB9
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['IER3', 'PHETA2', 'DPYSL5', 'LMO4', 'NDUFS8']",NDUFS8
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CLPP', 'AMN', 'PRKCB', 'INHBB', 'POP1']",PRKCB
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['ADAM22', 'KLF15', 'FRG1', 'NDUFA10', 'BMP2']",NDUFA10
+follicular lymphoma,cd4-positive alpha-beta cytotoxic t cell,"['CYB5R1', 'RAB11FIP3', 'MYEF2', 'NDUFV1', 'DNAJC13']",NDUFV1
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['NUP107', 'SVOP', 'NDUFC2', 'TMEM131', 'ETS2']",NDUFC2
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['C17orf50', 'PRKAA2', 'SERF2', 'INIP', 'NDUFC1']",NDUFC1
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['MSL3', 'MAFA', 'LCP1', 'ZDHHC11', 'TUBB']",TUBB
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['GYPC', 'CENPU', 'NDUFA2', 'EVX2', 'OLIG2']",NDUFA2
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['SPRR1B', 'KRTAP5-1', 'STRBP', 'HTR4', 'TOP2B']",TOP2B
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['MBLAC2', 'DNMT1', 'MAGEB6', 'SLC9A1', 'TTC39A']",DNMT1
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['LHFPL3', 'NDUFA5', 'MRPS31', 'RNF8', 'RUSF1']",NDUFA5
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['C10orf62', 'PPP1R12C', 'NAA50', 'NDUFS4', 'C1orf105']",NDUFS4
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['BORCS5', 'NDUFS6', 'SPTBN2', 'WASHC2C', 'MCM8']",NDUFS6
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['TTLL7', 'CCNYL1', 'LHX6', 'PROX1', 'NDUFB11']",NDUFB11
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['SEC61B', 'FGD5', 'DTX3', 'NCOA1', 'MCL1']",MCL1
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['PGP', 'HDAC7', 'PDE4A', 'ITIH6', 'PRKCZ']",HDAC7
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['GAK', 'CERK', 'HCLS1', 'MIP', 'NDUFAF4']",NDUFAF4
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['SLC7A10', 'GLA', 'TRAPPC10', 'NDUFV1', 'ECHDC2']",NDUFV1
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['CAB39L', 'PSME1', 'CD79B', 'PPP1CB', 'FAM76B']",CD79B
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['PRNP', 'AVP', 'SMARCC1', 'NDUFA1', 'UROS']",NDUFA1
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['UTP25', 'PSMB5', 'SYN3', 'ACBD5', 'PCSK5']",PSMB5
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['CD3D', 'HAUS4', 'USP36', 'BAZ1B', 'TBC1D15']",CD3D
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['KLHL23', 'CRBN', 'PLD2', 'UCP3', 'TNFRSF12A']",CRBN
+follicular lymphoma,naive thymus-derived cd4-positive alpha-beta t cell,"['MT-ND4', 'ZNF438', 'HCFC1R1', 'MAGEA2B', 'NME1-NME2']",MT-ND4
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['H2AC13', 'BBS4', 'LHPP', 'FXR2', 'NDUFA4']",NDUFA4
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['NDUFAB1', 'RGMA', 'ZNF697', 'IL18', 'ANKRD26P1']",NDUFAB1
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['TLR2', 'KHDRBS3', 'ZNF660', 'U2AF1', 'FYN']",FYN
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['FCRL3', 'TEAD2', 'LRRC45', 'CELF2', 'HECTD1']",CELF2
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['CDRT4', 'NDUFB4', 'SLC7A11', 'IL36RN', 'SPIRE1']",NDUFB4
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['PDS5B', 'NDUFS5', 'FAM27E3', 'APOBEC3A', 'CASP9']",NDUFS5
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['TRMT10A', 'NDUFS7', 'LONRF2', 'SERINC1', 'RBPMS2']",NDUFS7
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['GABRD', 'RNF122', 'NDUFV2', 'MAP4K2', 'PAGE1']",NDUFV2
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['IL2RB', 'ATG16L2', 'TMEM120B', 'TIE1', 'EIF5A']",IL2RB
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['UGT2B4', 'PFKM', 'AZGP1', 'HSP90AA1', 'GSTM3']",HSP90AA1
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['COL20A1', 'PPIA', 'STAC', 'MRPL49', 'MTHFS']",PPIA
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['MT-ND4L', 'IFNA1', 'FCER1G', 'BRD2', 'ARMC1']",MT-ND4L
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['SFXN1', 'AQP9', 'HLA-DMB', 'HSP90AB1', 'DROSHA']",HSP90AB1
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['PPP4R1', 'SEMA3A', 'NUDT6', 'INTS13', 'NDUFB10']",NDUFB10
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['USP47', 'PDC', 'KEL', 'MT-ND3', 'NET1']",MT-ND3
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['NDUFS7', 'OGDHL', 'CLCN1', 'CACNA1F', 'ZBTB1']",NDUFS7
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['PTBP2', 'NDUFS5', 'CLTRN', 'BCAR1', 'PHKA1']",NDUFS5
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['ZFP3', 'GLA', 'STMN4', 'TRMT10A', 'HSP90AA1']",HSP90AA1
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['TUG1', 'SLC13A3', 'MT-ND3', 'DLEU1', 'CERKL']",MT-ND3
+follicular lymphoma,naive thymus-derived cd8-positive alpha-beta t cell,"['SHISAL2A', 'FBN2', 'NGLY1', 'NDUFA4', 'DDX58']",NDUFA4
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['HDAC1', 'HS3ST1', 'FLI1', 'PROKR2', 'SYT15']",HDAC1
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['WIPF3', 'CELSR2', 'BCL2A1', 'RHAG', 'SH3YL1']",BCL2A1
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['HSPE1', 'BAG6', 'NDUFV2', 'VEZF1', 'WEE1']",NDUFV2
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['OTUD3', 'ZFP36', 'CD28', 'NDUFS7', 'GOLGA2']",NDUFS7
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['CYP1A1', 'DUSP21', 'MS4A1', 'ELMOD2', 'SART1']",MS4A1
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['HDAC3', 'SPRING1', 'ATXN7L1', 'SCNN1D', 'STK16']",HDAC3
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['HMGA1', 'MBD3L3', 'NDUFS3', 'SUCO', 'KMT2C']",NDUFS3
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['DNMT1', 'TIMM29', 'TH', 'ORMDL3', 'PTPN20']",DNMT1
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['UVRAG', 'RCVRN', 'SUV39H2', 'NDUFAF3', 'RSRP1']",NDUFAF3
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['HLA-DRB5', 'NCOA5', 'UBE2E2', 'TDRD1', 'GFUS']",HLA-DRB5
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['DMTN', 'LRP1', 'SMTN', 'CXCR4', 'DPP10']",CXCR4
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['NDUFB7', 'VASH1', 'DOCK7', 'XRCC1', 'EFS']",NDUFB7
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['PPIA', 'BATF3', 'MRAP', 'KIF9', 'TONSL']",PPIA
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['C17orf67', 'FAAP20', 'PRR19', 'SEPTIN12', 'NDUFA5']",NDUFA5
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['RFTN1', 'NDUFA2', 'CLIP4', 'CD177', 'SP2']",NDUFA2
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['HSPB1', 'MT-ND4L', 'FIGN', 'SUPV3L1', 'PRPSAP2']",MT-ND4L
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['DTX3L', 'NIFK', 'CDK4', 'MYOF', 'SCML1']",CDK4
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['FAM153CP', 'TMIE', 'CCL21', 'MCMDC2', 'NDUFB6']",NDUFB6
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['SDS', 'BTBD2', 'RABGAP1', 'ARIH2', 'NDUFS6']",NDUFS6
+follicular lymphoma,effector cd8-positive alpha-beta t cell,"['LMBR1L', 'HSP90AA1', 'KLF3', 'KLK4', 'POU2AF1']",HSP90AA1
+follicular lymphoma,cd8-positive alpha-beta t cell,"['EZH2', 'KCNIP4', 'CERK', 'NCOA1', 'EI24']",EZH2
+follicular lymphoma,cd8-positive alpha-beta t cell,"['HDAC2', 'CDCA7L', 'IL1A', 'WDR82P1', 'AQP3']",HDAC2
+follicular lymphoma,cd8-positive alpha-beta t cell,"['NDUFB5', 'PLEKHA6', 'PAM', 'POMK', 'SERPINA5']",NDUFB5
+follicular lymphoma,cd8-positive alpha-beta t cell,"['FBXO28', 'UNC5A', 'ATF2', 'TMEM255B', 'HDAC3']",HDAC3
+follicular lymphoma,cd8-positive alpha-beta t cell,"['MECR', 'BANK1', 'USE1', 'NDUFS7', 'MUC5AC']",NDUFS7
+follicular lymphoma,cd8-positive alpha-beta t cell,"['PCDHA12', 'RBM15B', 'LINC00663', 'NDUFB3', 'RAB41']",NDUFB3
+follicular lymphoma,cd8-positive alpha-beta t cell,"['MIEF2', 'EIF4H', 'IMPDH2', 'REV1', 'CCSER1']",IMPDH2
+follicular lymphoma,cd8-positive alpha-beta t cell,"['GRM4', 'CAP1', 'NDUFA10', 'SP8', 'ACTA1']",NDUFA10
+follicular lymphoma,cd8-positive alpha-beta t cell,"['DMAC1', 'RPL27', 'SPACA1', 'CEP290', 'TP53']",TP53
+follicular lymphoma,cd8-positive alpha-beta t cell,"['NDUFS2', 'HES5', 'KIAA0754', 'PLA2G4A', 'RPH3A']",NDUFS2
+follicular lymphoma,cd8-positive alpha-beta t cell,"['HS3ST2', 'RFC1', 'YES1', 'PRKAR2B', 'SMARCE1']",YES1
+follicular lymphoma,cd8-positive alpha-beta t cell,"['EMC7', 'TBC1D9', 'IMPDH1', 'UTF1', 'CELSR2']",IMPDH1
+follicular lymphoma,cd8-positive alpha-beta t cell,"['MYT1', 'CCDC150', 'NEUROD1', 'CALCB', 'NDUFB6']",NDUFB6
+follicular lymphoma,cd8-positive alpha-beta t cell,"['CREBBP', 'MT-ND3', 'ATG12', 'PIK3IP1', 'RPS16']",MT-ND3
+follicular lymphoma,cd8-positive alpha-beta t cell,"['POLA2', 'PLD3', 'TOR1B', 'FKBP8', 'KRTAP5-3']",POLA2
+follicular lymphoma,cd8-positive alpha-beta t cell,"['CNOT10', 'SLC35B4', 'COLQ', 'LPAR3', 'CDK7']",CDK7
+follicular lymphoma,cd8-positive alpha-beta t cell,"['C5orf22', 'SLC39A9', 'DDHD1', 'TYK2', 'TBCB']",TYK2
+follicular lymphoma,cd8-positive alpha-beta t cell,"['RRP12', 'PLEKHB1', 'IDH3G', 'MT-ND4', 'NSRP1']",MT-ND4
+follicular lymphoma,cd8-positive alpha-beta t cell,"['NRSN2', 'PLG', 'RNF13', 'NDUFA8', 'HIF1A']",NDUFA8
+follicular lymphoma,cd8-positive alpha-beta t cell,"['MT-ND5', 'XPO1', 'PRPF40B', 'RNF213', 'CD27']",MT-ND5
+follicular lymphoma,t follicular helper cell,"['SLITRK5', 'GPX7', 'LIFR', 'CCNK', 'NDUFA5']",NDUFA5
+follicular lymphoma,t follicular helper cell,"['TMEM38B', 'PTRH1', 'NDUFB5', 'CCDC125', 'ANKRD13C']",NDUFB5
+follicular lymphoma,t follicular helper cell,"['CENPB', 'HSP90AA1', 'RASGRF2', 'MAGED4', 'BASP1']",HSP90AA1
+follicular lymphoma,t follicular helper cell,"['LHX9', 'DNMT3L', 'NDUFV2', 'TRIB2', 'TSPAN7']",NDUFV2
+follicular lymphoma,t follicular helper cell,"['KRTAP12-2', 'CEP57L1P1', 'TFE3', 'POLD2', 'EMP2']",POLD2
+follicular lymphoma,t follicular helper cell,"['CHML', 'METTL3', 'DHCR7', 'CDK9', 'KCNMB1']",CDK9
+follicular lymphoma,t follicular helper cell,"['CYSRT1', 'SLC17A9', 'PSMB5', 'LGALS9', 'TJP2']",PSMB5
+follicular lymphoma,t follicular helper cell,"['GRIPAP1', 'ALG13', 'ETHE1', 'CDK6', 'FDXACB1']",CDK6
+follicular lymphoma,t follicular helper cell,"['STAG3', 'SGSM1', 'MAD1L1', 'NDUFC1', 'WDR83OS']",NDUFC1
+follicular lymphoma,t follicular helper cell,"['IFNAR1', 'PRDM10', 'BMP4', 'IL16', 'ARPC1B']",IFNAR1
+follicular lymphoma,t follicular helper cell,"['ZC3H7A', 'OR4F29', 'MT-ND3', 'DNAJC10', 'CSF2RB']",MT-ND3
+follicular lymphoma,t follicular helper cell,"['SSX4B', 'IL24', 'XPNPEP1', 'DNMT1', 'HSD17B10']",DNMT1
+follicular lymphoma,t follicular helper cell,"['CREBZF', 'POLD4', 'CASP14', 'IGFBP4', 'CYP11B2']",POLD4
+follicular lymphoma,t follicular helper cell,"['GTF2H1', 'CCDC125', 'PRKACG', 'CD38', 'PMM2']",CD38
+follicular lymphoma,t follicular helper cell,"['CLEC4C', 'SARNP', 'NDUFS5', 'HGH1', 'FXYD1']",NDUFS5
+follicular lymphoma,t follicular helper cell,"['CDC42EP4', 'MAGED4B', 'MATN3', 'IL2RB', 'COL2A1']",IL2RB
+follicular lymphoma,t follicular helper cell,"['ZNF581', 'FKBP1A', 'PMF1-BGLAP', 'NUDCD3', 'PDXDC1']",FKBP1A
+follicular lymphoma,t follicular helper cell,"['UQCR10', 'TRAF5', 'FAM228A', 'NAMPT', 'CELF2']",CELF2
+follicular lymphoma,t follicular helper cell,"['MDM2', 'ARMC7', 'PZP', 'ARHGAP24', 'OTC']",MDM2
+follicular lymphoma,t follicular helper cell,"['PREB', 'UBAP2', 'THYN1', 'HDAC3', 'LIN9']",HDAC3
+follicular lymphoma,cd4-positive alpha-beta t cell,"['BHLHB9', 'RAD23B', 'TSKS', 'CEBPB', 'MT-ND3']",MT-ND3
+follicular lymphoma,cd4-positive alpha-beta t cell,"['YJEFN3', 'SUFU', 'NDUFV1', 'ESYT1', 'MRPL34']",NDUFV1
+follicular lymphoma,cd4-positive alpha-beta t cell,"['NDUFB7', 'ZNF223', 'ALDH3A1', 'DPF3', 'BLVRA']",NDUFB7
+follicular lymphoma,cd4-positive alpha-beta t cell,"['MDM2', 'USP12P1', 'HBZ', 'FREM1', 'DEXI']",MDM2
+follicular lymphoma,cd4-positive alpha-beta t cell,"['CDK2', 'NPPC', 'TMPRSS11D', 'COL8A1', 'CDCA7L']",CDK2
+follicular lymphoma,cd4-positive alpha-beta t cell,"['ADAMTSL5', 'TPSG1', 'NDUFS2', 'KCNE4', 'CABYR']",NDUFS2
+follicular lymphoma,cd4-positive alpha-beta t cell,"['ARG1', 'NCLN', 'RAI1', 'AURKA', 'KLC2']",AURKA
+follicular lymphoma,cd4-positive alpha-beta t cell,"['HOXB6', 'RUFY4', 'F13B', 'NDUFB1', 'ICMT']",NDUFB1
+follicular lymphoma,cd4-positive alpha-beta t cell,"['CTSA', 'CYBRD1', 'ZBTB34', 'RARS2', 'TNFRSF4']",TNFRSF4
+follicular lymphoma,cd4-positive alpha-beta t cell,"['ITIH3', 'BCL6', 'PCDHA5', 'BDKRB1', 'CDK4']",CDK4
+follicular lymphoma,cd4-positive alpha-beta t cell,"['LMAN2L', 'LRFN4', 'POLD3', 'FGF8', 'NAPRT']",POLD3
+follicular lymphoma,cd4-positive alpha-beta t cell,"['AGPAT4', 'RFTN1', 'ABHD16A', 'ZNF747', 'MT-ND4']",MT-ND4
+follicular lymphoma,cd4-positive alpha-beta t cell,"['SIGLEC9', 'FKBP10', 'NDUFAB1', 'KCNMA1', 'REXO2']",NDUFAB1
+follicular lymphoma,cd4-positive alpha-beta t cell,"['MED12L', 'NDUFS5', 'ADSS2', 'ACBD7', 'SLC2A2']",NDUFS5
+follicular lymphoma,cd4-positive alpha-beta t cell,"['PCDHA1', 'KRTAP10-10', 'PSMB5', 'ARL6', 'SPATA4']",PSMB5
+follicular lymphoma,cd4-positive alpha-beta t cell,"['RUFY3', 'FOLR3', 'SLC36A1', 'NDUFB4', 'ABCB11']",NDUFB4
+follicular lymphoma,cd4-positive alpha-beta t cell,"['PLOD1', 'POLD2', 'RAD51AP1', 'IFNL2', 'HLA-B']",POLD2
+follicular lymphoma,cd4-positive alpha-beta t cell,"['CNOT4', 'TVP23B', 'NDUFA9', 'HSD17B7', 'CR2']",NDUFA9
+follicular lymphoma,cd4-positive alpha-beta t cell,"['DESI1', 'MASTL', 'ACTN4', 'ARHGAP10', 'DNMT3A']",DNMT3A
+follicular lymphoma,cd4-positive alpha-beta t cell,"['NDP', 'POLD4', 'CREG1', 'TRHR', 'NLRP2']",POLD4
+follicular lymphoma,regulatory t cell,"['IFNAR1', 'NPNT', 'DCUN1D4', 'PCNA', 'DPF2']",IFNAR1
+follicular lymphoma,regulatory t cell,"['CDK4', 'GPNMB', 'ZNF318', 'NRG3', 'SLC23A2']",CDK4
+follicular lymphoma,regulatory t cell,"['CYP2C8', 'NDUFAF4', 'OXA1L', 'COPZ1', 'POMT2']",NDUFAF4
+follicular lymphoma,regulatory t cell,"['TIGD7', 'MCL1', 'UBTD2', 'HOXB1', 'FUT1']",MCL1
+follicular lymphoma,regulatory t cell,"['TUBB', 'RGS14', 'PAQR5', 'SNAPIN', 'KCNC2']",TUBB
+follicular lymphoma,regulatory t cell,"['DACT3', 'ZCCHC8', 'HLA-DRB5', 'ZNF233', 'HDGFL3']",HLA-DRB5
+follicular lymphoma,regulatory t cell,"['IWS1', 'PYGO2', 'TNFRSF4', 'AMY2B', 'FBXL14']",TNFRSF4
+follicular lymphoma,regulatory t cell,"['NDUFA8', 'MAD2L2', 'KLHL21', 'LMO2', 'RPS27L']",NDUFA8
+follicular lymphoma,regulatory t cell,"['ANAPC11', 'NDUFA7', 'PLEKHN1', 'LRRC8E', 'ERMN']",NDUFA7
+follicular lymphoma,regulatory t cell,"['FRMD4A', 'CDH1', 'CDAN1', 'PIK3R1', 'C9orf78']",PIK3R1
+follicular lymphoma,regulatory t cell,"['C1D', 'NDUFS5', 'TRIML2', 'ING3', 'POU2AF1']",NDUFS5
+follicular lymphoma,regulatory t cell,"['IMPDH2', 'IGFBP1', 'EIF3A', 'H4C15', 'ROPN1']",IMPDH2
+follicular lymphoma,regulatory t cell,"['CMTM2', 'SIGLECL1', 'HLA-DRB1', 'CPSF4', 'TMEM30B']",HLA-DRB1
+follicular lymphoma,regulatory t cell,"['GLI1', 'MT-ND2', 'NUDT4', 'RHBG', 'CGAS']",MT-ND2
+follicular lymphoma,regulatory t cell,"['AIM2', 'MIER3', 'NR3C1', 'TMEM59', 'FOXRED2']",NR3C1
+follicular lymphoma,regulatory t cell,"['UBE2V2', 'PSMB5', 'ARMC7', 'WRAP73', 'KIAA0753']",PSMB5
+follicular lymphoma,regulatory t cell,"['RBM14', 'NDUFA11', 'TRIM55', 'CD200', 'SERF1A']",NDUFA11
+follicular lymphoma,regulatory t cell,"['PSMC5', 'JAK3', 'WASF3', 'IQCF3', 'PLRG1']",JAK3
+follicular lymphoma,regulatory t cell,"['SRD5A1', 'APOD', 'IL18R1', 'KIF9', 'MT-ND6']",MT-ND6
+follicular lymphoma,regulatory t cell,"['CASP3', 'RAB7B', 'MT-ND3', 'GGT6', 'PPBP']",MT-ND3
+follicular lymphoma,exhausted t cell,"['C1RL', 'LCK', 'EFEMP1', 'DGKD', 'RRP12']",LCK
+follicular lymphoma,exhausted t cell,"['NKX2-2', 'PTGIR', 'HTATSF1', 'NDUFC2', 'IKBKE']",NDUFC2
+follicular lymphoma,exhausted t cell,"['FGR', 'TAS2R5', 'PLCXD3', 'P2RX6', 'HOXA13']",FGR
+follicular lymphoma,exhausted t cell,"['SMN2', 'SLC12A8', 'NDUFB3', 'SYNE1', 'CYP2F1']",NDUFB3
+follicular lymphoma,exhausted t cell,"['MRPL30', 'NDUFB5', 'KCNK7', 'CPLX3', 'ZBTB18']",NDUFB5
+follicular lymphoma,exhausted t cell,"['ZNF711', 'TRAPPC2', 'NDUFS6', 'TMEM256-PLSCR3', 'MSS51']",NDUFS6
+follicular lymphoma,exhausted t cell,"['AADAT', 'KDM1A', 'MT-ND4L', 'MIB1', 'SLC2A8']",MT-ND4L
+follicular lymphoma,exhausted t cell,"['GPR143', 'PDCD1', 'FAIM2', 'SPATS1', 'USP34']",PDCD1
+follicular lymphoma,exhausted t cell,"['SLX1B', 'NDUFA5', 'PDLIM1', 'PC', 'WDR33']",NDUFA5
+follicular lymphoma,exhausted t cell,"['NDUFA12', 'C1QTNF5', 'PEX1', 'OBP2A', 'RPP14']",NDUFA12
+follicular lymphoma,exhausted t cell,"['RPS13', 'NDUFB9', 'SYT6', 'ISM2', 'NUDT3']",NDUFB9
+follicular lymphoma,exhausted t cell,"['DEFB121', 'PHF20L1', 'FAM120B', 'ZNF236', 'PRKCB']",PRKCB
+follicular lymphoma,exhausted t cell,"['SRA1', 'VMAC', 'AVEN', 'NUDT5', 'NDUFA8']",NDUFA8
+follicular lymphoma,exhausted t cell,"['ISLR2', 'PRKAR1A', 'ACAT1', 'NDUFS3', 'SYNJ2BP']",NDUFS3
+follicular lymphoma,exhausted t cell,"['NTN1', 'NSG1', 'POLD4', 'CDKL3', 'ADORA1']",POLD4
+follicular lymphoma,exhausted t cell,"['PSMB5', 'HBE1', 'MPP6', 'CYP2D6', 'NOMO3']",PSMB5
+follicular lymphoma,exhausted t cell,"['ALDH4A1', 'MARK4', 'CDK4', 'SECTM1', 'WDR1']",CDK4
+follicular lymphoma,exhausted t cell,"['POU3F1', 'TLK1', 'METAP2', 'MLXIPL', 'NDUFS2']",NDUFS2
+follicular lymphoma,exhausted t cell,"['TTC5', 'NDUFA10', 'USP13', 'REPS1', 'PRR20B']",NDUFA10
+follicular lymphoma,exhausted t cell,"['HNRNPH2', 'MAP4', 'PPP3CA', 'VSTM4', 'NDUFS7']",NDUFS7
+follicular lymphoma,t cell,"['CELSR2', 'HDAC7', 'HBA1', 'TYR', 'TWSG1']",HDAC7
+follicular lymphoma,t cell,"['WDR92', 'ZNF131', 'WWP1', 'NDUFC2', 'CCNA2']",NDUFC2
+follicular lymphoma,t cell,"['NDUFS5', 'FAM133A', 'COX8C', 'CLPTM1L', 'FFAR1']",NDUFS5
+follicular lymphoma,t cell,"['DNMT1', 'URM1', 'MYO15A', 'CDCP1', 'NOL4L']",DNMT1
+follicular lymphoma,t cell,"['AGTR2', 'HDAC10', 'GJA8', 'DHODH', 'SCARB2']",HDAC10
+follicular lymphoma,t cell,"['GAGE12F', 'MAP3K3', 'NDUFB3', 'PSPH', 'GNA11']",NDUFB3
+follicular lymphoma,t cell,"['KHDC1', 'FNDC3B', 'SEMA3B', 'HDAC9', 'VSIG1']",HDAC9
+follicular lymphoma,t cell,"['DYNLT4', 'MDM2', 'SUMO1P1', 'ITGA4', 'SRA1']",MDM2
+follicular lymphoma,t cell,"['POLA1', 'ACTA2', 'DSP', 'GRID2IP', 'RNF114']",POLA1
+follicular lymphoma,t cell,"['RCC2', 'NDUFB7', 'GOLGA1', 'MBD4', 'COMMD5']",NDUFB7
+follicular lymphoma,t cell,"['SGPL1', 'MAPK11', 'SLC9A3', 'DDB1', 'RAB40C']",DDB1
+follicular lymphoma,t cell,"['JAK3', 'C10orf67', 'DTX1', 'TMEM126B', 'FGF23']",JAK3
+follicular lymphoma,t cell,"['KDR', 'RAB11A', 'TUBB4B', 'TBC1D21', 'GNRHR']",TUBB4B
+follicular lymphoma,t cell,"['MED22', 'DCTN4', 'ETFDH', 'BCL2L1', 'ARHGAP24']",BCL2L1
+follicular lymphoma,t cell,"['MXD4', 'RBX1', 'USB1', 'OR7A17', 'GRIP1']",RBX1
+follicular lymphoma,t cell,"['RCN3', 'PLCL2', 'CD38', 'IVD', 'ATE1']",CD38
+follicular lymphoma,t cell,"['POLD3', 'CRTAC1', 'TADA2A', 'FOXR2', 'CLEC11A']",POLD3
+follicular lymphoma,t cell,"['KLF15', 'NDUFA4', 'TSPYL4', 'FIGN', 'MED25']",NDUFA4
+follicular lymphoma,t cell,"['CUL4A', 'OR8D2', 'PRRC2B', 'SOS1', 'BANF2']",CUL4A
+follicular lymphoma,t cell,"['PDRG1', 'PIK3CG', 'TRIM23', 'SUCO', 'GCKR']",PIK3CG
+follicular lymphoma,mature nk t cell,"['SIRPG', 'TMEM144', 'NRIP3', 'USP49', 'PIK3R1']",PIK3R1
+follicular lymphoma,mature nk t cell,"['LSG1', 'PMM2', 'CXCR4', 'SKA2', 'POLR3H']",CXCR4
+follicular lymphoma,mature nk t cell,"['TP53RK', 'NDUFB7', 'FHL5', 'VPS13B', 'ERO1A']",NDUFB7
+follicular lymphoma,mature nk t cell,"['CRBN', 'CEP89', 'EPHB3', 'DAXX', 'KLKB1']",CRBN
+follicular lymphoma,mature nk t cell,"['ADAMTS1', 'SH2B2', 'GSTA2', 'MIA', 'NDUFB3']",NDUFB3
+follicular lymphoma,mature nk t cell,"['RBM41', 'LAG3', 'USF3', 'RBM8A', 'MCPH1']",LAG3
+follicular lymphoma,mature nk t cell,"['CD86', 'MAP2K5', 'REEP6', 'TUBB', 'LRRC47']",TUBB
+follicular lymphoma,mature nk t cell,"['TP53INP2', 'NDUFB11', 'LRRC23', 'REN', 'CCDC8']",NDUFB11
+follicular lymphoma,mature nk t cell,"['NDUFB4', 'ZBTB21', 'SLC11A2', 'SCAF8', 'LRP1B']",NDUFB4
+follicular lymphoma,mature nk t cell,"['C1QTNF2', 'H2AC1', 'UNC45A', 'YES1', 'TRIM52']",YES1
+follicular lymphoma,mature nk t cell,"['CACNB1', 'CEND1', 'SYPL2', 'DNMT1', 'RAB11B']",DNMT1
+follicular lymphoma,mature nk t cell,"['SH3BP4', 'PRMT8', 'NDUFA13', 'RTRAF', 'EME1']",NDUFA13
+follicular lymphoma,mature nk t cell,"['SLC12A8', 'PIK3CD', 'NEK4', 'TFR2', 'ORMDL3']",PIK3CD
+follicular lymphoma,mature nk t cell,"['PDZK1IP1', 'RAB22A', 'CEND1', 'IMPDH2', 'PRSS1']",IMPDH2
+follicular lymphoma,mature nk t cell,"['FAM163B', 'GTF2A1L', 'HBEGF', 'CORO6', 'NDUFV2']",NDUFV2
+follicular lymphoma,mature nk t cell,"['NDUFS5', 'RTN4RL1', 'GMPR2', 'MIER3', 'TMTC3']",NDUFS5
+follicular lymphoma,mature nk t cell,"['FOXD4', 'MT-ND3', 'NR2E3', 'NCBP2AS2', 'RALGAPB']",MT-ND3
+follicular lymphoma,mature nk t cell,"['SCML4', 'NDUFAF3', 'RPL36', 'PDE12', 'MRPL36']",NDUFAF3
+follicular lymphoma,mature nk t cell,"['MCL1', 'FOXP1', 'ZNF430', 'SERPINB1', 'PFDN6']",MCL1
+follicular lymphoma,mature nk t cell,"['INKA1', 'RBX1', 'MAPK14', 'ZNF79', 'RBM33']",RBX1
+follicular lymphoma,myeloid cell,"['RPL26L1', 'GAGE13', 'SLC5A1', 'TOP1', 'NEU4']",TOP1
+follicular lymphoma,myeloid cell,"['SMC3', 'SEC22A', 'NDUFA4', 'SP8', 'UBE2J2']",NDUFA4
+follicular lymphoma,myeloid cell,"['DCUN1D1', 'C5orf22', 'INTU', 'NDUFS5', 'IGSF8']",NDUFS5
+follicular lymphoma,myeloid cell,"['MT-ND2', 'FDX1', 'ZNRD2', 'RNF103-CHMP3', 'INPP5J']",MT-ND2
+follicular lymphoma,myeloid cell,"['MYO1D', 'NDUFB6', 'DPH3', 'ARMC7', 'CACNA1G']",NDUFB6
+follicular lymphoma,myeloid cell,"['PIK3CB', 'VPS52', 'SEC11A', 'UBE2L6', 'COPS8']",PIK3CB
+follicular lymphoma,myeloid cell,"['GTF3C3', 'CD28', 'NXPH2', 'PBRM1', 'CRBN']",CRBN
+follicular lymphoma,myeloid cell,"['PRR20A', 'ADGRL1', 'NDUFA12', 'ZBTB38', 'H2AC8']",NDUFA12
+follicular lymphoma,myeloid cell,"['CALD1', 'MEPE', 'PGLYRP2', 'VPS33A', 'JAK1']",JAK1
+follicular lymphoma,myeloid cell,"['MT-ND5', 'BAMBI', 'PCID2', 'B3GAT1', 'CT45A1']",MT-ND5
+follicular lymphoma,myeloid cell,"['PPP2R2B', 'ZCCHC12', 'KCTD13', 'SPINK4', 'EZH2']",EZH2
+follicular lymphoma,myeloid cell,"['NDUFB7', 'GPKOW', 'MVP', 'MRPL14', 'DESI2']",NDUFB7
+follicular lymphoma,myeloid cell,"['VMA21', 'CDK4', 'TNKS2', 'LDHA', 'C2orf50']",CDK4
+follicular lymphoma,myeloid cell,"['OMP', 'GSKIP', 'PRPF8', 'FAM169A', 'IMPDH2']",IMPDH2
+follicular lymphoma,myeloid cell,"['EN1', 'XIST', 'NT5C', 'PPIA', 'MUC12']",PPIA
+follicular lymphoma,myeloid cell,"['ZNF705D', 'NDUFS2', 'PIK3C3', 'MORN2', 'MINDY2']",NDUFS2
+follicular lymphoma,myeloid cell,"['PCDHGC3', 'RBMX2', 'SOX4', 'IFNAR1', 'ODF3L1']",IFNAR1
+follicular lymphoma,myeloid cell,"['MTFR1L', 'MB21D2', 'GCSAM', 'PIK3CD', 'PRRX2']",PIK3CD
+follicular lymphoma,myeloid cell,"['CAND1', 'LTBP1', 'ZCCHC3', 'BCL2A1', 'NUDC']",BCL2A1
+follicular lymphoma,myeloid cell,"['F3', 'SLC1A3', 'RGS5', 'CD22', 'FUT11']",CD22
+follicular lymphoma,plasmacytoid dendritic cell,"['NDUFC1', 'EIF3C', 'AKT1S1', 'RPL26L1', 'KMO']",NDUFC1
+follicular lymphoma,plasmacytoid dendritic cell,"['CFHR5', 'LOXL1', 'DNMT1', 'SRFBP1', 'EMC9']",DNMT1
+follicular lymphoma,plasmacytoid dendritic cell,"['EGR4', 'NDUFA6', 'SERPINI1', 'CDK11A', 'ATG2A']",NDUFA6
+follicular lymphoma,plasmacytoid dendritic cell,"['MIOS', 'USB1', 'KRTAP10-10', 'THBS3', 'NDUFAF3']",NDUFAF3
+follicular lymphoma,plasmacytoid dendritic cell,"['IFNAR1', 'HNRNPLL', 'DCP1B', 'RPSA', 'PAFAH1B3']",IFNAR1
+follicular lymphoma,plasmacytoid dendritic cell,"['RIBC2', 'NDUFA3', 'CPN1', 'CYB5A', 'CCDC85A']",NDUFA3
+follicular lymphoma,plasmacytoid dendritic cell,"['NXF1', 'EMC7', 'GOLGA8EP', 'TOP1', 'ACE']",TOP1
+follicular lymphoma,plasmacytoid dendritic cell,"['EVC2', 'MSH5', 'ATOX1', 'NDUFA7', 'CCNB3']",NDUFA7
+follicular lymphoma,plasmacytoid dendritic cell,"['HIPK1', 'C4orf46', 'PSMB5', 'PRM1', 'DLX3']",PSMB5
+follicular lymphoma,plasmacytoid dendritic cell,"['TLN2', 'MT-ND4L', 'ATP2B4', 'TMPRSS11D', 'RND3']",MT-ND4L
+follicular lymphoma,plasmacytoid dendritic cell,"['DUSP15', 'CCDC70', 'ABCE1', 'EIF2AK2', 'NDUFB10']",NDUFB10
+follicular lymphoma,plasmacytoid dendritic cell,"['TMEM102', 'FOSL1', 'HDAC2', 'LYPD6B', 'NOL8']",HDAC2
+follicular lymphoma,plasmacytoid dendritic cell,"['APCS', 'NDUFB6', 'NR4A1', 'IFI16', 'GGT6']",NDUFB6
+follicular lymphoma,plasmacytoid dendritic cell,"['ARHGEF11', 'KCNJ13', 'WDR25', 'NNAT', 'NDUFV2']",NDUFV2
+follicular lymphoma,plasmacytoid dendritic cell,"['S100A9', 'NDUFB11', 'IL27', 'DAPK3', 'ZBTB42']",NDUFB11
+follicular lymphoma,plasmacytoid dendritic cell,"['MT-ND2', 'S100A11', 'GRHL1', 'CAMP', 'F2RL3']",MT-ND2
+follicular lymphoma,plasmacytoid dendritic cell,"['SPIB', 'IMPDH2', 'SIGLEC14', 'CSN3', 'FCSK']",IMPDH2
+follicular lymphoma,plasmacytoid dendritic cell,"['RAB3D', 'TUBB6', 'PLA2G2E', 'ZNF165', 'NAA20']",TUBB6
+follicular lymphoma,plasmacytoid dendritic cell,"['CD38', 'VSTM1', 'KPNA6', 'PAPPA2', 'KRT25']",CD38
+follicular lymphoma,plasmacytoid dendritic cell,"['HDAC9', 'HLA-DRA', 'LRP11', 'RFX3', 'TLE3']",HDAC9
+follicular lymphoma,b cell,"['EIF5B', 'MT-ND4', 'MRPL28', 'LBHD1', 'ATP6V1B1']",MT-ND4
+follicular lymphoma,b cell,"['RASL10A', 'COX6A2', 'SCN4B', 'TUBB2A', 'TNKS']",TUBB2A
+follicular lymphoma,b cell,"['NDUFAF4', 'ZNF626', 'NOP10', 'TMEM35A', 'GJB2']",NDUFAF4
+follicular lymphoma,b cell,"['SH3BP5', 'NFATC2IP', 'TNP2', 'CD19', 'CD48']",CD19
+follicular lymphoma,b cell,"['HCK', 'CBR1', 'TEKT5', 'SERP2', 'KCNE3']",HCK
+follicular lymphoma,b cell,"['CIITA', 'TGFBR2', 'MT-ND4L', 'BRD9', 'SLC25A42']",MT-ND4L
+follicular lymphoma,b cell,"['SIPA1L3', 'ZMYM2', 'DNAJA3', 'EIF4E2', 'JAK3']",JAK3
+follicular lymphoma,b cell,"['PLEKHA2', 'CD38', 'OGN', 'SYCE2', 'FBXO46']",CD38
+follicular lymphoma,b cell,"['NME5', 'CERKL', 'PHF19', 'CXCR4', 'VPS29']",CXCR4
+follicular lymphoma,b cell,"['H2AC4', 'NDUFC2', 'CYTOR', 'CCDC13', 'POGLUT1']",NDUFC2
+follicular lymphoma,b cell,"['BBOX1', 'ZNF69', 'MOB3C', 'HSD17B2', 'CDK7']",CDK7
+follicular lymphoma,b cell,"['NDUFS2', 'GOT2', 'RFX7', 'ACVR1B', 'ICAM4']",NDUFS2
+follicular lymphoma,b cell,"['AMN', 'SWI5', 'DEFB127', 'DENND4A', 'MS4A1']",MS4A1
+follicular lymphoma,b cell,"['ANKS4B', 'KTI12', 'SPRR1B', 'HSP90AB1', 'ZNF141']",HSP90AB1
+follicular lymphoma,b cell,"['GGT1', 'C16orf87', 'NOTCH2NLA', 'C10orf90', 'NDUFB3']",NDUFB3
+follicular lymphoma,b cell,"['FYN', 'DDT', 'SCGB3A1', 'ADARB2', 'ALYREF']",FYN
+follicular lymphoma,b cell,"['ACO1', 'CDK9', 'AP1G2', 'PYY', 'TENT5C']",CDK9
+follicular lymphoma,b cell,"['YWHAH', 'NDUFS7', 'RTP4', 'SCX', 'SBF1']",NDUFS7
+follicular lymphoma,b cell,"['MFSD14B', 'ZSWIM9', 'PPIA', 'KIF11', 'AMBP']",PPIA
+follicular lymphoma,b cell,"['EIF2AK2', 'DFFA', 'TOP2A', 'TSPYL2', 'RALBP1']",TOP2A

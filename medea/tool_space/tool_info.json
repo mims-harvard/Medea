@@ -1,0 +1,540 @@
+[
+    {
+        "name": "load_disease_targets",
+        "type": "tool",
+        "description": "Given a disease name, this tool fetch the pre-stored disease-associted target set locally that pre-downloaded from OpenTarget-2025. It return a set with target names for the specified disease that open target genetic score (identified by GWAS), and approved for marketing by the U.S Food and Drug Administration (FDA). ",
+        "import_path": "from medea.tool_space.action_functions import load_disease_targets",
+        "input_params": [
+            {"name": "disease_name", "type": "str", "description": "the name of the disease"}
+        ],
+        "return_type": "set[str]", 
+        "returns": "A set of target protein names for the specified disease, or empty set if no targets are found.",
+        "code_example": {
+            "description": "Find the disease-associated target set for basal cell carcinoma",
+            "code": "from medea.tool_space.action_functions import load_disease_targets   \n\n#Fetch the disease-associated target set\nbcc_targets = load_disease_targets(disease_name='basal cell carcinoma')"
+        }
+    },
+    {
+        "name": "load_pinnacle_ppi",
+        "type": "tool",
+        "description": "Loads protein embeddings for PINNACLE, a geometric deep learning model that can generate protein representations in different celltype contexts. This function efficiently retrieves embeddings only for genes that are active within a specified cell type, avoiding loading unnecessary data for other cell types.",
+        "import_path": "from medea.tool_space.action_functions import load_pinnacle_ppi",
+        "input_params": [
+            {"name": "cell_type", "type": "str", "description": "The specific cell type to load embeddings for (e.g., 'b_cell', 'hepatocyte', 'neuron'). Function will find best matching cell type using fuzzy matching."}
+        ],
+        "return_type": "dict[str, torch.Tensor]",
+        "tensor_size": "torch.Size([128])",
+        "returns": "A dictionary of PPI embeddings for the specified cell type, where the key is the activated gene name and the value is the cell type-specific gene embedding (torch.Tensor of size [128]). Returns empty dict if cell type not found.",
+        "code_example": {
+            "description": "Load PINNACLE embeddings for B cells and examine gene embeddings",
+            "code": "from medea.tool_space.action_functions import load_pinnacle_ppi\n\n# Load embeddings for B cell context\nb_cell_embeddings = load_pinnacle_ppi(cell_type='b_cell')\n\n# Check available genes and their embedding dimensions\nprint(f\"Number of genes in B cell context: {len(b_cell_embeddings)}\")\nif b_cell_embeddings:\n    sample_gene = list(b_cell_embeddings.keys())[0]\n    print(f\"Embedding shape for {sample_gene}: {b_cell_embeddings[sample_gene].shape}\")"
+        }
+    },
+    {
+        "name": "humanbase_ppi_retrieve",
+        "type": "tool",
+        "description": "LEGACY FUNCTION - This function retrieves a tissue-specific interaction network using the HumanBase API. Returns NetworkX graph object with interaction scores. Consider using the new class-based analyzers (humanbase_analyze_tissue_coexpression, humanbase_analyze_tissue_protein_interactions, etc.) for better agent-friendly outputs.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_ppi_retrieve",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "A list of gene symbols (gene names, strings)"},
+            {"name": "tissue", "type": "str", "description": "The tissue context represented in lowercase singular noun"}
+        ],
+        "returns": [
+            {
+                "description": "Returns a tissue-specific interaction networkx graph that includes the queried genes. Each node in the graph represents a gene, identified by its standard name (e.g., 'EGFR'), rather than an Entrez ID. Each edge denotes a gene-gene interaction between two associated genes.",
+                "return_type": "networkx.classes.graph.Graph"
+            },
+            {
+                "description":"A list of interactions specific to biological processes and pathways that commonly associted with the input genes.",
+                "return_type": "list[str] | None"
+            }
+        ],
+        "code_example":[
+            {
+                "description": "Retrieve a tissue-specific interaction network and inspect interactions between genes.",
+                "code": "import networkx as nx\n\ngene_list = [\"METAP2\", \"ATP6AP1\"]  \ntissue = \"blood\"\n\n# Retrieve the tissue-specific interaction network and the associated biological processes\nG, bp_collection = humanbase_ppi_retrieve(genes=gene_list, tissue=tissue)\n\n# Check the interaction types between METAP2 and ATP6V0C, if an edge exists\nif \"METAP2\" in G and \"ATP6V0C\" in G[\"METAP2\"]:\n    print(G[\"METAP2\"][\"ATP6V0C\"][\"interaction\"])  # Example output: ['TF binding']\n\n    # Check the interaction confidence score (weight) between the two genes\n    print(G[\"METAP2\"][\"ATP6V0C\"][\"weight\"])  # Example output: 0.00838\nelse:\n    print(\"No interaction found between METAP2 and ATP6V0C.\")"
+            }
+        ]
+    },
+    {
+        "name": "humanbase_analyze_tissue_coexpression",
+        "type": "tool",
+        "description": "Analyzes tissue-specific gene co-expression patterns using HumanBase API. Identifies genes with similar expression profiles in specific tissues, indicating coordinated regulation and potential functional relationships. Strong co-expression (≥0.7) suggests genes are co-regulated in the tissue context, while moderate co-expression (0.4-0.7) indicates functional associations. PERFORMANCE NOTE: Keep max_interactions < 10 for optimal agent performance. Processing time is 10-15 seconds per gene. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_analyze_tissue_coexpression",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "List of gene symbols to analyze for co-expression"},
+            {"name": "tissue", "type": "str", "description": "Target tissue context (e.g., 'brain', 'heart', 'liver', 'blood')"},
+            {"name": "max_interactions", "type": "int", "description": "Maximum number of interactions to return (default: 10). WARNING: Values > 10 are time-consuming and inference-heavy, DO NOT SET THIS VALUE TO BE GREATER THAN 10."}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of co-expression patterns in the tissue", "return_type": "str"},
+            {"description": "Network strength: 'high', 'medium', 'low', 'minimal'", "return_type": "str"},
+            {"description": "List of co-expression interactions with weights and evidence", "return_type": "list[dict]"},
+            {"description": "List of relevant biological processes associated with the genes", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze co-expression patterns of metabolic genes in liver tissue",
+            "code": "summary, strength, interactions, processes = humanbase_analyze_tissue_coexpression(\n    genes=['PPARA', 'CPT1A', 'ACOX1'], \n    tissue='liver', \n    max_interactions=5\n)\nprint(f\"Co-expression strength: {strength}\")\nprint(f\"Summary: {summary}\")\nprint(f\"Top processes: {processes[:3]}\")"
+        }
+    },
+    {
+        "name": "humanbase_analyze_tissue_protein_interactions",
+        "type": "tool", 
+        "description": "Analyzes tissue-specific protein-protein interactions using HumanBase API. Identifies direct and indirect protein interactions within specific tissue contexts. High-confidence interactions (≥0.6) indicate physical protein complexes or direct binding partners, while lower scores suggest pathway-level associations. PERFORMANCE NOTE: Keep max_interactions ≤ 10 for optimal agent performance. Processing time is 10-15 seconds per gene. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_analyze_tissue_protein_interactions",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "List of gene symbols to analyze for protein interactions"},
+            {"name": "tissue", "type": "str", "description": "Target tissue context (e.g., 'brain', 'heart', 'liver', 'blood')"},
+            {"name": "max_interactions", "type": "int", "description": "Maximum number of interactions to return (default: 10). WARNING: Values > 10 are time-consuming and inference-heavy, NOT RECOMMENDED for agent use"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of protein interactions in the tissue", "return_type": "str"},
+            {"description": "Network strength: 'high', 'medium', 'low', 'minimal'", "return_type": "str"},
+            {"description": "List of protein interactions with confidence scores and evidence", "return_type": "list[dict]"},
+            {"description": "List of relevant biological processes associated with the interactions", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze protein interactions in neuronal signaling pathways",
+            "code": "summary, strength, interactions, processes = humanbase_analyze_tissue_protein_interactions(\n    genes=['AMPA', 'NMDA', 'GABRA1'], \n    tissue='brain', \n    max_interactions=8\n)\nprint(f\"Interaction network strength: {strength}\")\nfor interaction in interactions[:2]:\n    print(f\"{interaction['source']} - {interaction['target']}: {interaction['weight']}\")"
+        }
+    },
+    {
+        "name": "humanbase_analyze_tissue_transcription_regulation",
+        "type": "tool",
+        "description": "Analyzes tissue-specific transcription factor regulation using HumanBase API. Identifies transcription factor-target gene relationships and regulatory networks within specific tissues. Hub transcription factors controlling multiple targets suggest master regulatory roles in tissue-specific gene expression programs. PERFORMANCE NOTE: Keep max_interactions ≤ 10 for optimal agent performance. Processing time is 10-15 seconds per gene. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_analyze_tissue_transcription_regulation",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "List of gene symbols to analyze for transcriptional regulation"},
+            {"name": "tissue", "type": "str", "description": "Target tissue context (e.g., 'brain', 'heart', 'liver', 'blood')"},
+            {"name": "max_interactions", "type": "int", "description": "Maximum number of regulatory relationships to return (default: 10). WARNING: Values > 10 are time-consuming and inference-heavy, NOT RECOMMENDED for agent use"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of transcriptional regulation in the tissue", "return_type": "str"},
+            {"description": "Regulatory network strength: 'high', 'medium', 'low', 'minimal'", "return_type": "str"},
+            {"description": "List of transcription factor-target relationships with evidence", "return_type": "list[dict]"},
+            {"description": "List of relevant biological processes regulated in the tissue", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze transcriptional regulation in cardiac muscle",
+            "code": "summary, strength, regulations, processes = humanbase_analyze_tissue_transcription_regulation(\n    genes=['GATA4', 'NKX2-5', 'TBX5'], \n    tissue='heart', \n    max_interactions=6\n)\nprint(f\"Regulatory complexity: {strength}\")\nprint(f\"Key processes: {processes[:3]}\")"
+        }
+    },
+    {
+        "name": "humanbase_analyze_tissue_microrna_regulation",
+        "type": "tool",
+        "description": "Analyzes tissue-specific microRNA-target interactions using HumanBase API. Identifies post-transcriptional regulatory mechanisms that fine-tune gene expression in tissue-specific contexts. These interactions control cellular responses and adaptation through targeted mRNA degradation or translation inhibition. PERFORMANCE NOTE: Keep max_interactions ≤ 10 for optimal agent performance. Processing time is 10-15 seconds per gene. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_analyze_tissue_microrna_regulation",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "List of gene symbols to analyze for microRNA regulation"},
+            {"name": "tissue", "type": "str", "description": "Target tissue context (e.g., 'brain', 'heart', 'liver', 'blood')"},
+            {"name": "max_interactions", "type": "int", "description": "Maximum number of microRNA-target interactions to return (default: 10). WARNING: Values > 10 are time-consuming and inference-heavy, NOT RECOMMENDED for agent use"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of microRNA regulation in the tissue", "return_type": "str"},
+            {"description": "Regulatory network strength: 'high', 'medium', 'low', 'minimal'", "return_type": "str"},
+            {"description": "List of microRNA-target interactions with regulatory evidence", "return_type": "list[dict]"},
+            {"description": "List of biological processes controlled by microRNA regulation", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze microRNA regulation in immune cells",
+            "code": "summary, strength, mirna_targets, processes = humanbase_analyze_tissue_microrna_regulation(\n    genes=['CD4', 'CD8A', 'FOXP3'], \n    tissue='blood', \n    max_interactions=7\n)\nprint(f\"MicroRNA regulatory activity: {strength}\")\nprint(f\"Regulatory summary: {summary}\")"
+        }
+    },
+    {
+        "name": "humanbase_analyze_tissue_perturbation_outcomes",
+        "type": "tool",
+        "description": "Analyzes tissue-specific gene perturbation outcomes using HumanBase API. Predicts functional consequences when genes are knocked down or overexpressed in specific tissues. High-impact responses (≥0.6) indicate genes with strong functional roles and potential as therapeutic targets or biomarkers for tissue-specific interventions. PERFORMANCE NOTE: Keep max_interactions ≤ 10 for optimal agent performance. Processing time is 10-15 seconds per gene. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_analyze_tissue_perturbation_outcomes",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "List of gene symbols to analyze for perturbation effects"},
+            {"name": "tissue", "type": "str", "description": "Target tissue context (e.g., 'brain', 'heart', 'liver', 'blood')"},
+            {"name": "max_interactions", "type": "int", "description": "Maximum number of perturbation outcomes to return (default: 10). WARNING: Values > 10 are time-consuming and inference-heavy, NOT RECOMMENDED for agent use"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of perturbation effects in the tissue", "return_type": "str"},
+            {"description": "Perturbation impact strength: 'high', 'medium', 'low', 'minimal'", "return_type": "str"},
+            {"description": "List of perturbation-response relationships with impact scores", "return_type": "list[dict]"},
+            {"description": "List of biological processes affected by perturbations", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze perturbation outcomes for cancer genes in tumor tissue",
+            "code": "summary, impact, perturbations, processes = humanbase_analyze_tissue_perturbation_outcomes(\n    genes=['TP53', 'MYC', 'KRAS'], \n    tissue='lung', \n    max_interactions=5\n)\nprint(f\"Perturbation impact: {impact}\")\nprint(f\"Therapeutic implications: {summary}\")\nprint(f\"Affected processes: {processes[:3]}\")"
+        }
+    },
+    {
+        "name": "humanbase_analyze_comprehensive_tissue_network",
+        "type": "tool",
+        "description": "Performs comprehensive tissue-specific network analysis across all HumanBase interaction types (co-expression, protein interactions, transcriptional regulation, microRNA regulation, and perturbation outcomes). Provides complete molecular interaction profile for genes within a specific tissue context, enabling holistic understanding of tissue-specific gene function. PERFORMANCE NOTE: This runs 5 analyses - keep max_interactions ≤ 8 for optimal agent performance. Processing time is 10-15 seconds per gene. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.humanbase import humanbase_analyze_comprehensive_tissue_network",
+        "input_params": [
+            {"name": "genes", "type": "list[str]", "description": "List of gene symbols for comprehensive analysis"},
+            {"name": "tissue", "type": "str", "description": "Target tissue context (e.g., 'brain', 'heart', 'liver', 'blood')"},
+            {"name": "max_interactions", "type": "int", "description": "Maximum interactions per analysis type (default: 8). WARNING: Values > 10 are time-consuming and inference-heavy, NOT RECOMMENDED for agent use"}
+        ],
+        "return_type": "dict",
+        "returns": "Dictionary with keys: 'coexpression', 'protein_interactions', 'tf_regulation', 'microrna_regulation', 'perturbation_outcomes'. Each value is a 4-element tuple: (summary, strength, interactions, processes). Provides complete tissue-specific molecular interaction landscape.",
+        "code_example": {
+            "description": "Comprehensive tissue network analysis for metabolic genes in liver",
+            "code": "results = humanbase_analyze_comprehensive_tissue_network(\n    genes=['PPARA', 'CPT1A', 'ACOX1'], \n    tissue='liver', \n    max_interactions=6\n)\n# Access specific analysis results\ncoexp_summary = results['coexpression'][0]\nprotein_strength = results['protein_interactions'][1]\ntf_processes = results['tf_regulation'][3]\n# Print summary across all interaction types\nfor analysis_type, (summary, strength, _, _) in results.items():\n    print(f\"{analysis_type}: {strength} strength - {summary[:100]}...\")"
+        }
+    },
+    {
+        "name": "analyze_pathway_interaction",
+        "type": "tool",
+        "description": "Analyzes genetic interactions between two genes using WikiPathways database. This tool identifies shared biological pathways, determines interaction confidence based on statistical significance, and classifies interaction mechanisms such as signaling pathways, metabolic regulation, and cellular transport. Returns standardized analysis results with biological context.",
+        "import_path": "from medea.tool_space.enrichr import analyze_pathway_interaction",
+        "input_params": [
+            {"name": "gene1", "type": "str", "description": "First gene symbol for interaction analysis"},
+            {"name": "gene2", "type": "str", "description": "Second gene symbol for interaction analysis"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of the pathway interaction analysis", "return_type": "str"},
+            {"description": "Confidence level of the interaction: 'high', 'medium', 'low', 'very_low', or 'none'", "return_type": "str"},
+            {"description": "List of biological mechanisms identified (e.g., 'signaling_pathway', 'metabolic_pathway')", "return_type": "list[str]"},
+            {"description": "List of key pathway names supporting the interaction (top 5)", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze pathway interactions between TP53 and MDM2 genes",
+            "code": "summary, confidence, mechanisms, pathways = analyze_pathway_interaction('TP53', 'MDM2')\nprint(f\"Confidence: {confidence}\")\nprint(f\"Mechanisms: {mechanisms}\")\nprint(f\"Key pathways: {pathways[:3]}\")"
+        }
+    },
+    {
+        "name": "analyze_reactome_interaction",
+        "type": "tool", 
+        "description": "Analyzes genetic interactions between two genes using Reactome biochemical pathways database. This tool identifies shared biochemical reactions, protein complexes, and molecular mechanisms. It determines interaction confidence and classifies molecular mechanisms such as phosphorylation regulation, protein complex formation, and direct binding interactions.",
+        "import_path": "from medea.tool_space.enrichr import analyze_reactome_interaction",
+        "input_params": [
+            {"name": "gene1", "type": "str", "description": "First gene symbol for biochemical interaction analysis"},
+            {"name": "gene2", "type": "str", "description": "Second gene symbol for biochemical interaction analysis"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of the biochemical interaction analysis", "return_type": "str"},
+            {"description": "Confidence level of the interaction: 'high', 'medium', 'low', 'very_low', or 'none'", "return_type": "str"},
+            {"description": "List of molecular mechanisms identified (e.g., 'phosphorylation_regulation', 'protein_complex_formation')", "return_type": "list[str]"},
+            {"description": "List of key biochemical reactions supporting the interaction (top 5)", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze biochemical interactions between kinase and substrate genes",
+            "code": "summary, confidence, mechanisms, reactions = analyze_reactome_interaction('AKT1', 'GSK3B')\nprint(f\"Biochemical mechanisms: {mechanisms}\")\nprint(f\"Supporting reactions: {reactions[:2]}\")"
+        }
+    },
+    {
+        "name": "analyze_hallmark_interaction",
+        "type": "tool",
+        "description": "Analyzes genetic interactions between two genes using MSigDB Hallmark cancer processes database. This tool identifies shared cancer hallmark processes, determines interaction confidence, and classifies cancer-related mechanisms such as apoptotic regulation, proliferative control, and metabolic reprogramming. Particularly useful for cancer gene interaction analysis.",
+        "import_path": "from medea.tool_space.enrichr import analyze_hallmark_interaction",
+        "input_params": [
+            {"name": "gene1", "type": "str", "description": "First gene symbol for cancer hallmark analysis"},
+            {"name": "gene2", "type": "str", "description": "Second gene symbol for cancer hallmark analysis"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of the cancer hallmark interaction analysis", "return_type": "str"},
+            {"description": "Confidence level of the interaction: 'high', 'medium', 'low', 'very_low', or 'none'", "return_type": "str"},
+            {"description": "List of cancer mechanisms identified (e.g., 'apoptotic_regulation', 'proliferative_control')", "return_type": "list[str]"},
+            {"description": "List of key cancer hallmark processes supporting the interaction (top 5)", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze cancer hallmark interactions between tumor suppressor genes",
+            "code": "summary, confidence, mechanisms, hallmarks = analyze_hallmark_interaction('TP53', 'RB1')\nprint(f\"Cancer mechanisms: {mechanisms}\")\nprint(f\"Hallmark processes: {hallmarks[:3]}\")"
+        }
+    },
+    {
+        "name": "analyze_function_interaction",
+        "type": "tool",
+        "description": "Analyzes genetic interactions between two genes using Gene Ontology Molecular Functions database. This tool identifies shared molecular functions, determines interaction confidence, and classifies functional mechanisms such as kinase activity, protein binding, and transcriptional regulation. Useful for understanding biochemical function similarities.",
+        "import_path": "from medea.tool_space.enrichr import analyze_function_interaction",
+        "input_params": [
+            {"name": "gene1", "type": "str", "description": "First gene symbol for molecular function analysis"},
+            {"name": "gene2", "type": "str", "description": "Second gene symbol for molecular function analysis"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of the molecular function interaction analysis", "return_type": "str"},
+            {"description": "Confidence level of the interaction: 'high', 'medium', 'low', 'very_low', or 'none'", "return_type": "str"},
+            {"description": "List of functional mechanisms identified (e.g., 'kinase_activity', 'protein_binding')", "return_type": "list[str]"},
+            {"description": "List of key molecular functions supporting the interaction (top 5)", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze molecular function similarities between enzymes",
+            "code": "summary, confidence, mechanisms, functions = analyze_function_interaction('CDK1', 'CDK2')\nprint(f\"Functional similarities: {mechanisms}\")\nprint(f\"Shared functions: {functions[:3]}\")"
+        }
+    },
+    {
+        "name": "analyze_process_interaction",
+        "type": "tool",
+        "description": "Analyzes genetic interactions between two genes using Gene Ontology Biological Processes database. This tool identifies shared biological processes, determines interaction confidence, and classifies process mechanisms such as cell cycle regulation, apoptotic processes, and signal transduction. Useful for understanding cellular process co-participation.",
+        "import_path": "from medea.tool_space.enrichr import analyze_process_interaction",
+        "input_params": [
+            {"name": "gene1", "type": "str", "description": "First gene symbol for biological process analysis"},
+            {"name": "gene2", "type": "str", "description": "Second gene symbol for biological process analysis"}
+        ],
+        "returns": [
+            {"description": "Human-readable summary of the biological process interaction analysis", "return_type": "str"},
+            {"description": "Confidence level of the interaction: 'high', 'medium', 'low', 'very_low', or 'none'", "return_type": "str"},
+            {"description": "List of process mechanisms identified (e.g., 'cell_cycle_regulation', 'signal_transduction')", "return_type": "list[str]"},
+            {"description": "List of key biological processes supporting the interaction (top 5)", "return_type": "list[str]"}
+        ],
+        "code_example": {
+            "description": "Analyze biological process co-participation between developmental genes",
+            "code": "summary, confidence, mechanisms, processes = analyze_process_interaction('WNT1', 'CTNNB1')\nprint(f\"Process mechanisms: {mechanisms}\")\nprint(f\"Shared processes: {processes[:3]}\")"
+        }
+    },
+    {
+        "name": "analyze_comprehensive_interaction",
+        "type": "tool",
+        "description": "Performs comprehensive genetic interaction analysis by running all five Enrichr-based tools (pathway, reactome, hallmark, function, and process analysis) on a gene pair. This tool provides a complete interaction profile across multiple biological databases, returning results from each analysis tool in a structured format with detailed logging. WARNING: This is a compound tool and is very slow and may take up to 2 minutes to complete.",
+        "import_path": "from medea.tool_space.enrichr import analyze_comprehensive_interaction",
+        "input_params": [
+            {"name": "gene1", "type": "str", "description": "First gene symbol for comprehensive interaction analysis"},
+            {"name": "gene2", "type": "str", "description": "Second gene symbol for comprehensive interaction analysis"}
+        ],
+        "return_type": "dict",
+        "returns": "A dictionary with keys 'pathway', 'reactome', 'hallmark', 'function', 'process'. Each value is a 4-element tuple: (summary, confidence, mechanisms, pathways). This provides complete interaction analysis across all biological databases.",
+        "code_example": {
+            "description": "Perform comprehensive interaction analysis across all databases",
+            "code": "results = analyze_comprehensive_interaction('TP53', 'MDM2')\n# Access specific analysis results\npathway_summary = results['pathway'][0]\nhallmark_confidence = results['hallmark'][1]\nreactome_mechanisms = results['reactome'][2]\n# Print summary of all analyses\nfor tool, (summary, confidence, _, _) in results.items():\n    print(f\"{tool}: {confidence} confidence - {summary}\")"
+        }
+    },
+    {
+        "name": "compass_predict",
+        "type": "tool",
+        "description": "This tool leverages Immune-Compass, a research framework for concept feature extraction and Immune Checkpoint Inhibitor (ICI) response prediction, to analyze bulk transcriptomic data from a single patient. It provides insights into cell-type-level immune-related concepts that are highly correlated with ICI responsiveness. These high-level concepts include immune cell types, states, and oncogenic pathways in the tumor microenvironment, creating a detailed multidimensional landscape of the cancer-immunity interplay.",
+        "import_path": "from medea.tool_space.immune_compass import compass_predict",
+        "input_params": [
+            {
+                "name": "df_tpm",
+                "type": "pandas.core.frame.DataFrame",
+                "description": "A DataFrame containing the bulk transcriptomic data of a single patient (gene expression values in Transcripts Per Million format)."
+            }
+        ],
+        "returns": [
+            {
+                "description": "A boolean indicating the predicted responsiveness of the patient to Immune Checkpoint Inhibitor therapy (True for responder, False for non-responder).",
+                "return_type": "bool"
+            },
+            {
+                "description": "A ranked list of tuples, where each tuple contains an immune-related concept (as a string) and its corresponding significance score (as a float). These concepts are inferred from the patient's transcriptomic data and represent high-level immune-related features associated with specific cell types, pathways, and functional groups. The list is sorted in descending order based on significance score, which reflects the magnitude and relevance of each concept (e.g., high 'Exhausted_Tcell' scores are linked to an Immune Desert phenotype, while high 'Cytotoxic_Tcell' scores are associated with an Immune Inflamed phenotype).",
+                "return_type": "list[tuple[str, float]]",
+                "notes": "The high-level concept predefined by Compass and avaliable in the ranked tuples list insluding: 'Memory_Bcell', 'Naive_Tcell', 'Apoptosis_pathway', 'pDC', 'Memory_Tcell', 'Genome_integrity',  'Adipocyte', 'Erythrocyte', 'Pancreatic', 'Innate_lymphoid_cell', 'cDC', 'CD8_Tcell', 'Hepatocyte', 'Platelet', 'Treg', 'CD4_Tcell', 'Stroma', 'Endothelial', 'Myeloid', 'Exhausted_Tcell', 'Immune_checkpoint', 'Tcell_general', 'Cell_proliferation', 'IFNg_pathway', 'Mesothelial', 'TLS', 'Cytokine', 'Monocyte', 'Cytotoxic_Tcell', 'Plasma_cell', 'Fibroblast', 'TGFb_pathway', 'Pneumocyte', 'Granulocyte', 'Macrophage', 'NKcell', 'Stem', 'Epithelial', 'Mast', 'Pericyte', 'Bcell_general', 'Naive_Bcell'."
+            }
+        ],
+        "code_example":[
+            {
+                "description": "Analyze a patient's transcriptomic data to predict ICI response",
+                "code": "import pandas as pd\n\n# Load the transcriptomic data from the specified pickle file\ndf_tpm = pd.read_pickle('patient_tpm_data.pkl')\n\n# Use Compass to analyze the transcriptomic data and predict response\n# IMPORTANT: First return is boolean (responder), second is concepts list\nis_responder, concepts = compass_predict(df_tpm=df_tpm)\n\n# Print the top 3 immune-related concepts\nfor concept, score in concepts[:3]:\n    print(f\"{concept}: {score:.4f}\")\n\n# Check if patient is predicted to respond to ICI therapy\nprint(f\"Patient predicted to respond to ICI therapy: {is_responder}\")"
+            }
+        ]
+    },
+    {
+        "name": "compute_depmap24q2_gene_correlations",
+        "type": "tool",
+        "description": "Validates genetic interactions using empirical cell viability data from 1,320 cancer cell lines. Determines if two genes have correlated knockout effects: positive correlations indicate co-dependency (shared essential function), negative correlations suggest synthetic lethality (compensatory relationship). Use to prioritize gene pairs for experimental validation, combination therapy development, or functional studies. Strong correlations (|r| > 0.5, adj_p < 0.05) provide robust evidence for therapeutic targeting. Essential for translating pathway predictions into clinically-actionable insights. Inference time is 30 second per gene pair. Please avoid any repeat/concurrent calls that cause heavy load on the server.",
+        "import_path": "from medea.tool_space.depmap import compute_depmap24q2_gene_correlations",
+        "input_params": [
+            {
+                "name": "gene_a",
+                "type": "str",
+                "description": "First gene symbol"
+            },
+            {
+                "name": "gene_b",
+                "type": "str",
+                "description": "Second gene symbol"
+            }
+        ],
+        "returns": [
+            {
+                "description": "Pearson correlation coefficient (-1 to +1) measuring cell viability dependency relationship. Positive values (r > 0) indicate genes have similar knockout effects (co-dependency), negative values (r < 0) suggest opposing effects (compensatory/synthetic lethality). Strong correlations (|r| > 0.5) are clinically relevant for combination therapies. Returns None if gene not found in DepMap dataset.",
+                "return_type": "float | None",
+                "interpretation_guide": {
+                    "very_strong": "|r| ≥ 0.8 - Highly significant biological relationship",
+                    "strong": "|r| ≥ 0.6 - Clear dependency relationship, therapeutic potential", 
+                    "moderate": "|r| ≥ 0.4 - Meaningful relationship, worth investigating",
+                    "weak": "|r| ≥ 0.2 - Limited biological significance",
+                    "negligible": "|r| < 0.2 - No meaningful dependency relationship"
+                }
+            },
+            {
+                "description": "Statistical significance of the correlation (0 to 1). Values ≤ 0.05 indicate statistically significant relationships, ≤ 0.01 suggest strong evidence, ≤ 0.001 represent highly significant dependencies. Use in combination with correlation strength for reliable interpretation. Returns None if gene not found in dataset.",
+                "return_type": "float | None",
+                "significance_levels": {
+                    "highly_significant": "p ≤ 0.001 - Strong statistical evidence",
+                    "significant": "p ≤ 0.05 - Statistically reliable",
+                    "marginally_significant": "p ≤ 0.1 - Trending toward significance",
+                    "not_significant": "p > 0.1 - No reliable statistical evidence"
+                }
+            },
+            {
+                "description": "Multiple testing corrected p-value using Benjamini-Hochberg procedure. More stringent than raw p-value, accounts for testing thousands of gene pairs simultaneously. Values ≤ 0.05 indicate relationships that survive rigorous statistical correction and are highly reliable for biological interpretation and clinical applications. Returns None if correction not available or gene not found.",
+                "return_type": "float | None",
+                "clinical_relevance": {
+                    "adj_p_0.001": "Exceptionally reliable - suitable for immediate therapeutic consideration",
+                    "adj_p_0.05": "Highly reliable - strong candidate for functional validation",
+                    "adj_p_0.1": "Moderately reliable - worth further investigation",
+                    "adj_p_>0.1": "Limited reliability - requires additional validation"
+                }
+            }
+        ]
+    },
+    {
+        "name": "scientific_reasoning_agent",
+        "type": "tool",
+        "description": "Advanced literature synthesis tool powered by OpenScholar AI that queries 8M+ peer-reviewed research papers to provide evidence-based scientific reasoning. Use strategically for complex biological questions requiring comprehensive literature context, therapeutic mechanism validation, or clinical translation insights. Ideal for synthesizing contradictory findings, identifying research gaps, or supporting high-stakes decisions. IMPORTANT: High computational cost - limit to 1 query per analysis for critical knowledge gaps that cannot be resolved through other tools. IMPORTANT: scientific_reasoning_agent makes 10+ internal API calls and is extremely expensive; use ONLY as final validation step, never for intermediate analysis.",
+        "import_path": "from medea.tool_space.agent_tool import scientific_reasoning_agent",
+        "input_params": [
+            {
+                "name": "user_instruction",
+                "type": "str",
+                "description": "Specific, focused scientific question or analysis request. Be precise and include relevant context (e.g., 'Analyze the therapeutic potential of targeting TP53-MDM2 interaction in p53 wild-type cancers, focusing on clinical trial data and combination strategies'). Avoid broad or general questions."
+            }
+        ],
+        "returns": [
+            {
+                "description": "Comprehensive scientific analysis synthesizing relevant literature with evidence citations, mechanistic insights, clinical implications, and research recommendations. Provides authoritative context for decision-making, identifies knowledge gaps, and offers multiple perspectives on controversial topics. Returns error message if query fails or times out.",
+                "return_type": "str"
+            }
+        ],
+        "usage_strategy": {
+            "timing": "Use as final validation step after completing other analyses (pathway, interaction, correlation studies)",
+            "query_optimization": "Include specific gene names, pathways, disease contexts, and desired outcomes in your instruction",
+            "cost_efficiency": "Combine multiple related questions into single comprehensive query rather than multiple simple queries"
+        },
+        "code_example": {
+            "description": "Strategic literature validation after completing genetic interaction analysis",
+            "code": "# After completing pathway and DepMap analysis for TP53-MDM2\n# Construct comprehensive literature query\nanalysis_context = \"\"\"\nBased on our analysis showing:\n- High confidence pathway interaction (p53 signaling)\n- Strong DepMap correlation (r=0.72, adj_p=1.2e-15)\n- Shared apoptotic and cell cycle mechanisms\n\nAnalyze the therapeutic potential of targeting TP53-MDM2 interaction \nin p53 wild-type cancers. Focus on:\n1. Clinical trial outcomes for MDM2 inhibitors\n2. Combination therapy strategies and synergistic mechanisms\n3. Biomarkers for patient selection\n4. Resistance mechanisms and mitigation strategies\n5. Current regulatory status and development challenges\n\"\"\"\n\n# Single comprehensive query for maximum value\nliterature_analysis = scientific_reasoning_agent(user_instruction=analysis_context)\nprint(\"LITERATURE SYNTHESIS:\")\nprint(literature_analysis)\n\n# Use results to inform final recommendations\nif \"promising clinical activity\" in literature_analysis.lower():\n    recommendation = \"HIGH PRIORITY: Strong computational + literature evidence\"\nelse:\n    recommendation = \"MODERATE PRIORITY: Computational evidence needs clinical validation\""
+        }
+    },
+    {
+        "name": "TranscriptformerEmbeddingTool",
+        "type": "tool",
+        "description": "A high-performance tool to load cell-type and disease-state specific gene embeddings. It queries a pre-generated, high-performance embedding store, supporting both Ensembl IDs and official gene symbols with near-instant initialization and on-demand data loading. Can retrieve embeddings for specific genes or all genes in a context.",
+        "import_path": "from medea.tool_space.transcriptformer import TranscriptformerEmbeddingTool",
+        "input_params": [
+            {"name": "state", "type": "str", "description": "The disease state context, e.g., 'control' or 'disease'"},
+            {"name": "cell_type", "type": "str", "description": "The specific cell type context, e.g., 'B cell'"},
+            {"name": "gene_names", "type": "list[str] | None", "description": "A list of gene identifiers (e.g., ['CD79A', 'CD19']) or Ensembl IDs that will be used to retrieve cell-type and disease-state specific gene embeddings. If None, returns embeddings for all genes in the specified context."},
+            {"name": "disease", "type": "str", "description": "The name of the disease to load embeddings for."}
+        ],
+        "returns": [
+            {
+                "description": "A dictionary mapping each valid gene name to its numpy array embedding. Returns an empty dictionary if no valid embeddings are found. When gene_names=None, returns embeddings for all genes in the context.",
+                "return_type": "dict[str, numpy.ndarray]"
+            },
+            {
+                "description": "A list of strings with context information, including success messages about the number of embeddings retrieved or error messages if the query is invalid. Returns None on success.",
+                "return_type": "list[str] | None"
+            }
+        ],
+        "code_example": [
+            {
+                "description": "Retrieve embeddings for specific genes in a context.",
+                "code": "tool = TranscriptformerEmbeddingTool()\nembeddings, context = tool.get_embedding_for_context(state='control', cell_type='b_cell', gene_names=['CD79A', 'CD19'], disease='your_disease_name')\nif embeddings:\n    print(f'Successfully retrieved {len(embeddings)} embeddings.')"
+            },
+            {
+                "description": "Retrieve embeddings for all genes in a context.",
+                "code": "tool = TranscriptformerEmbeddingTool()\nall_embeddings, context = tool.get_embedding_for_context(state='control', cell_type='b_cell', gene_names=None, disease='your_disease_name')\nif all_embeddings:\n    print(f'Retrieved embeddings for all {len(all_embeddings)} genes in the context.')"
+            }
+        ]
+    },
+    {
+        "name": "HPAGetComprehensiveBiologicalProcessTool",
+        "type": "tool",
+        "description": "[CRITICAL WARNING]: This is a computational heavy tool and take up to 2 minutes to complete for a single call. Comprehensive biological process analysis tool that leverages Human Protein Atlas API to provide enhanced gene function analysis. Features include process categorization into 10 functional groups (cell_cycle, apoptosis, transcription, metabolism, signaling, immune, development, stress_response, transport, dna_repair), critical process identification, pathway analysis, comparative analysis with interacting proteins, and automated functional insights generation. Provides specific critical processes and disease-relevant biological processes instead of broad messages, along with therapeutic potential evaluation and research priority recommendations. Essential for gene function discovery, drug target identification, and disease mechanism analysis.",
+        "import_path": "from medea.tool_space.human_protein_atlas import HPAGetComprehensiveBiologicalProcessTool",
+        "input_params": [
+            {"name": "gene_name", "type": "str", "description": "Name of the gene to analyze (e.g., 'TP53', 'BRCA1', 'EGFR')"},
+            {"name": "include_categorization", "type": "bool", "description": "Whether to categorize processes by function (default: True). Categorizes into 10 functional groups with priority and confidence scoring."},
+            {"name": "include_pathway_analysis", "type": "bool", "description": "Whether to analyze pathway involvement (default: True). Identifies involvement in major biological pathways with confidence scoring."},
+            {"name": "include_comparative_analysis", "type": "bool", "description": "Whether to compare with other genes (default: False). Performs comparative analysis with interacting proteins using functional similarity scoring."},
+            {"name": "max_processes", "type": "int", "description": "Maximum number of processes to return (default: 50). Controls analysis depth and performance."},
+            {"name": "filter_critical_only", "type": "bool", "description": "Whether to focus only on critical processes (default: False). Filters to essential processes like apoptosis, cell cycle, DNA repair."}
+        ],
+        "return_type": "dict",
+        "returns": "Comprehensive dictionary containing: gene information, analysis summary (total processes, categorized processes, critical processes found, pathway involvement), biological processes list, enhanced analysis (categorized processes, critical processes, pathway analysis, process complexity score), functional insights (critical_processes list with details, disease_relevant_processes list with categories and relevance levels, therapeutic potential, research priorities, confidence assessment), comparative analysis (related genes with functional similarity), and metadata (timestamp, version, data source, confidence level).",
+        "code_example": [
+            {
+                "description": "Basic comprehensive analysis of TP53 gene showing specific processes",
+                "code": "from medea.tool_space.human_protein_atlas import HPAGetComprehensiveBiologicalProcessTool\n\n# Initialize the tool\ntool = HPAGetComprehensiveBiologicalProcessTool({})\n\n# Basic comprehensive analysis\nresult = tool.run({\n    \"gene_name\": \"TP53\",\n    \"include_categorization\": True,\n    \"include_pathway_analysis\": True,\n    \"include_comparative_analysis\": False,\n    \"max_processes\": 50,\n    \"filter_critical_only\": False\n})\n\n# Extract key insights with specific processes\nprint(f\"Total processes: {result['analysis_summary']['total_processes']}\")\nprint(f\"Critical processes found: {len(result['functional_insights']['critical_processes'])}\")\nprint(f\"Disease-relevant processes: {len(result['functional_insights']['disease_relevant_processes'])}\")\nprint(f\"Therapeutic potential: {result['functional_insights']['therapeutic_potential']}\")\n\n# Show specific critical processes\ncritical_processes = result['functional_insights']['critical_processes']\nif critical_processes:\n    print(f\"\\nCritical processes:\")\n    for cp in critical_processes:\n        print(f\"  - {cp['process']} ({cp['critical_type']}, {cp['disease_relevance']} disease relevance)\")\n\n# Show specific disease-relevant processes\ndisease_processes = result['functional_insights']['disease_relevant_processes']\nif disease_processes:\n    print(f\"\\nDisease-relevant processes:\")\n    for dp in disease_processes:\n        print(f\"  - {dp['process']} ({dp['primary_category']}, {dp['relevance_level']} relevance)\")"
+            },
+            {
+                "description": "Focused analysis on critical processes with detailed breakdown",
+                "code": "# Focus on critical processes only\ntool = HPAGetComprehensiveBiologicalProcessTool({})\nresult = tool.run({\n    \"gene_name\": \"BRCA1\",\n    \"include_categorization\": True,\n    \"include_pathway_analysis\": True,\n    \"include_comparative_analysis\": False,\n    \"max_processes\": 20,\n    \"filter_critical_only\": True\n})\n\n# Show critical processes with details\ncritical_processes = result['functional_insights']['critical_processes']\nif critical_processes:\n    print(f\"Found {len(critical_processes)} critical processes:\")\n    for cp in critical_processes:\n        print(f\"  - {cp['process']} ({cp['critical_type']}, {cp['importance']}, {cp['disease_relevance']} relevance)\")\nelse:\n    print(\"No critical processes found\")\n\n# Show disease-relevant processes\ndisease_processes = result['functional_insights']['disease_relevant_processes']\nif disease_processes:\n    print(f\"\\nDisease-relevant processes:\")\n    for dp in disease_processes:\n        print(f\"  - {dp['process']} ({dp['primary_category']}, {dp['relevance_level']} relevance)\")"
+            },
+            {
+                "description": "Full analysis with comparative data and pathway analysis",
+                "code": "# Full analysis with comparative data\ntool = HPAGetComprehensiveBiologicalProcessTool({})\nresult = tool.run({\n    \"gene_name\": \"EGFR\",\n    \"include_categorization\": True,\n    \"include_pathway_analysis\": True,\n    \"include_comparative_analysis\": True,\n    \"max_processes\": 100,\n    \"filter_critical_only\": False\n})\n\n# Show pathway involvement\npathway_analysis = result['enhanced_analysis']['pathway_analysis']\nif pathway_analysis:\n    print(f\"Pathway involvement: {len(pathway_analysis)} pathways\")\n    for pathway, data in list(pathway_analysis.items())[:3]:\n        print(f\"  - {pathway}: score {data['involvement_score']}, confidence {data['pathway_confidence']:.2f}\")\n\n# Show related genes from comparative analysis\ncomparative = result['comparative_analysis']\nif 'related_genes' in comparative and comparative['related_genes']:\n    print(f\"Related genes: {len(comparative['related_genes'])} found\")\n    for rg in comparative['related_genes'][:2]:\n        print(f\"  - {rg['gene_name']} (similarity: {rg['functional_similarity']:.2f})\")\n\n# Show specific critical and disease-relevant processes\ninsights = result['functional_insights']\nprint(f\"\\nCritical processes ({len(insights['critical_processes'])}):\")\nfor cp in insights['critical_processes']:\n    print(f\"  - {cp['process']} ({cp['critical_type']})\")\n\nprint(f\"\\nDisease-relevant processes ({len(insights['disease_relevant_processes'])}):\")\nfor dp in insights['disease_relevant_processes']:\n    print(f\"  - {dp['process']} ({dp['primary_category']}, {dp['relevance_level']} relevance)\")"
+            },
+            {
+                "description": "Advanced analysis with process categorization and detailed insights",
+                "code": "# Advanced analysis with detailed categorization\ntool = HPAGetComprehensiveBiologicalProcessTool({})\nresult = tool.run({\n    \"gene_name\": \"MYC\",\n    \"include_categorization\": True,\n    \"include_pathway_analysis\": True,\n    \"include_comparative_analysis\": True,\n    \"max_processes\": 50,\n    \"filter_critical_only\": False\n})\n\n# Show categorized processes\ncategorized = result['enhanced_analysis']['categorized_processes']\nprint(f\"Process categorization ({len(categorized)} categories):\")\nfor category, processes in categorized.items():\n    print(f\"  {category}: {len(processes)} processes\")\n    for p in processes[:2]:  # Show first 2 processes per category\n        print(f\"    - {p['process']}\")\n\n# Show specific critical and disease-relevant processes\ninsights = result['functional_insights']\nprint(f\"\\nCritical processes ({len(insights['critical_processes'])} total):\")\nfor cp in insights['critical_processes']:\n    print(f\"  - {cp['process']} ({cp['critical_type']}, {cp['disease_relevance']} disease relevance)\")\n\nprint(f\"\\nDisease-relevant processes ({len(insights['disease_relevant_processes'])} total):\")\nfor dp in insights['disease_relevant_processes']:\n    print(f\"  - {dp['process']} ({dp['primary_category']}, {dp['relevance_level']} relevance)\")\n\n# Show research priorities and confidence\nprint(f\"\\nResearch priorities: {', '.join(insights['research_priorities'])}\")\nprint(f\"Confidence assessment: {insights['confidence_assessment']}\")\nprint(f\"Therapeutic potential: {insights['therapeutic_potential']}\")\n\n# Show metadata\nmetadata = result['metadata']\nprint(f\"\\nAnalysis metadata:\")\nprint(f\"  Version: {metadata['analysis_version']}\")\nprint(f\"  Confidence level: {metadata['confidence_level']}\")\nprint(f\"  Data source: {metadata['data_source']}\")"
+            }
+        ]
+    },
+    {
+        "name": "HPAGetEnhancedComparativeExpressionTool",
+        "type": "tool",
+        "description": "[CRITICAL WARNING]: This is a computational heavy tool and take up to 2 minutes to complete for a single call. Enhanced tool for comparing gene expression levels between cell lines and healthy tissues. Leverages Human Protein Atlas API with additional features including detailed expression analysis, statistical significance assessment, expression level categorization, and comprehensive comparison insights. Provides therapeutic potential evaluation, biomarker assessment, and clinical relevance insights. Supports 10 cancer cell lines with detailed metadata including cancer type, origin tissue, and cell line descriptions. WARNING: This tool would take at least 20 seconds to complete.",
+        "import_path": "from medea.tool_space.human_protein_atlas import HPAGetEnhancedComparativeExpressionTool",
+        "input_params": [
+            {"name": "gene_name", "type": "str", "description": "Gene name or symbol (e.g., 'TP53', 'BRCA1', 'EGFR')"},
+            {"name": "cell_line", "type": "str", "description": "Cell line name from supported list: ishikawa, hela, mcf7, a549, hepg2, jurkat, pc3, rh30, siha, u251"},
+            {"name": "include_statistical_analysis", "type": "bool", "description": "Whether to include statistical significance analysis (default: True). Provides statistical significance, effect size, and confidence levels."},
+            {"name": "include_expression_breakdown", "type": "bool", "description": "Whether to include detailed expression breakdown (default: True). Categorizes expression levels and calculates fold changes."},
+            {"name": "include_therapeutic_insights", "type": "bool", "description": "Whether to include therapeutic relevance insights (default: True). Provides therapeutic potential, targeting strategy, and biomarker assessment."}
+        ],
+        "return_type": "dict",
+        "returns": "Comprehensive dictionary containing: gene information, cell line metadata (type, origin, description), expression data (cell line and tissue values in nTPM), expression analysis (categorization, fold change, expression difference), comparison analysis (statistical significance, effect size, confidence), therapeutic insights (therapeutic potential, targeting strategy, biomarker potential, clinical relevance, recommendations), enhanced comparison summary, and metadata (timestamp, version, data source, confidence level).",
+        "code_example": [
+            {
+                "description": "Basic enhanced comparative analysis of TP53 in Hela cells",
+                "code": "from medea.tool_space.human_protein_atlas import HPAGetEnhancedComparativeExpressionTool\n\n# Initialize the tool\ntool = HPAGetEnhancedComparativeExpressionTool({})\n\n# Basic enhanced analysis\nresult = tool.run({\n    \"gene_name\": \"TP53\",\n    \"cell_line\": \"hela\",\n    \"include_statistical_analysis\": True,\n    \"include_expression_breakdown\": True,\n    \"include_therapeutic_insights\": True\n})\n\n# Extract key insights\nprint(f\"Gene: {result['gene_symbol']}\")\nprint(f\"Cell line: {result['cell_line']} ({result['cell_line_info']['type']})\")\nprint(f\"Cell line expression: {result['cell_line_expression']} nTPM\")\nprint(f\"Tissue expression: {result['healthy_tissue_expression']} nTPM\")\nprint(f\"Fold change: {result['expression_analysis']['expression_ratio']}\")\nprint(f\"Therapeutic potential: {result['therapeutic_insights']['therapeutic_potential']}\")\nprint(f\"Comparison summary: {result['comparison_summary']}\")"
+            },
+            {
+                "description": "Focused analysis with statistical significance assessment",
+                "code": "# Focus on statistical analysis\ntool = HPAGetEnhancedComparativeExpressionTool({})\nresult = tool.run({\n    \"gene_name\": \"EGFR\",\n    \"cell_line\": \"a549\",\n    \"include_statistical_analysis\": True,\n    \"include_expression_breakdown\": True,\n    \"include_therapeutic_insights\": False\n})\n\n# Show statistical analysis\ncomparison = result['comparison_analysis']\nprint(f\"Statistical significance: {comparison['statistical_significance']}\")\nprint(f\"Effect size: {comparison['effect_size']}\")\nprint(f\"Confidence level: {comparison['confidence_level']}\")\nprint(f\"Interpretation: {comparison['interpretation']}\")\n\n# Show expression breakdown\nexpression = result['expression_analysis']\nprint(f\"Cell line category: {expression['cell_line_category']}\")\nprint(f\"Tissue category: {expression['tissue_category']}\")\nprint(f\"Expression difference: {expression['expression_difference']}\")"
+            },
+            {
+                "description": "Therapeutic insights analysis for drug target identification",
+                "code": "# Focus on therapeutic insights\ntool = HPAGetEnhancedComparativeExpressionTool({})\nresult = tool.run({\n    \"gene_name\": \"MYC\",\n    \"cell_line\": \"mcf7\",\n    \"include_statistical_analysis\": True,\n    \"include_expression_breakdown\": True,\n    \"include_therapeutic_insights\": True\n})\n\n# Show therapeutic insights\ninsights = result['therapeutic_insights']\nprint(f\"Therapeutic potential: {insights['therapeutic_potential']}\")\nprint(f\"Targeting strategy: {insights['targeting_strategy']}\")\nprint(f\"Biomarker potential: {insights['biomarker_potential']}\")\nprint(f\"Clinical relevance: {insights['clinical_relevance']}\")\nprint(f\"Recommendations:\")\nfor rec in insights['recommendations']:\n    print(f\"  - {rec}\")"
+            },
+            {
+                "description": "Comprehensive analysis across multiple cell lines",
+                "code": "# Analyze multiple cell lines for comprehensive comparison\ncell_lines = [\"hela\", \"mcf7\", \"a549\", \"hepg2\"]\ngene = \"TP53\"\n\ntool = HPAGetEnhancedComparativeExpressionTool({})\nresults = {}\n\nfor cell_line in cell_lines:\n    result = tool.run({\n        \"gene_name\": gene,\n        \"cell_line\": cell_line,\n        \"include_statistical_analysis\": True,\n        \"include_expression_breakdown\": True,\n        \"include_therapeutic_insights\": True\n    })\n    results[cell_line] = result\n\n# Compare results across cell lines\nprint(f\"Comparative analysis of {gene} across {len(cell_lines)} cell lines:\")\nfor cell_line, result in results.items():\n    if \"error\" not in result:\n        cancer_type = result['cell_line_info']['type']\n        fold_change = result['expression_analysis']['expression_ratio']\n        therapeutic = result['therapeutic_insights']['therapeutic_potential']\n        print(f\"  {cell_line} ({cancer_type}): {fold_change}x, {therapeutic} potential\")\n    else:\n        print(f\"  {cell_line}: {result['error']}\")"
+            }
+        ]
+    },
+    {
+        "name": "numpy",
+        "type": "api",
+        "version": "2.0.2"
+    },
+    {
+        "name": "networkx",
+        "type": "api",
+        "version": "3.2.1"
+    },
+    {
+        "name": "requests",
+        "type": "api",
+        "version": "2.32.3"
+    },
+    {
+        "name": "pandas",
+        "type": "api",
+        "version": "2.2.2"
+    },
+    {
+        "name": "torch",
+        "type": "api",
+        "version": "2.6.0"
+    },
+    {
+        "name": "spacy",
+        "type": "api",
+        "version": "3.8.7"
+    },
+    {
+        "name": "h5py",
+        "type": "api",
+        "version": "3.13.0"
+    }
+]

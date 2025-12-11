@@ -1,0 +1,544 @@
+Metadata-Version: 2.4
+Name: medea-ai
+Version: 1.0.0
+Summary: Multi-Agent Research Planning System for Single-Cell Analysis and Therapeutic Discovery
+Home-page: https://github.com/mims-harvard/Medea
+Author: Medea Team
+Author-email: 
+License: MIT
+Project-URL: Homepage, https://github.com/mims-harvard/Medea
+Project-URL: Repository, https://github.com/mims-harvard/Medea
+Project-URL: Documentation, https://github.com/mims-harvard/Medea#readme
+Keywords: multi-agent,LLM,single-cell,therapeutic-discovery,bioinformatics,research-automation
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: agentlite-llm>=0.1.0
+Requires-Dist: pandas<2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: openai>=1.10
+Requires-Dist: ollama>=0.4.7
+Requires-Dist: anthropic>=0.20.0
+Requires-Dist: google-generativeai>=0.8.4
+Requires-Dist: google-ai-generativelanguage>=0.6.15
+Requires-Dist: google-api-core>=2.24.2
+Requires-Dist: google-api-python-client>=2.166.0
+Requires-Dist: google-auth>=2.38.0
+Requires-Dist: google-auth-httplib2>=0.2.0
+Requires-Dist: googleapis-common-protos>=1.69.2
+Requires-Dist: grpcio>=1.71.0
+Requires-Dist: grpcio-status>=1.71.0
+Requires-Dist: sentence-transformers>=2.2.0
+Requires-Dist: FlagEmbedding>=1.2.0
+Requires-Dist: transformers>=4.35.0
+Requires-Dist: tokenizers>=0.13.0
+Requires-Dist: torch>=2.0.0
+Requires-Dist: accelerate>=0.20.0
+Requires-Dist: safetensors>=0.3.0
+Requires-Dist: spacy>=3.5.0
+Requires-Dist: spacy-legacy>=3.0.0
+Requires-Dist: spacy-loggers>=1.0.0
+Requires-Dist: nltk>=3.8.0
+Requires-Dist: keybert>=0.8.0
+Requires-Dist: scikit-learn>=1.3.0
+Requires-Dist: scipy>=1.11.0
+Requires-Dist: peft>=0.4.0
+Requires-Dist: umap-learn>=0.5.0
+Requires-Dist: datasets>=2.0.0
+Requires-Dist: pyarrow>=10.0.0
+Requires-Dist: h5py>=3.0.0
+Requires-Dist: openpyxl>=3.0.0
+Requires-Dist: dill>=0.3.0
+Requires-Dist: biothings-client>=0.3.0
+Requires-Dist: mygene>=3.2.0
+Requires-Dist: gseapy>=1.0.0
+Requires-Dist: comut>=0.0.3
+Requires-Dist: requests>=2.31.0
+Requires-Dist: requests-cache>=1.0.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: httpx>=0.24.0
+Requires-Dist: httpx-sse>=0.3.0
+Requires-Dist: aiohttp>=3.8.0
+Requires-Dist: lxml>=4.9.0
+Requires-Dist: duckduckgo-search>=3.0.0
+Requires-Dist: wikipedia>=1.4.0
+Requires-Dist: ir-datasets>=0.5.0
+Requires-Dist: matplotlib>=3.7.0
+Requires-Dist: seaborn>=0.12.0
+Requires-Dist: plotly>=5.0.0
+Requires-Dist: palettable>=3.3.0
+Requires-Dist: wandb>=0.15.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: psutil>=5.9.0
+Requires-Dist: dotenv==0.9.9
+Requires-Dist: python-dotenv==1.2.1
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pydantic-settings>=2.0.0
+Requires-Dist: click>=8.0.0
+Requires-Dist: typer>=0.9.0
+Requires-Dist: thefuzz>=0.20.0
+Requires-Dist: tqdm>=4.65.0
+Requires-Dist: retry-requests>=2.0.0
+Requires-Dist: tenacity>=8.0.0
+Requires-Dist: filelock>=3.12.0
+Requires-Dist: huggingface-hub>=0.16.0
+Requires-Dist: tiktoken>=0.4.0
+Requires-Dist: networkx>=3.0.0
+Requires-Dist: sympy>=1.12.0
+Requires-Dist: joblib>=1.3.0
+Requires-Dist: regex>=2023.0.0
+Requires-Dist: pyyaml>=6.0.0
+Requires-Dist: certifi>=2023.0.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Provides-Extra: jupyter
+Requires-Dist: jupyter>=1.0.0; extra == "jupyter"
+Requires-Dist: ipykernel>=6.0.0; extra == "jupyter"
+Requires-Dist: notebook>=7.0.0; extra == "jupyter"
+Dynamic: home-page
+Dynamic: requires-python
+
+<h1 align="center">Medea: An omics AI agent for therapeutics</h1>
+
+
+<p align="center">
+  <a href="https://docs.astral.sh/uv/"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fpsui3905%2Fdd996b3802242fbb31ba604182759b79%2Fraw%2Fef4ff3a61419fe721edcbb74e854177d1a86973c%2Fgistfile1.txt&style=for-the-badge&logo=uv&label=uv&labelColor=%2352276A" alt="uv"></a>
+  <a href="https://openrouter.ai/"><img src="https://img.shields.io/badge/OpenRouter-API-5a67d8?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMiA3TDEyIDEyTDIyIDdMMTIgMloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yIDEyTDEyIDE3VjIyTDIgMTdWMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjIgMTJMMTIgMTdWMjJMMjIgMTdWMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=&labelColor=1a202c" alt="openrouter"></a>
+  <a href="https://github.com/SalesforceAIResearch/AgentLite"><img src="https://img.shields.io/badge/AgentLite-Framework-00a1e0?style=for-the-badge&logo=salesforce&logoColor=white&labelColor=032d60" alt="agentlite"></a>
+</p>
+
+<p align="center">
+  <a href="https://arxiv.org/abs/TODO"><img src="https://img.shields.io/badge/Paper_on-arXiv-5dade2?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=2980b9" alt="arXiv"></a>
+  <a href="https://mims-harvard.github.io/Medea/"><img src="https://img.shields.io/badge/Project-Website-5dade2?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2980b9" alt="Website"></a>
+  <a href="https://huggingface.co/datasets/psui3905/MedeaDB"><img src="https://img.shields.io/badge/Datasets-Hugging_Face-5dade2?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=2980b9" alt="HuggingFace"></a>
+</p> 
+
+-----
+Welcom to **Medea**, an autonomous agent system that with specialized computational tools to accelerate therapeutic discovery through single-cell analysis. Built on the AgentLite framework, Medea addresses a fundamental challenge in biomedical research: how to effectively integrate diverse data modalities, computational resources, and scientific knowledge to identify therapeutic targets and predict drug responses.
+
+Medea orchestrates three specialized agents that collaborat with each other:
+
+1. **Research Planning Agent** - Formulates experimental plans, verifies biological context (diseases, cell types, genes), and ensures analytical feasibility
+2. **Analysis Agent** - Generates and executes Python code for single-cell data analysis, including quality checks and debugging
+3. **Literature Reasoning Agent** - Searches, filters, and synthesizes relevant scientific papers using LLM-based relevance assessment
+
+<p align="center">
+  <img src="assets/images/figure1-medeaOverview.png" alt="Medea System Overview" style="max-width: 60%; height: auto;">
+  <br>
+  <em>Overview of Medea</em>
+</p>
+
+## 📋 Table of Contents
+
+- [Installation](#installation)
+  - [Quick Install (Package)](#quick-install-package)
+  - [Development Setup](#development-setup)
+- [Using Medea as a Library](#using-medea-as-a-library)
+- [Command-Line Interface (CLI) Usage](#command-line-interface-cli-usage)
+
+
+## Installation
+
+### 1. Quick Install (Package)
+
+For users who want to use Medea as a library in their own projects:
+
+```bash
+# Clone the repository
+git clone https://github.com/mims-harvard/Medea.git
+cd Medea
+
+# Create virtual environment
+pip install uv
+uv venv medea --python 3.10
+source medea/bin/activate  # On Windows: medea\Scripts\activate
+
+# Install the package
+uv pip install -e .
+uv pip install openai==1.82.1
+```
+
+**📚 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md)**
+
+**📦 For package structure and usage as a library, see [PACKAGE_STRUCTURE.md](PACKAGE_STRUCTURE.md)**
+
+
+#### 3. Clone Medea Repository
+```bash
+git clone https://github.com/mims-harvard/Medea.git
+cd Medea
+```
+
+#### 2. Download Required Models and Data
+
+**Download MedeaDB (Hugging Face dataset):**
+```bash
+uv pip install -U huggingface_hub
+huggingface-cli login  # Enter your token
+brew install git-lfs  # macOS, or: sudo apt-get install git-lfs (Linux)
+git lfs install
+git clone https://huggingface.co/datasets/psui3905/MedeaDB
+```
+
+**Add `.env`**
+All LLM API keys should be managed in the `.env` file. Here is a example configeration:
+```bash
+# Inside of .env file
+# Add langchain API key
+
+# OpenAI API
+AZURE_OPENAI_ENDPOINT=<Endpoint>
+AZURE_OPENAI_API_KEY=xxxx
+AZURE_API_VERSION=2024-05-01-preview
+AZURE_OPENAI_CHAT_DEPLOYMENT_NAME=gpt-4o
+
+# Gemini-2.0-flush
+GEMINI_API_KEY=xxxx
+GEMINI_MODEL=gemini-2.0-flash-exp
+
+# Claude
+ANTHROPIC_API_KEY=xxxx
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+```
+
+
+## Using Medea as a Library
+
+Once installed, you can use Medea in your own Python scripts. Here are three simple ways to get started:
+
+### 🚀 Option 1: Full Multi-Agent System (Recommended)
+
+Run the complete Medea agent system with research planning, in-silico experiments, and literature reasoning:
+
+```python
+from medea import medea, AgentLLM, LLMConfig
+from medea import ResearchPlanning, Analysis, LiteratureReasoning
+from medea import ResearchPlanDraft, CodeGenerator, LiteratureSearch
+
+# Step 1: Initialize LLM
+llm = AgentLLM(LLMConfig({"temperature": 0.4}), llm_name="gpt-4o")
+
+# Step 2: Create agents with actions
+research_planning_module = ResearchPlanning(llm, actions=[ResearchPlanDraft()])
+analysis_module = Analysis(llm, actions=[CodeGenerator()])
+literature_module = LiteratureReasoning(llm, actions=[LiteratureSearch()])
+
+# Step 3: Run Medea
+result = medea(
+    user_instruction="Which gene is the best therapeutic target for RA in CD4+ T cells?",
+    experiment_instruction=None,  # Optional: additional experiment context
+    research_planning_module=research_planning_module,
+    analysis_module=analysis_module,
+    literature_module=literature_module
+)
+
+# Alternative: with separate experiment instruction
+# result = medea(
+#     user_instruction="Which gene is the best therapeutic target for RA?",
+#     experiment_instruction="in CD4+ T cells",
+#     research_planning_module=research_planning_module,
+#     analysis_module=analysis_module,
+#     literature_module=literature_module
+# )
+
+# Step 4: Get your answer
+print(result['CGRH'])  # Final hypothesis from panel discussion
+```
+
+### 🔬 Option 2: Medea With Customized Agentic Component
+
+Use only the research planning and analysis components:
+
+```python
+from medea import experiment_analysis
+from medea import ResearchPlanning, Analysis, AgentLLM, LLMConfig
+from medea import ResearchPlanDraft, CodeGenerator, AnalysisExecution
+
+# Initialize Research Planning + In-Silico Experiment
+llm = AgentLLM(LLMConfig({"temperature": 0.4}))
+research_planning_module = ResearchPlanning(llm, actions=[ResearchPlanDraft()])
+analysis_module = Analysis(llm, actions=[CodeGenerator(), AnalysisExecution()])
+
+# Run
+plan, result = experiment_analysis(
+    query="Your research question here",
+    research_planning_module=research_planning_module,
+    analysis_module=analysis_module
+)
+
+print(f"Research Plan: {plan}")
+print(f"Analysis Result: {result}")
+```
+
+### 📚 Option 3: Use Individual Agent Component
+
+Use only the literature search and reasoning component:
+
+```python
+from medea import literature_reasoning, LiteratureReasoning, AgentLLM, LLMConfig
+from medea import LiteratureSearch, OpenScholarReasoning
+
+# Use Literature Reasoning Only
+llm = AgentLLM(LLMConfig({"temperature": 0.4}))
+agent = LiteratureReasoning(llm, actions=[LiteratureSearch(), OpenScholarReasoning()])
+
+# Run
+result = literature_reasoning(
+    query="What are the therapeutic targets for rheumatoid arthritis?",
+    literature_module=agent
+)
+
+print(result)
+```
+
+### 📖 More Examples
+
+See the [`examples/`](examples/) directory for detailed examples including:
+- Custom temperature settings for different agents
+- Using different LLMs for different tasks
+- Advanced agent configuration
+- Panel discussion customization
+
+## Command-Line Interface (CLI) Usage
+
+Medea provides a comprehensive command-line interface for running different evaluation tasks and configurations. The CLI allows you to easily configure all aspects of the system without modifying code.
+
+### Quick Start for Benchmark Evaluation
+
+```bash
+# Run with defaults (Medea evaluation on targetID task on rheumatoid arthritis)
+python main.py
+
+# View all options
+python main.py --help
+```
+
+### Task-Specific Evaluation
+
+##### TargetID Task
+
+```bash
+# Default TargetID (disease: ra, scfm: PINNACLE)
+python main.py --task targetID
+
+# Custom disease
+python main.py --task targetID --disease t1dm
+
+# Different single-cell model
+python main.py --task targetID --scfm TranscriptFormer --disease ss
+
+# Combined
+python main.py --task targetID --disease blastoma --scfm PINNACLE --sample-seed 44
+```
+
+##### Synthetic Lethality Task
+
+```bash
+# Default SL (cell line: MCF7, source: samson)
+python main.py --task sl
+
+# Custom cell line
+python main.py --task sl --cell-line A549
+
+# Different data source
+python main.py --task sl --sl-source samson
+
+# Combined
+python main.py --task sl --cell-line CAL27 --sl-source samson
+```
+
+##### Immune Therapy Response Task
+
+```bash
+# Default immune response
+python main.py --task immune_response
+
+# Custom dataset
+python main.py --task immune_response --immune-dataset IMVigor210
+
+# Custom patient TPM data path
+python main.py --task immune_response --patient-tpm-root /path/to/tpm/data
+```
+
+#### Agent Configuration
+
+```bash
+# Custom temperature (LLM temperature for all agents)
+python main.py --temperature 0.7
+
+# Custom quality iterations (3 max iteration for IntegrityVerification, 3 max iteration for CodeQulityChecker)
+python main.py --quality-max-iter 3 --code-quality-max-iter 3
+
+# Custom debate rounds
+python main.py --debate-rounds 3
+
+# Custom panelists
+python main.py --panelists gemini-2.5-flash gpt-4o claude
+```
+
+#### Advanced Examples
+
+```bash
+# Complete custom configuration
+python main.py \
+  --setting gpt-4o \
+  --task targetID \
+  --disease ra \
+  --scfm PINNACLE \
+  --sample-seed 42 \
+  --temperature 0.5 \
+  --quality-max-iter 3 \
+  --evaluation-folder ./custom_evaluation
+
+# Resume from checkpoint
+python main.py --checkpoint "PARP6,NOTCH1,CAL27,non-sl"
+
+# Multi-round discussion with custom panelists
+python main.py \
+  --task sl \
+  --debate-rounds 3 \
+  --panelists gemini-2.5-flash o3-mini-0131 gpt-4o claude
+```
+
+### All Available Arguments
+
+#### General Settings
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--setting` | str | `medea` | Evaluation setting (medea, gpt-4o, o3-mini-0131, etc.) |
+| `--task` | str | `targetID` | Task type (targetID, sl, immune_response) |
+| `--sample-seed` | int | `42` | Dataset sampling seed |
+| `--evaluation-folder` | str | `./evaluation` | Path to evaluation data folder |
+| `--checkpoint` | str | `None` | Checkpoint to resume from (comma-separated) |
+
+#### TargetID Task
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--disease` | str | `ra` | Disease context (ra, t1dm, ss, blastoma, fl) |
+| `--scfm` | str | `PINNACLE` | Single-cell foundation model (PINNACLE, TranscriptFormer) |
+
+#### Synthetic Lethality Task
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--cell-line` | str | `MCF7` | Cell line |
+| `--sl-source` | str | `samson` | SL data source (samson) |
+
+#### Immune Therapy Task
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--immune-dataset` | str | `IMVigor210` | Immune therapy dataset |
+| `--patient-tpm-root` | str | `None` | Path to patient TPM data |
+
+#### Agent Configuration
+
+| Argument | Type | Default | Description |
+|----------|------|---------|-------------|
+| `--temperature` | float | `0.4` | LLM temperature for all agents |
+| `--quality-max-iter` | int | `2` | Max iterations for proposal quality checks |
+| `--code-quality-max-iter` | int | `2` | Max iterations for code quality checks |
+| `--debate-rounds` | int | `2` | Number of panel discussion rounds |
+| `--panelists` | str[] | `[gemini-2.5-flash, o3-mini-0131, BACKBONE_LLM]` | LLM models for panel |
+
+### Output
+
+Running any configuration will show:
+
+```
+================================================================================
+ MEDEA EVALUATION CONFIGURATION
+================================================================================
+Setting:           medea
+Task:              targetID
+Dataset Seed:      42
+LLM Backbone Seed: 42
+Temperature:       0.4
+Evaluation Folder: ./evaluation
+--------------------------------------------------------------------------------
+Disease:           ra
+SCFM:              PINNACLE
+--------------------------------------------------------------------------------
+LLM Backbone:      gpt-4o
+LLM Paraphraser:   gpt-4o
+LLM Judge:         gpt-4o
+Quality Max Iter:  2
+Debate Rounds:     2
+Panelists:         ['gemini-2.5-flash', 'o3-mini-0131', 'gpt-4o']
+================================================================================
+```
+
+### Tips
+
+1. **View help anytime:**
+   ```bash
+   python main.py --help
+   ```
+
+2. **Task-specific args only needed for that task:**
+   ```bash
+   # These are ignored when task != targetID
+   python main.py --task sl --disease ra --scfm PINNACLE
+   ```
+
+3. **Environment variables still work:**
+   - `BACKBONE_LLM`, `SEED`, `MEDEADB_PATH`, etc. are still used
+   - Command-line args override defaults but respect env vars where appropriate
+
+4. **Checkpoint format:**
+   ```bash
+   --checkpoint "GENE1,GENE2,CELLLINE,TYPE"
+   ```
+
+### Default Behavior
+
+Without any arguments, runs:
+- **Setting:** medea
+- **Task:** targetID
+- **Disease:** ra
+- **SCFM:** PINNACLE
+- **Seed:** 42
+- **Temperature:** 0.4
+- **Quality Iterations:** 2
+- **Debate Rounds:** 2
+
+## Cite
+```tex
+@misc{medea,
+      title={{TODO}},
+      author={Pengwei Sui, Michelle M. Li, Shanghua Gao, Wanxiang Shen, Valentina Giunchiglia,Andrew Shen, Yepeng Huang, Zhenglun Kong, and Marinka Zitnik},
+      year={2025},
+      eprint={TODO},
+      archivePrefix={arXiv},
+      primaryClass={TODO},
+      url={TODO},
+}
+```
+
+
+[uv-url]: https://docs.astral.sh/uv/
+[uv.js]: https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fpsui3905%2Fdd996b3802242fbb31ba604182759b79%2Fraw%2Fef4ff3a61419fe721edcbb74e854177d1a86973c%2Fgistfile1.txt&style=for-the-badge&logo=uv&label=uv&labelColor=%2352276A
+[torch-url]: https://pytorch.org/
+[torch.js]: https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fpsui3905%2Fb84f7f55bd6d1b87a9279f1a18e585e0%2Fraw%2Fca501ae63498214db21c562d29968eaff8aa98e9%2Fgistfile1.txt&style=for-the-badge&logo=pytorch
+[openrouter-url]: https://openrouter.ai/
+[openrouter.js]: https://img.shields.io/badge/OpenRouter-API-5a67d8?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMiA3TDEyIDEyTDIyIDdMMTIgMloiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yIDEyTDEyIDE3VjIyTDIgMTdWMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjIgMTJMMTIgMTdWMjJMMjIgMTdWMTJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=&labelColor=1a202c
+[agentlite-url]: https://github.com/SalesforceAIResearch/AgentLite
+[agentlite.js]: https://img.shields.io/badge/AgentLite-Framework-00a1e0?style=for-the-badge&logo=salesforce&logoColor=white&labelColor=032d60
+
+
+
+

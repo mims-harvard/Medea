@@ -1,0 +1,118 @@
+gene a,gene b,cell line,interaction
+EGFR,PARP11,MCF10A,synthetic lethality
+MRE11,KDM1A,MCF10A,synthetic lethality
+POLB,ATR,MCF10A,synthetic lethality
+PRKDC,EGFR,MCF10A,synthetic lethality
+EGFR,NF1,MCF10A,synthetic lethality
+DGKA,GNAS,MCF10A,synthetic lethality
+SMARCA4,UBA2,MCF10A,synthetic lethality
+ERCC3,FAT1,MCF10A,synthetic lethality
+PARP3,RAD17,MCF10A,synthetic lethality
+XRCC1,USP1,MCF10A,synthetic lethality
+FAT1,EXO1,MCF10A,synthetic lethality
+PRKDC,ATM,MCF10A,synthetic lethality
+KRAS,RECQL,MCF10A,synthetic lethality
+ERCC2,PARP1,MCF10A,synthetic lethality
+HSP90AA1,MRE11,MCF10A,synthetic lethality
+CTNNB1,EIF1AX,MCF10A,synthetic lethality
+UHRF1,SMARCA4,MCF10A,synthetic lethality
+MRE11,PRKACA,MCF10A,synthetic lethality
+GATA3,XRCC3,MCF10A,synthetic lethality
+TNKS2,MYC,MCF10A,synthetic lethality
+PARP6,GNAS,MCF10A,synthetic lethality
+MGMT,POLD1,MCF10A,synthetic lethality
+RNF4,KDM5C,MCF10A,synthetic lethality
+LIG3,CASP8,MCF10A,synthetic lethality
+APEX2,RAD17,MCF10A,synthetic lethality
+HSP90AA1,FANCM,MCF10A,synthetic lethality
+FAT1,MYC,MCF10A,synthetic lethality
+RUNX1,CASP8,MCF10A,synthetic lethality
+SF3B1,XPC,MCF10A,synthetic lethality
+EIF1AX,PBRM1,MCF10A,synthetic lethality
+PRKDC,VHL,MCF10A,synthetic lethality
+ATR,KIF15,MCF10A,synthetic lethality
+BRD7,SMARCA4,MCF10A,synthetic lethality
+RUNX1,PRKACA,MCF10A,synthetic lethality
+EGFR,MPHOSPH8,MCF10A,synthetic lethality
+MAPK1,APC,MCF10A,synthetic lethality
+EGFR,PARP6,MCF10A,synthetic lethality
+RUNX1,ADA,MCF10A,synthetic lethality
+MYC,CDK12,MCF10A,synthetic lethality
+EGFR,NOTCH1,MCF10A,non-sl
+PARP11,ERCC1,MCF10A,non-sl
+RAD54B,MRE11,MCF10A,non-sl
+KDM1A,DCC,MCF10A,non-sl
+POLB,PTEN,MCF10A,non-sl
+UBR5,ATR,MCF10A,non-sl
+PRKDC,BRCA2,MCF10A,non-sl
+DNMT1,EGFR,MCF10A,non-sl
+PARP12,EGFR,MCF10A,non-sl
+UBA2,NF1,MCF10A,non-sl
+DGKA,NBN,MCF10A,non-sl
+ERCC3,GNAS,MCF10A,non-sl
+LIG1,SMARCA4,MCF10A,non-sl
+UBA2,BRCA2,MCF10A,non-sl
+ERCC3,MSH6,MCF10A,non-sl
+PARP6,FAT1,MCF10A,non-sl
+PARP3,EIF1AX,MCF10A,non-sl
+PIF1,RAD17,MCF10A,non-sl
+PARP4,XRCC1,MCF10A,non-sl
+USP1,MUTYH,MCF10A,non-sl
+UBE2A,FAT1,MCF10A,non-sl
+EXO1,SETD2,MCF10A,non-sl
+PRKDC,PALB2,MCF10A,non-sl
+INO80,ATM,MCF10A,non-sl
+POLE,KRAS,MCF10A,non-sl
+RECQL,RUNX1,MCF10A,non-sl
+ERCC2,MSH2,MCF10A,non-sl
+BLM,PARP1,MCF10A,non-sl
+HSP90AA1,CREBBP,MCF10A,non-sl
+UHRF1,MRE11,MCF10A,non-sl
+CTNNB1,DCC,MCF10A,non-sl
+POLE,EIF1AX,MCF10A,non-sl
+UHRF1,BRCA1,MCF10A,non-sl
+VEGFA,SMARCA4,MCF10A,non-sl
+POLQ,MRE11,MCF10A,non-sl
+PRKACA,RECQL4,MCF10A,non-sl
+VRK1,GATA3,MCF10A,non-sl
+XRCC3,CHEK2,MCF10A,non-sl
+TNKS2,KDM5C,MCF10A,non-sl
+ZC3HAV1,MYC,MCF10A,non-sl
+PARP6,CDKN2A,MCF10A,non-sl
+ERCC5,GNAS,MCF10A,non-sl
+SMARCA2,MGMT,MCF10A,non-sl
+POLD1,NF1,MCF10A,non-sl
+RNF4,CREBBP,MCF10A,non-sl
+PARP16,KDM5C,MCF10A,non-sl
+LIG3,MSH2,MCF10A,non-sl
+FLT3,CASP8,MCF10A,non-sl
+APEX2,NPM1,MCF10A,non-sl
+SETD7,RAD17,MCF10A,non-sl
+HSP90AA1,DCC,MCF10A,non-sl
+CASP8,FANCM,MCF10A,non-sl
+SMUG1,FAT1,MCF10A,non-sl
+TRIP12,MYC,MCF10A,non-sl
+MET,RUNX1,MCF10A,non-sl
+FOXK1,CASP8,MCF10A,non-sl
+HDAC2,SF3B1,MCF10A,non-sl
+XPC,PTEN,MCF10A,non-sl
+POLG,EIF1AX,MCF10A,non-sl
+PBRM1,NF2,MCF10A,non-sl
+PRKDC,PARP1,MCF10A,non-sl
+PARP16,VHL,MCF10A,non-sl
+DHFR,ATR,MCF10A,non-sl
+KIF15,KDM5C,MCF10A,non-sl
+BRD7,SETD2,MCF10A,non-sl
+PRKACA,SMARCA4,MCF10A,non-sl
+VEGFA,RUNX1,MCF10A,non-sl
+PRKACA,STK11,MCF10A,non-sl
+RAD1,EGFR,MCF10A,non-sl
+MPHOSPH8,STK11,MCF10A,non-sl
+MAPK1,NF2,MCF10A,non-sl
+PARP6,APC,MCF10A,non-sl
+RAD18,EGFR,MCF10A,non-sl
+PARP6,PDE4D,MCF10A,non-sl
+PRMT5,RUNX1,MCF10A,non-sl
+ADA,CASP8,MCF10A,non-sl
+SRC,MYC,MCF10A,non-sl
+CDK12,BRCA2,MCF10A,non-sl

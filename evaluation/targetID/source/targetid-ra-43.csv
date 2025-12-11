@@ -1,0 +1,141 @@
+disease,celltype,candidate_genes,y
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['FRY', 'CALHM5', 'CD3E', 'LINC02054', 'OR8D4']",CD3E
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['ARMCX2', 'IL6ST', 'PYHIN1', 'NADSYN1', 'C10orf67']",IL6ST
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['ZNF696', 'PRKD2', 'VPS39-DT', 'COX4I1', 'ATP6V0B']",COX4I1
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['NT5C', 'TCEA2', 'KHNYN', 'PRDM1', 'LL22NC03-63E9.3']",PRDM1
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['MIR223HG', 'CABP5', 'ACSBG1', 'LTB', 'TFDP1']",LTB
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['UQCC3', 'SMYD2', 'JAK3', 'REEP1', 'PACSIN3']",JAK3
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['KLHDC10', 'PPIAL4H', 'NOL12', 'ABI3BP', 'RPL21']",RPL21
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['MT-ND3', 'ARPC3', 'TXNDC2', 'MEMO1', 'GNA13']",MT-ND3
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['ZNF385D', 'ADAMTS2', 'TNFAIP3', 'C12orf57', 'TAF5']",TNFAIP3
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['EPB41L4A-DT', 'GAR1', 'TMEM256', 'TRPC4AP', 'HLA-A']",HLA-A
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['EDC4', 'HMG20B', 'DCTN6', 'S100A10', 'PKD2L1']",S100A10
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['SDCBP2-AS1', 'TMEM184C', 'RPL3', 'TET1', 'NOP53-AS1']",RPL3
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['TRDV3', 'CD2', 'SNX31', 'TBPL2', 'SYNC']",CD2
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['MYO3A', 'RPLP1', 'LINC01806', 'ZNF865', 'CD8B2']",RPLP1
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['CORO1A', 'OPHN1', 'CCDC175', 'ZNF18', 'TMEM213']",CORO1A
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['GPSM3', 'LINC00628', 'TIPRL', 'SH3RF3', 'SUCLG1']",GPSM3
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['PRICKLE3', 'LINC00278', 'CD52', 'TRIM56', 'ACYP2']",CD52
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['ECPAS', 'ZBED5-AS1', 'LINC02384', 'DDX6', 'CNN3']",DDX6
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['PRR19', 'LINC02851', 'PPIA', 'PTCRA', 'TCF25']",PPIA
+rheumatoid arthritis,effector memory cd4 positive alpha beta t cell,"['KRTAP5-2', 'HLA-C', 'CSTF2T', 'ATXN2L', 'TTLL12']",HLA-C
+rheumatoid arthritis,classical monocyte,"['HIF1A', 'TM2D2', 'FAM193B-DT', 'LRP1', 'MRM3']",HIF1A
+rheumatoid arthritis,classical monocyte,"['IFNGR2', 'LACTB2-AS1', 'GBP7', 'JARID2', 'TRAF3IP1']",IFNGR2
+rheumatoid arthritis,classical monocyte,"['PANX2', 'TLE3', 'ANKUB1', 'ASXL2', 'YY1AP1']",TLE3
+rheumatoid arthritis,classical monocyte,"['COL17A1', 'GCNT7', 'SLC25A43', 'ARMC3', 'AHR']",AHR
+rheumatoid arthritis,classical monocyte,"['USP5', 'PSMD13', 'SLC22A18AS', 'ADAM17', 'C12orf50']",ADAM17
+rheumatoid arthritis,classical monocyte,"['UHMK1', 'LAD1', 'CDC42EP3', 'LBHD1', 'LINC01277']",CDC42EP3
+rheumatoid arthritis,classical monocyte,"['KIR2DL4', 'BCDIN3D', 'AIMP1', 'RAB15', 'ZEB2']",ZEB2
+rheumatoid arthritis,classical monocyte,"['MTPAP', 'CCDC148', 'SAP130', 'RB1', 'PRMT7']",MTPAP
+rheumatoid arthritis,classical monocyte,"['IL1B', 'UBE2V1', 'ALG9', 'CD180', 'SULT1E1']",IL1B
+rheumatoid arthritis,classical monocyte,"['HLA-DRA', 'NSUN3', 'CLHC1', 'ZNF568', 'LINC00545']",HLA-DRA
+rheumatoid arthritis,classical monocyte,"['TNFRSF14-AS1', 'GOLGA8Q', 'WDR82', 'NFKBIA', 'VPS28']",NFKBIA
+rheumatoid arthritis,classical monocyte,"['ABCA1', 'HLA-E', 'FEZ2', 'SPOUT1', 'LRP6']",HLA-E
+rheumatoid arthritis,classical monocyte,"['RAB26', 'LSP1', 'ECHS1', 'RPLP1', 'TTC3-AS1']",RPLP1
+rheumatoid arthritis,classical monocyte,"['HPS1', 'RBCK1', 'TLE3', 'ZNF569', 'PLAAT2']",TLE3
+rheumatoid arthritis,classical monocyte,"['HIF1A', 'URB2', 'RTN4', 'SLC35E4', 'SBF2']",HIF1A
+rheumatoid arthritis,classical monocyte,"['TM9SF3', 'MADD', 'MED13', 'ZEB2', 'ASIC3']",ZEB2
+rheumatoid arthritis,classical monocyte,"['SPCS2', 'RPLP1', 'ZC3H3', 'ANKRD30B', 'PRKAG2']",RPLP1
+rheumatoid arthritis,classical monocyte,"['TFAP2A', 'ADAM17', 'RHBDD1', 'ZNF837', 'RAB19']",ADAM17
+rheumatoid arthritis,classical monocyte,"['KRTAP5-8', 'GSG1L', 'NLK', 'AHR', 'COL23A1']",AHR
+rheumatoid arthritis,classical monocyte,"['SLC1A2', 'CDC42EP3', 'ATP6V0A2', 'HIF1AN', 'CELF1']",CDC42EP3
+rheumatoid arthritis,naive b cell,"['TRIM4', 'KLHL15', 'ANKRD16', 'ACOT1', 'IRF1']",IRF1
+rheumatoid arthritis,naive b cell,"['TADA1', 'WDR82', 'MS4A1', 'RASAL2', 'SRGAP1']",MS4A1
+rheumatoid arthritis,naive b cell,"['FOS', 'EPPK1', 'LMCD1-AS1', 'MED6', 'LINC01852']",FOS
+rheumatoid arthritis,naive b cell,"['SRSF11', 'MT-ND3', 'ARL5C', 'DLX4', 'WDR26']",MT-ND3
+rheumatoid arthritis,naive b cell,"['ATP13A2', 'SPG11', 'AGTPBP1', 'YPEL5', 'GRWD1']",YPEL5
+rheumatoid arthritis,naive b cell,"['NFKBIA', 'XPO5', 'LPGAT1', 'YARS2', 'HDAC8']",NFKBIA
+rheumatoid arthritis,naive b cell,"['RPS26', 'KCTD1', 'ZNF181', 'MED26', 'TRAV24']",RPS26
+rheumatoid arthritis,naive b cell,"['NDFIP2', 'SMARCA1', 'PPP1R12B', 'RPS26', 'FLNA']",RPS26
+rheumatoid arthritis,naive b cell,"['SIMC1', 'YPEL5', 'OTOF', 'POMT2', 'LINC01725']",YPEL5
+rheumatoid arthritis,naive b cell,"['DNAJC8', 'DLGAP1', 'OGG1', 'FOS', 'EMB']",FOS
+rheumatoid arthritis,naive b cell,"['TMEM53', 'ATG101', 'FAHD1', 'IRF1', 'CTR9']",IRF1
+rheumatoid arthritis,naive b cell,"['NIBAN2', 'LINC01801', 'RNF157', 'NFKBIA', 'TIMM8B']",NFKBIA
+rheumatoid arthritis,naive b cell,"['OR4K13', 'MS4A1', 'CREB3L4', 'TEX10', 'PRKAG1']",MS4A1
+rheumatoid arthritis,naive b cell,"['GALNT5', 'SIRT6', 'MT-ND3', 'APOL1', 'GPN1']",MT-ND3
+rheumatoid arthritis,naive b cell,"['LINC01565', 'IRF1', 'ANKRD36C', 'KRT2', 'ZMYND8']",IRF1
+rheumatoid arthritis,naive b cell,"['LYG1', 'FOS', 'GMNN', 'CRISPLD1', 'RAP1A']",FOS
+rheumatoid arthritis,naive b cell,"['MT-ND3', 'LINC01140', 'ZNF280D', 'ZNF527', 'BIRC6']",MT-ND3
+rheumatoid arthritis,naive b cell,"['PARD3B', 'RASSF3', 'RNLS', 'RNPEP', 'RPS26']",RPS26
+rheumatoid arthritis,naive b cell,"['GXYLT2', 'RAB23', 'STON1', 'NFKBIA', 'STOX1']",NFKBIA
+rheumatoid arthritis,naive b cell,"['SLC25A30-AS1', 'FANCA', 'MS4A1', 'SMIM6', 'TMEM129']",MS4A1
+rheumatoid arthritis,myeloid dendritic cell,"['RPL21', 'PNPLA4', 'DNASE1L2', 'NMRK1', 'ARMH1']",RPL21
+rheumatoid arthritis,myeloid dendritic cell,"['SPTSSA', 'WARS1', 'COX4I1', 'EIF4A3', 'C2orf50']",COX4I1
+rheumatoid arthritis,myeloid dendritic cell,"['NR2C1', 'ATAT1', 'WDR6', 'LRIG2-DT', 'LTB']",LTB
+rheumatoid arthritis,myeloid dendritic cell,"['RPL3', 'ARMCX3', 'CPLANE2', 'UQCRHL', 'MAGEE1']",RPL3
+rheumatoid arthritis,myeloid dendritic cell,"['LINC01630', 'ERCC3', 'CNDP2', 'RPS26', 'C1orf220']",RPS26
+rheumatoid arthritis,myeloid dendritic cell,"['LINC00621', 'HLA-E', 'DMTF1', 'SCAND1', 'RWDD1']",HLA-E
+rheumatoid arthritis,myeloid dendritic cell,"['SHISA4', 'CCDC175', 'TPRKB', 'KCNK1', 'CD52']",CD52
+rheumatoid arthritis,myeloid dendritic cell,"['RBM8A', 'MNS1', 'ACTB', 'ULBP2', 'WASHC2A']",ACTB
+rheumatoid arthritis,myeloid dendritic cell,"['FAM182B', 'MAP7', 'LRRC57', 'RPLP1', 'STRN']",RPLP1
+rheumatoid arthritis,myeloid dendritic cell,"['ASB3', 'TRAV24', 'KAT5', 'ARTN', 'HLA-E']",HLA-E
+rheumatoid arthritis,myeloid dendritic cell,"['RPL21', 'OBSCN-AS1', 'CLASP2', 'RANBP2', 'RAB40A']",RPL21
+rheumatoid arthritis,myeloid dendritic cell,"['COX4I1', 'SAMD12-AS1', 'RHOF', 'LINC02362', 'IATPR']",COX4I1
+rheumatoid arthritis,myeloid dendritic cell,"['LTB', 'PLEKHA3', 'TFR2', 'DNMBP-AS1', 'DCTN1']",LTB
+rheumatoid arthritis,myeloid dendritic cell,"['SNF8', 'AOC1', 'FAM184B', 'ACTB', 'NUMBL']",ACTB
+rheumatoid arthritis,myeloid dendritic cell,"['CAVIN1', 'CD52', 'ATXN2-AS', 'KIF9', 'NECTIN4']",CD52
+rheumatoid arthritis,myeloid dendritic cell,"['COCH', 'HSPA4L', 'RPLP1', 'C6orf132', 'PTPRE']",RPLP1
+rheumatoid arthritis,myeloid dendritic cell,"['FZD3', 'CHMP6', 'RPS26', 'CMTM3', 'UTY']",RPS26
+rheumatoid arthritis,myeloid dendritic cell,"['DCP2', 'SWSAP1', 'ARHGAP8', 'RPL3', 'APLP2']",RPL3
+rheumatoid arthritis,myeloid dendritic cell,"['SERTAD3', 'SARNP', 'VPS50', 'CLINT1', 'CD52']",CD52
+rheumatoid arthritis,myeloid dendritic cell,"['WDR55', 'NTMT1', 'RPLP1', 'NPAS3', 'SPON1']",RPLP1
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['C4orf19', 'HTR2A', 'NKAP', 'HLA-C', 'NPEPL1']",HLA-C
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['FOS', 'RBP7', 'CNN3-DT', 'IFT88', 'LINC02422']",FOS
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['ZNF674', 'RUVBL1', 'MT-ND3', 'INTS12', 'ATP6V0E1']",MT-ND3
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['MSS51', 'MT-ND6', 'ZNF789', 'SMAD5-AS1', 'ADGRF5']",MT-ND6
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['KLHL8', 'DDX6', 'ZNF783', 'RYR1', 'EDARADD']",DDX6
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['CBX6', 'H2AC21', 'ARL8A', 'RABEPK', 'NFKBIA']",NFKBIA
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['ANG', 'TAF9B', 'CD52', 'ZNF714', 'RFNG']",CD52
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['RPL21', 'RGS18', 'PCGF3', 'GDI2', 'ZNF599']",RPL21
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['H3C11', 'FBXW12', 'LTB', 'C2orf69', 'CACNA2D2']",LTB
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['RPL3', 'ANP32E', 'LINC01044', 'ZNF470', 'CADM4']",RPL3
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['CSDE1', 'PRRT3', 'ACTB', 'NANOGNB', 'VCPIP1']",ACTB
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['RLN1', 'S100A10', 'ZNF746', 'KLHL2', 'TRIP10']",S100A10
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['TMEM115', 'LARP4', 'KLHDC8B', 'PRKRA', 'RPS26']",RPS26
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['JADE1', 'RPLP1', 'LRRC56', 'DHDH', 'SH3D21']",RPLP1
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['SRA1', 'DNAJC5', 'NFKBIA', 'RAN', 'ZNF597']",NFKBIA
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['LTB', 'PHAX', 'ARFIP1', 'PECR', 'ZBED1_ENSG00000214717']",LTB
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['ARL4C', 'SLC7A6OS', 'LZIC', 'MT-ND3', 'PRR23C']",MT-ND3
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['CAPNS2', 'ALDH3A2', 'TXLNB', 'RPS26', 'CDCA2']",RPS26
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['C1orf87', 'MORF4L2', 'CHODL', 'TBCD', 'DDX6']",DDX6
+rheumatoid arthritis,naive thymus derived cd8 positive alpha beta t cell,"['ST3GAL6', 'MT-ND6', 'SCAF11', 'GNAL', 'SLX4IP']",MT-ND6
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['PTPN7', 'LINC00940', 'RPL21', 'RGS20', 'KHDC1L']",RPL21
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['ZNF706', 'HBG2', 'KIAA2012', 'ACTB', 'SPPL3']",ACTB
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['LDHC', 'MT-ND3', 'ZMIZ1-AS1', 'B3GAT3', 'MFSD14B']",MT-ND3
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['NUTM2B', 'ZNHIT6', 'RPLP1', 'MCCC1-AS1', 'DNAJA4']",RPLP1
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['STK11IP', 'TARBP1', 'THSD7A', 'IKZF1', 'TARDBP']",IKZF1
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['MGST1', 'COX4I1', 'CXXC5', 'ZNF101', 'TRGV5P']",COX4I1
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['BICRAL', 'DDX6', 'CD300LB', 'RFC1', 'PRSS16']",DDX6
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['ASMT_ENSG00000196433', 'HLA-E', 'SNHG22', 'UBL7', 'RGPD2']",HLA-E
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['MIIP', 'TRMT12', 'SESN3', 'CASP6', 'MSL1']",SESN3
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['STRBP', 'TAL2', 'EIF4A1', 'PTPRC', 'RRAGA']",PTPRC
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['ZNF573', 'LTB', 'CCDC138', 'DENND10', 'PROSER2-AS1']",LTB
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['SCAI', 'RPS26', 'MFAP1', 'EFCC1', 'DPM1']",RPS26
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['APOBEC2', 'ZBTB8B', 'ARRDC2', 'LINC01307', 'CD52']",CD52
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['ZNF385C', 'TNFAIP3', 'SUV39H2', 'ZBTB26', 'TFAP2A']",TNFAIP3
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['RPL3', 'RNF13', 'BCLAF1', 'NRBP2', 'ATXN3']",RPL3
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['DDX6', 'ZNF324', 'C1QBP', 'RGS7', 'UBTD1']",DDX6
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['RPLP1', 'POLDIP2', 'CHD8', 'CC2D1B', 'SLC30A8']",RPLP1
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['MYEOV', 'CLSTN3', 'SESN3', 'TRAV1-2', 'ARHGAP44']",SESN3
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['PPP1R27', 'RPL3', 'CYB561A3', 'UBE3C', 'EXOSC7']",RPL3
+rheumatoid arthritis,naive thymus derived cd4 positive alpha beta t cell,"['PPP1R15B', 'MAP2K6', 'COX4I1', 'FAM89A', 'AHDC1']",COX4I1
+rheumatoid arthritis,natural killer cell,"['RBM34', 'IRF2', 'TMEM63C', 'NFKBIA', 'FAM30A']",NFKBIA
+rheumatoid arthritis,natural killer cell,"['RFXAP', 'ECRG4', 'GCSAML', 'PLPP6', 'HLA-C']",HLA-C
+rheumatoid arthritis,natural killer cell,"['JAK1', 'HEXD', 'WDR5B', 'MS4A7', 'DDX39B-AS1']",JAK1
+rheumatoid arthritis,natural killer cell,"['TOP2A', 'MST1R', 'HEATR6-DT', 'PYGB', 'ACTB']",ACTB
+rheumatoid arthritis,natural killer cell,"['TTC9', 'TANC2', 'NOMO2', 'FOS', 'MED15']",FOS
+rheumatoid arthritis,natural killer cell,"['MAMDC2', 'ZNF341-AS1', 'JAK1', 'CPAMD8', 'SLC30A7']",JAK1
+rheumatoid arthritis,natural killer cell,"['LINC01135', 'UVSSA', 'SDR42E1', 'NFKBIA', 'CLK4']",NFKBIA
+rheumatoid arthritis,natural killer cell,"['UNC5B', 'MCF2', 'ACTB', 'NUGGC', 'YIF1B']",ACTB
+rheumatoid arthritis,natural killer cell,"['ABCC5', 'FAM3C', 'FOS', 'TMEM244', 'TRBV25-1']",FOS
+rheumatoid arthritis,natural killer cell,"['FBXO8', 'RARA', 'HLA-C', 'ABHD1', 'CTSV']",HLA-C
+rheumatoid arthritis,natural killer cell,"['JAK1', 'H2BC8', 'ADGRB2', 'OTUD1', 'CETN2']",JAK1
+rheumatoid arthritis,natural killer cell,"['FOS', 'CLIP4', 'LINC01531', 'PSTK', 'ABCD2']",FOS
+rheumatoid arthritis,natural killer cell,"['AP2B1', 'PCNT', 'ASPHD1', 'NFKBIA', 'SPRY3']",NFKBIA
+rheumatoid arthritis,natural killer cell,"['APOL4', 'CEND1', 'WIPI1', 'NAE1', 'HLA-C']",HLA-C
+rheumatoid arthritis,natural killer cell,"['ACTB', 'SGSM1', 'POLR3E', 'MGAT1', 'TMEM210']",ACTB
+rheumatoid arthritis,natural killer cell,"['ZNF212', 'MAP3K2-DT', 'JAK1', 'ZC2HC1A', 'SLIT2']",JAK1
+rheumatoid arthritis,natural killer cell,"['HLA-C', 'ZNF213', 'C1QTNF2', 'NHLRC1', 'ROBO3']",HLA-C
+rheumatoid arthritis,natural killer cell,"['PNRC2', 'ARL6', 'FOS', 'ZNF252P-AS1', 'A1BG-AS1']",FOS
+rheumatoid arthritis,natural killer cell,"['USP43', 'MFF-DT', 'DTWD1', 'TSHZ2', 'ACTB']",ACTB
+rheumatoid arthritis,natural killer cell,"['NT5DC3', 'NFKBIA', 'WDR18', 'CDK7', 'TAS2R46']",NFKBIA

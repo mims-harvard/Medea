@@ -1,0 +1,61 @@
+disease,celltype,candidate_genes,y
+Hepatoblastoma,endothelial,"['GRK2', 'MUC12', 'PTH2R', 'TOP2A', 'CFB']",TOP2A
+Hepatoblastoma,endothelial,"['ASB16-AS1', 'LGMN', 'ARVCF', 'CDC42BPA', 'TYMS']",TYMS
+Hepatoblastoma,endothelial,"['NHLH1', 'SLK', 'PRSS3', 'POLD3', 'KLF13']",POLD3
+Hepatoblastoma,endothelial,"['DUSP16', 'RBMS1', 'NUDT5', 'PRIM2', 'GRAMD4']",PRIM2
+Hepatoblastoma,endothelial,"['DHPS', 'MCEE', 'ANKS3', 'SSPOP', 'TUBB']",TUBB
+Hepatoblastoma,endothelial,"['ZCCHC8', 'RMC1', 'TMEM33', 'POLE3', 'FDX2']",POLE3
+Hepatoblastoma,endothelial,"['YEATS4', 'RAB4A', 'FBXO42', 'RRM1', 'H1-6']",RRM1
+Hepatoblastoma,endothelial,"['SLC25A18', 'GPR135', 'THEMIS2', 'KIT', 'GATAD1']",KIT
+Hepatoblastoma,endothelial,"['DCTD', 'TUBB4B', 'FPR2', 'NEU3', 'MT1H']",TUBB4B
+Hepatoblastoma,endothelial,"['NOS1', 'HOXD4', 'SURF6', 'KCTD11', 'KDR']",KDR
+Hepatoblastoma,endothelial,"['MASTL', 'SERINC2', 'YTHDF1', 'POLE2', 'CCNH']",POLE2
+Hepatoblastoma,endothelial,"['ODF2L', 'MAML3', 'POLD2', 'LSG1', 'SLC16A9']",POLD2
+Hepatoblastoma,endothelial,"['SLC9A3R2', 'PAPOLA', 'FLT4', 'GART', 'RABIF']",FLT4
+Hepatoblastoma,endothelial,"['BRF2', 'TSKS', 'TOP1', 'ILK', 'SPEN']",TOP1
+Hepatoblastoma,endothelial,"['TOP2B', 'CSH1', 'IL11', 'LSM14A', 'S100A12']",TOP2B
+Hepatoblastoma,endothelial,"['NACA4P', 'TXN2', 'FLT1', 'RELT', 'SLAIN1']",FLT1
+Hepatoblastoma,endothelial,"['PRIM1', 'CASQ2', 'GLIS3', 'HFE', 'GAA']",PRIM1
+Hepatoblastoma,endothelial,"['ARL1', 'TUBB4B', 'WDR92', 'HSPA5', 'PIK3CD']",TUBB4B
+Hepatoblastoma,endothelial,"['POLE3', 'METTL5', 'RBM28', 'NDUFA10', 'EPOR']",POLE3
+Hepatoblastoma,endothelial,"['IGKV2-40', 'U2AF1', 'EPRS1', 'RALGDS', 'POLE2']",POLE2
+Hepatoblastoma,kupffer cell,"['MORN3', 'CSRNP1', 'CD247', 'SWSAP1', 'PRIM1']",PRIM1
+Hepatoblastoma,kupffer cell,"['KIAA1107', 'COLGALT2', 'RAC3', 'RPL9', 'FLT1']",FLT1
+Hepatoblastoma,kupffer cell,"['HSPG2', 'PRIM2', 'EBF1', 'GPNMB', 'VAMP5']",PRIM2
+Hepatoblastoma,kupffer cell,"['EIF3I', 'TOP2B', 'AFF2', 'KRT16', 'AMBP']",TOP2B
+Hepatoblastoma,kupffer cell,"['HOXD12', 'CFAP97', 'RRM1', 'LCK', 'GNB1L']",RRM1
+Hepatoblastoma,kupffer cell,"['C12orf57', 'IFNA16', 'PMPCA', 'DNM3', 'TOP1']",TOP1
+Hepatoblastoma,kupffer cell,"['DYNLL2', 'TUBB4B', 'SHPRH', 'C2orf50', 'MAPK12']",TUBB4B
+Hepatoblastoma,kupffer cell,"['ABCE1', 'POLE2', 'ATG16L2', 'FHL5', 'TRIO']",POLE2
+Hepatoblastoma,kupffer cell,"['KDM4D', 'TYMS', 'NPC1', 'ATG4C', 'ASIC3']",TYMS
+Hepatoblastoma,kupffer cell,"['TOP2A', 'DBI', 'SCML1', 'CEP250', 'H2AC6']",TOP2A
+Hepatoblastoma,kupffer cell,"['POLA1', 'FAM207A', 'TIAF1', 'CNOT6L', 'OR10J1']",POLA1
+Hepatoblastoma,kupffer cell,"['MRPL36', 'PABPN1', 'KIAA0232', 'POLA2', 'SLC35G5']",POLA2
+Hepatoblastoma,kupffer cell,"['PLAAT1', 'ABCF3', 'POLD3', 'TMEM154', 'SGCE']",POLD3
+Hepatoblastoma,kupffer cell,"['ENDOG', 'C6orf141', 'PSRC1', 'ADRA1D', 'TUBB']",TUBB
+Hepatoblastoma,kupffer cell,"['SLC13A2', 'PWWP2A', 'TUBB', 'EXTL3', 'DERL3']",TUBB
+Hepatoblastoma,kupffer cell,"['ADI1', 'MRPL30', 'SDR16C5', 'OR6C1', 'RRM1']",RRM1
+Hepatoblastoma,kupffer cell,"['FAM214A', 'TMEM114', 'LCP1', 'CCT4', 'POLD3']",POLD3
+Hepatoblastoma,kupffer cell,"['GPR183', 'PRIM2', 'FZR1', 'DNAJC17', 'NAP1L4']",PRIM2
+Hepatoblastoma,kupffer cell,"['FLT1', 'RCN2', 'OOEP', 'ALDH16A1', 'UIMC1']",FLT1
+Hepatoblastoma,kupffer cell,"['ACR', 'TOP1', 'CPXM1', 'ADAT3', 'CXXC1']",TOP1
+Hepatoblastoma,hepatic stellate cell,"['MMP24', 'OR6C1', 'TJP1', 'TOP1', 'OR4F16']",TOP1
+Hepatoblastoma,hepatic stellate cell,"['ANKRD53', 'TIMP1', 'FLT1', 'DYNLT3', 'HCN2']",FLT1
+Hepatoblastoma,hepatic stellate cell,"['CATSPER4', 'PSMB4', 'PDGFRB', 'MTRNR2L1', 'SYCE1']",PDGFRB
+Hepatoblastoma,hepatic stellate cell,"['CBL', 'MTHFS', 'POU3F4', 'TUBB', 'CYSRT1']",TUBB
+Hepatoblastoma,hepatic stellate cell,"['PDK2', 'HSP90AA5P', 'MED13L', 'PTPRN', 'TYMS']",TYMS
+Hepatoblastoma,hepatic stellate cell,"['PIANP', 'LOXL4', 'ILKAP', 'TOP2A', 'APOA1']",TOP2A
+Hepatoblastoma,hepatic stellate cell,"['TCP11L2', 'AFG1L', 'SUMF2', 'LINGO1', 'PRIM2']",PRIM2
+Hepatoblastoma,hepatic stellate cell,"['SDC3', 'FITM2', 'B3GALNT2', 'TOP2B', 'SLC12A4']",TOP2B
+Hepatoblastoma,hepatic stellate cell,"['BDH1', 'MDFIC', 'APOC3', 'PRIM2', 'CENPQ']",PRIM2
+Hepatoblastoma,hepatic stellate cell,"['TOP1', 'SGCD', 'POTEKP', 'MSANTD2', 'LAG3']",TOP1
+Hepatoblastoma,hepatic stellate cell,"['MTCH2', 'FA2H', 'CSDC2', 'TOP2A', 'MMP26']",TOP2A
+Hepatoblastoma,hepatic stellate cell,"['OLAH', 'TCL6', 'CCR6', 'TYMS', 'BPGM']",TYMS
+Hepatoblastoma,hepatic stellate cell,"['ZNF564', 'HEATR3', 'TBR1', 'IFNLR1', 'TUBB']",TUBB
+Hepatoblastoma,hepatic stellate cell,"['MTR', 'ATP6V0E2', 'DLX1', 'DPYS', 'PDGFRB']",PDGFRB
+Hepatoblastoma,hepatic stellate cell,"['MBNL2', 'SH3BP4', 'ZNF326', 'DAZAP2', 'FLT1']",FLT1
+Hepatoblastoma,hepatic stellate cell,"['TAF1C', 'MSH5', 'TOP2B', 'CDC27', 'SHANK1']",TOP2B
+Hepatoblastoma,hepatic stellate cell,"['TAF1', 'TOP2B', 'GLUD1', 'TSPAN8', 'ZC3H7A']",TOP2B
+Hepatoblastoma,hepatic stellate cell,"['CALD1', 'TYMS', 'MCFD2', 'CLDN18', 'BNC1']",TYMS
+Hepatoblastoma,hepatic stellate cell,"['CAVIN2', 'PDGFRB', 'MTMR12', 'PSMD5', 'ELOVL4']",PDGFRB
+Hepatoblastoma,hepatic stellate cell,"['RADX', 'TRPC1', 'TUBB', 'ZBTB25', 'TNFAIP2']",TUBB

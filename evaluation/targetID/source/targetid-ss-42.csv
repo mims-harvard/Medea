@@ -1,0 +1,121 @@
+disease,celltype,candidate_genes,y
+Sjogren syndrome,acinar cell of salivary gland,"['TMEM62', 'CYFIP1', 'NFKBIE', 'BPGM', 'RCN1']",RCN1
+Sjogren syndrome,acinar cell of salivary gland,"['MIF', 'NPM3', 'FAM199X', 'ZNF337', 'ANKZF1']",MIF
+Sjogren syndrome,acinar cell of salivary gland,"['PDK1', 'FCGRT', 'PIGL', 'ATP5MK', 'PRG4']",FCGRT
+Sjogren syndrome,acinar cell of salivary gland,"['B3GNT2', 'ECHDC2', 'CD40', 'NEURL3', 'CDC20B']",CD40
+Sjogren syndrome,acinar cell of salivary gland,"['H2AC19', 'CD320', 'RRP15', 'STK40', 'JAK1']",JAK1
+Sjogren syndrome,acinar cell of salivary gland,"['RPS18', 'HLA-DPA1', 'SH2D4A', 'SH3BGRL', 'DTX4']",HLA-DPA1
+Sjogren syndrome,acinar cell of salivary gland,"['LRP3', 'TMEM65', 'TYMSOS', 'FKBP1A', 'IDH3B']",FKBP1A
+Sjogren syndrome,acinar cell of salivary gland,"['NCAPG', 'SNX19', 'PPIA', 'EPGN', 'NAA35']",PPIA
+Sjogren syndrome,acinar cell of salivary gland,"['ITSN1', 'ENDOV', 'SMARCC2', 'UPK1B', 'ZNF534']",SMARCC2
+Sjogren syndrome,acinar cell of salivary gland,"['RTN4IP1', 'NPFF', 'EPHX4', 'GCM1', 'HLA-DPB1']",HLA-DPB1
+Sjogren syndrome,acinar cell of salivary gland,"['TPRA1', 'OR52E6', 'LAD1', 'SGO2', 'CTSS']",CTSS
+Sjogren syndrome,acinar cell of salivary gland,"['CNNM2', 'UPP2', 'MRPS35', 'CENPA', 'HLA-DRA']",HLA-DRA
+Sjogren syndrome,acinar cell of salivary gland,"['ABHD1', 'UPF3A', 'ZDHHC13', 'AVPR2', 'PYM1']",PYM1
+Sjogren syndrome,acinar cell of salivary gland,"['MIRLET7A1', 'GTF2I', 'KIR3DL1', 'PPP4R4', 'VCPIP1']",GTF2I
+Sjogren syndrome,acinar cell of salivary gland,"['IMPDH2', 'KYAT3', 'C19orf44', 'THG1L', 'FAM174A']",IMPDH2
+Sjogren syndrome,acinar cell of salivary gland,"['HIF1A', 'NAA25', 'FRYL', 'LRG1', 'HLA-B']",HLA-B
+Sjogren syndrome,acinar cell of salivary gland,"['SFTPD', 'QSOX1', 'CCDC181', 'STAT1', 'UMOD']",STAT1
+Sjogren syndrome,acinar cell of salivary gland,"['IFNAR1', 'DNAJC9', 'PA2G4', 'GTF2A1L', 'HAO2']",IFNAR1
+Sjogren syndrome,acinar cell of salivary gland,"['PRKCI', 'TEX44', 'TBC1D15', 'CHRM3', 'LTA4H']",CHRM3
+Sjogren syndrome,acinar cell of salivary gland,"['GK3P', 'MAN2A1', 'DDX6', 'ZNF624', 'SC5D']",DDX6
+Sjogren syndrome,iga plasma cell,"['HLA-B', 'TCF25', 'IGSF1', 'ADCY10P1', 'SERPINC1']",HLA-B
+Sjogren syndrome,iga plasma cell,"['INHBA', 'MAGT1', 'EIF3K', 'PSMD14', 'PPIA']",PPIA
+Sjogren syndrome,iga plasma cell,"['NDUFB10', 'PAM', 'HSP90AA5P', 'MIF', 'BST2']",MIF
+Sjogren syndrome,iga plasma cell,"['TANC2', 'FAM162A', 'CTSS', 'GDF5-AS1', 'TMEM80']",CTSS
+Sjogren syndrome,iga plasma cell,"['SNX33', 'ZNF285', 'TNFAIP3', 'COMMD9', 'NSA2']",TNFAIP3
+Sjogren syndrome,iga plasma cell,"['TMCO2', 'BCLAF1', 'TNFAIP3', 'UEVLD', 'IGF1']",TNFAIP3
+Sjogren syndrome,iga plasma cell,"['EPCAM', 'MISP', 'MIF', 'GABARAPL3', 'ODAM']",MIF
+Sjogren syndrome,iga plasma cell,"['PPIA', 'DMPK', 'CCNK', 'GLI1', 'NOTCH1']",PPIA
+Sjogren syndrome,iga plasma cell,"['GUK1', 'CTSS', 'COX14', 'CUEDC2', 'SELP']",CTSS
+Sjogren syndrome,iga plasma cell,"['CRIP2', 'HLA-B', 'RSPO1', 'HNF1B', 'PAQR7']",HLA-B
+Sjogren syndrome,iga plasma cell,"['SIPA1L3', 'HLF', 'VPS37D', 'CTSS', 'NPPA']",CTSS
+Sjogren syndrome,iga plasma cell,"['USP4', 'CLIP2', 'TNFAIP3', 'TBCCD1', 'H6PD']",TNFAIP3
+Sjogren syndrome,iga plasma cell,"['CAMK1D', 'PPIA', 'PLEKHM2', 'NPIPA1', 'TRAK1']",PPIA
+Sjogren syndrome,iga plasma cell,"['IFIT1', 'BICDL2', 'P2RX1', 'HLA-B', 'RPA2']",HLA-B
+Sjogren syndrome,iga plasma cell,"['AADAC', 'GIPC1', 'JAGN1', 'MIF', 'MRPS2']",MIF
+Sjogren syndrome,iga plasma cell,"['SCRN2', 'SWI5', 'MIF', 'GREM1', 'KCNQ4']",MIF
+Sjogren syndrome,iga plasma cell,"['TMEM159', 'OR7C2', 'CTSS', 'MXD3', 'GCNT4']",CTSS
+Sjogren syndrome,iga plasma cell,"['NFATC2IP', 'BCKDHB', 'TNFAIP3', 'CEPT1', 'RAB5C']",TNFAIP3
+Sjogren syndrome,iga plasma cell,"['ZNF559-ZNF177', 'HLA-B', 'STARD10', 'TAC1', 'MON1B']",HLA-B
+Sjogren syndrome,iga plasma cell,"['CRTAC1', 'SS18L2', 'PPIA', 'GK3P', 'CLNS1A']",PPIA
+Sjogren syndrome,endothelial cell,"['IFNAR1', 'PARP4', 'BRI3', 'GSTM5', 'MTA3']",IFNAR1
+Sjogren syndrome,endothelial cell,"['GTF2I', 'GGNBP2', 'JOSD2', 'TEX44', 'PSMB4']",GTF2I
+Sjogren syndrome,endothelial cell,"['DGCR8', 'NRG2', 'DDX6', 'WNT11', 'ARHGEF16']",DDX6
+Sjogren syndrome,endothelial cell,"['TRIM7', 'HLA-DPA1', 'NEK9', 'ACTL8', 'FZD6']",HLA-DPA1
+Sjogren syndrome,endothelial cell,"['IL13', 'RBM8A', 'RCN1', 'ZNF500', 'ACTR5']",RCN1
+Sjogren syndrome,endothelial cell,"['NPB', 'NLRP10', 'DEFA1', 'NR3C1', 'PTGES3']",NR3C1
+Sjogren syndrome,endothelial cell,"['PYGB', 'PFKFB4', 'VPS35', 'SMU1', 'BAZ2A']",BAZ2A
+Sjogren syndrome,endothelial cell,"['GRM1', 'NLRP12', 'SWAP70', 'SGTA', 'JAK1']",JAK1
+Sjogren syndrome,endothelial cell,"['PPIA', 'RPF1', 'C11orf54', 'MILR1', 'INSYN2A']",PPIA
+Sjogren syndrome,endothelial cell,"['RCN1', 'TRMT2A', 'PEX13', 'ARHGAP24', 'OTP']",RCN1
+Sjogren syndrome,endothelial cell,"['BAZ2A', 'NRBF2', 'TBC1D3G', 'LAS1L', 'SPATA3']",BAZ2A
+Sjogren syndrome,endothelial cell,"['PPIA', 'RASGRP2', 'PGAP2', 'MVB12B', 'CDH19']",PPIA
+Sjogren syndrome,endothelial cell,"['POLE2', 'ZNF275', 'UGT2B7', 'RPS6', 'DDX6']",DDX6
+Sjogren syndrome,endothelial cell,"['JAK1', 'UNC50', 'DERL2', 'SMIM1', 'MAGED1']",JAK1
+Sjogren syndrome,endothelial cell,"['SLITRK5', 'YIPF6', 'NDUFB1', 'GDF5-AS1', 'GTF2I']",GTF2I
+Sjogren syndrome,endothelial cell,"['SLC30A1', 'SERPINA5', 'ETS2', 'NKX3-1', 'NR3C1']",NR3C1
+Sjogren syndrome,endothelial cell,"['HLA-DPA1', 'KRT6B', 'NDUFA1', 'UBXN11', 'TIMM10']",HLA-DPA1
+Sjogren syndrome,endothelial cell,"['FABP7', 'IFNAR1', 'LCP2', 'FBXO7', 'TPP1']",IFNAR1
+Sjogren syndrome,endothelial cell,"['CKS1B', 'IFNAR1', 'PHRF1', 'GRWD1', 'SAMD13']",IFNAR1
+Sjogren syndrome,endothelial cell,"['DBH', 'PIH1D1', 'MIOS', 'CYRIB', 'BAZ2A']",BAZ2A
+Sjogren syndrome,duct epithelial cell,"['CHCHD6', 'KAT7', 'IMPDH2', 'NGDN', 'ZC3H12C']",IMPDH2
+Sjogren syndrome,duct epithelial cell,"['PPIA', 'ARTN', 'ZNF852', 'SERTAD1', 'ERGIC2']",PPIA
+Sjogren syndrome,duct epithelial cell,"['PPP2R2C', 'HLA-B', 'TRMT6', 'ZBTB33', 'XCL1']",HLA-B
+Sjogren syndrome,duct epithelial cell,"['EID3', 'ZFHX2', 'HLA-DRA', 'H4C7', 'PLRG1']",HLA-DRA
+Sjogren syndrome,duct epithelial cell,"['GP2', 'CENPQ', 'MT-CO3', 'HLA-DPB1', 'PRIM1']",HLA-DPB1
+Sjogren syndrome,duct epithelial cell,"['SENP3', 'RAB9A', 'TUBB6', 'SPA17', 'FCGRT']",FCGRT
+Sjogren syndrome,duct epithelial cell,"['THAP11', 'C5AR2', 'RTF1', 'PPIA', 'C11orf16']",PPIA
+Sjogren syndrome,duct epithelial cell,"['FST', 'HLA-DRA', 'ARID1B', 'SAMD11', 'MED11']",HLA-DRA
+Sjogren syndrome,duct epithelial cell,"['ARCN1', 'ITGB2', 'HLA-B', 'MMS22L', 'NCALD']",HLA-B
+Sjogren syndrome,duct epithelial cell,"['ASB1', 'SPOUT1', 'FAM180B', 'FCGRT', 'ALCAM']",FCGRT
+Sjogren syndrome,duct epithelial cell,"['MT-CYB', 'AUTS2', 'RAB1A', 'ALG11', 'HLA-DPB1']",HLA-DPB1
+Sjogren syndrome,duct epithelial cell,"['ETV6', 'KDM6A', 'LNPEP', 'IMPDH2', 'GPRIN2']",IMPDH2
+Sjogren syndrome,duct epithelial cell,"['TMEM135', 'PPIA', 'TNFAIP1', 'DGKI', 'NR2E3']",PPIA
+Sjogren syndrome,duct epithelial cell,"['FAM120C', 'IMPDH2', 'GRAMD1A', 'RASAL3', 'LBX2']",IMPDH2
+Sjogren syndrome,duct epithelial cell,"['KIAA0895L', 'ZNF268', 'PHF5A', 'GCN1', 'HLA-DPB1']",HLA-DPB1
+Sjogren syndrome,duct epithelial cell,"['H3-3A', 'CCNY', 'MRPL40', 'HLA-DRA', 'MYH1']",HLA-DRA
+Sjogren syndrome,duct epithelial cell,"['LTF', 'HLA-B', 'CAPN15', 'TMEM167A', 'APOL6']",HLA-B
+Sjogren syndrome,duct epithelial cell,"['ABCC1', 'FCGRT', 'DDX56', 'PLS3', 'APTX']",FCGRT
+Sjogren syndrome,duct epithelial cell,"['MUC1', 'HLA-B', 'TMOD3', 'CKMT1A', 'ADGRE2']",HLA-B
+Sjogren syndrome,duct epithelial cell,"['H3C15', 'HLA-DPB1', 'GFER', 'RPLP2', 'SRSF3']",HLA-DPB1
+Sjogren syndrome,myoepithelial cell,"['PRPF38A', 'HLA-B', 'PDE6A', 'ZNF662', 'ZNF420']",HLA-B
+Sjogren syndrome,myoepithelial cell,"['FKBP1A', 'MARCHF7', 'DLG3', 'SLITRK1', 'SNX7']",FKBP1A
+Sjogren syndrome,myoepithelial cell,"['HSD17B12', 'SUMO2', 'PPIA', 'PCDHA2', 'ARID1A']",PPIA
+Sjogren syndrome,myoepithelial cell,"['SPON2', 'TMUB2', 'ATG16L1', 'MIF', 'DENND2D']",MIF
+Sjogren syndrome,myoepithelial cell,"['STRAP', 'JAK1', 'B3GAT3', 'CAPN10', 'M1AP']",JAK1
+Sjogren syndrome,myoepithelial cell,"['RECK', 'CST4', 'MAGEB4', 'FCGRT', 'LMO7']",FCGRT
+Sjogren syndrome,myoepithelial cell,"['SORCS3', 'PRR35', 'MIF', 'MYL2', 'TAF6L']",MIF
+Sjogren syndrome,myoepithelial cell,"['SAR1A', 'ALDH7A1', 'NCOR1', 'PROSER3', 'PPIA']",PPIA
+Sjogren syndrome,myoepithelial cell,"['AGTR2', 'CSTB', 'JAK1', 'AIP', 'ATP1B4']",JAK1
+Sjogren syndrome,myoepithelial cell,"['KCNMB4', 'HLA-B', 'CMIP', 'RUBCNL', 'MRPS14']",HLA-B
+Sjogren syndrome,myoepithelial cell,"['IL10RB', 'PLPP6', 'FAM50B', 'ERI1', 'FCGRT']",FCGRT
+Sjogren syndrome,myoepithelial cell,"['GBP5', 'EAF2', 'FKBP1A', 'THAP12', 'ZNF576']",FKBP1A
+Sjogren syndrome,myoepithelial cell,"['HLA-B', 'MT-ND4', 'TMTC3', 'RAB1C', 'UBR3']",HLA-B
+Sjogren syndrome,myoepithelial cell,"['DGCR8', 'ARHGAP12', 'KDM5D', 'SCGB3A2', 'FCGRT']",FCGRT
+Sjogren syndrome,myoepithelial cell,"['HEMGN', 'FKBP1A', 'HMGN3', 'SCYL2', 'CRB3']",FKBP1A
+Sjogren syndrome,myoepithelial cell,"['FARS2', 'TRIM24', 'E2F8', 'HUS1B', 'PPIA']",PPIA
+Sjogren syndrome,myoepithelial cell,"['JAK1', 'MEP1A', 'PISD', 'GUCY1B2', 'FZD3']",JAK1
+Sjogren syndrome,myoepithelial cell,"['COX14', 'ATP1A3', 'MIF', 'WDR97', 'TARS2']",MIF
+Sjogren syndrome,myoepithelial cell,"['CHST7', 'FKBP1A', 'C22orf46', 'HLA-DRB1', 'RAE1']",FKBP1A
+Sjogren syndrome,myoepithelial cell,"['EIF4G2', 'PPIA', 'STAC', 'HCRTR2', 'STK38L']",PPIA
+Sjogren syndrome,fibroblast,"['STAT1', 'MC1R', 'UPP1', 'PALMD', 'PRMT5']",STAT1
+Sjogren syndrome,fibroblast,"['NR3C1', 'FAM153CP', 'NUDT22', 'C1GALT1C1', 'ARL6IP6']",NR3C1
+Sjogren syndrome,fibroblast,"['BAZ2A', 'ZNF134', 'RAG1', 'CSF2RB', 'WDR59']",BAZ2A
+Sjogren syndrome,fibroblast,"['FKBP1A', 'PTPN3', 'NDUFB11', 'KLHL38', 'FFAR3']",FKBP1A
+Sjogren syndrome,fibroblast,"['LDOC1', 'PDIA4', 'SYNE4', 'SREBF1', 'SMARCC2']",SMARCC2
+Sjogren syndrome,fibroblast,"['JAK1', 'ZNF835', 'PLEKHG6', 'TCF3', 'ANKRD28']",JAK1
+Sjogren syndrome,fibroblast,"['ADAT3', 'SCG2', 'ACY3', 'SERTAD4', 'HLA-B']",HLA-B
+Sjogren syndrome,fibroblast,"['GSTA4', 'PPIA', 'UQCR10', 'MYLK', 'EEF1A1P5']",PPIA
+Sjogren syndrome,fibroblast,"['DDX6', 'TYW1', 'GNAL', 'PLCG1', 'XAGE3']",DDX6
+Sjogren syndrome,fibroblast,"['NR2C2', 'FADS3', 'LGALS8', 'IFNAR1', 'XIRP2']",IFNAR1
+Sjogren syndrome,fibroblast,"['ZNF250', 'IFT172', 'HMBS', 'FMR1', 'RCN1']",RCN1
+Sjogren syndrome,fibroblast,"['GTF2I', 'USP25', 'SLC43A2', 'CDK2AP1', 'GTPBP3']",GTF2I
+Sjogren syndrome,fibroblast,"['GIMAP5', 'NUTF2', 'VWA5A', 'BCL2L14', 'HLA-DRA']",HLA-DRA
+Sjogren syndrome,fibroblast,"['SGCE', 'ICE2', 'RCN1', 'CIB4', 'TKT']",RCN1
+Sjogren syndrome,fibroblast,"['ANXA13', 'DNPH1', 'THAP4', 'MAN2A1', 'BAZ2A']",BAZ2A
+Sjogren syndrome,fibroblast,"['ZNF695', 'MUC6', 'TNK2', 'SNTG2', 'IFNAR1']",IFNAR1
+Sjogren syndrome,fibroblast,"['MYH15', 'PPIA', 'VMA21', 'NEK11', 'NTAN1']",PPIA
+Sjogren syndrome,fibroblast,"['DRP2', 'ATG16L2', 'GTF2I', 'OR5H1', 'TEX47']",GTF2I
+Sjogren syndrome,fibroblast,"['THBS2', 'COPG2', 'STAT1', 'SPDEF', 'PIGG']",STAT1
+Sjogren syndrome,fibroblast,"['JAK1', 'TET1', 'ZNF689', 'TASOR', 'UTP11']",JAK1

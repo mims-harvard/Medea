@@ -1,0 +1,64 @@
+gene a,gene b,cell line,interaction
+RNF168,NBN,MCF7,synthetic lethality
+MRE11,RAD54L,MCF7,synthetic lethality
+FANCD2,LIG1,MCF7,synthetic lethality
+ERCC2,EIF1AX,MCF7,synthetic lethality
+RUNX1,GNAS,MCF7,synthetic lethality
+STK11,PARP4,MCF7,synthetic lethality
+TOP3B,MYC,MCF7,synthetic lethality
+TET2,DGKZ,MCF7,synthetic lethality
+GNAQ,HDAC2,MCF7,synthetic lethality
+DCC,PARP9,MCF7,synthetic lethality
+TET2,HDAC2,MCF7,synthetic lethality
+HSP90AA1,GNAS,MCF7,synthetic lethality
+NRAS,MLH1,MCF7,synthetic lethality
+SMO,BRIP1,MCF7,synthetic lethality
+TOP1,ERCC3,MCF7,synthetic lethality
+AKT1,GNAS,MCF7,synthetic lethality
+UBE2I,MAP2K1,MCF7,synthetic lethality
+PRMT3,FANCM,MCF7,synthetic lethality
+TDP2,FANCM,MCF7,synthetic lethality
+MRE11,ERCC3,MCF7,synthetic lethality
+XRCC5,EIF1AX,MCF7,synthetic lethality
+RNF168,TP53,MCF7,non-sl
+LIG3,NBN,MCF7,non-sl
+APEX1,MRE11,MCF7,non-sl
+RAD54L,RAD50,MCF7,non-sl
+VRK1,FANCD2,MCF7,non-sl
+LIG1,SMAD4,MCF7,non-sl
+ERCC2,SMAD4,MCF7,non-sl
+ATM,EIF1AX,MCF7,non-sl
+WEE1,RUNX1,MCF7,non-sl
+DUT,GNAS,MCF7,non-sl
+POLK,STK11,MCF7,non-sl
+PARP4,RAD17,MCF7,non-sl
+TOP3B,RAD54B,MCF7,non-sl
+POLM,MYC,MCF7,non-sl
+HRAS,TET2,MCF7,non-sl
+DGKZ,RAD50,MCF7,non-sl
+EED,GNAQ,MCF7,non-sl
+HDAC2,TP53,MCF7,non-sl
+POLL,DCC,MCF7,non-sl
+PARP9,RAD50,MCF7,non-sl
+HSP90AA1,TET2,MCF7,non-sl
+HDAC2,PTEN,MCF7,non-sl
+HSP90AA1,RAD50,MCF7,non-sl
+DNA2,GNAS,MCF7,non-sl
+NRAS,PTEN,MCF7,non-sl
+WRN,MLH1,MCF7,non-sl
+SMO,PTEN,MCF7,non-sl
+TOP2A,BRIP1,MCF7,non-sl
+TOP1,ATM,MCF7,non-sl
+ERCC3,MAP2K1,MCF7,non-sl
+AKT1,RB1,MCF7,non-sl
+DNMT1,GNAS,MCF7,non-sl
+UBE2I,RUNX1,MCF7,non-sl
+CECR2,MAP2K1,MCF7,non-sl
+PRMT3,RAD50,MCF7,non-sl
+APEX1,FANCM,MCF7,non-sl
+TDP2,RAD50,MCF7,non-sl
+APEX2,FANCM,MCF7,non-sl
+APEX2,MRE11,MCF7,non-sl
+ERCC3,FBXW7,MCF7,non-sl
+XRCC5,TP53,MCF7,non-sl
+HRAS,EIF1AX,MCF7,non-sl

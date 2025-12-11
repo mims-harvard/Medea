@@ -1,0 +1,201 @@
+disease,celltype,candidate_genes,y
+type 1 diabetes mellitus,pancreatic epsilon cell,"['CYTIP', 'ADCY2', 'DNAH10OS', 'XKR4', 'NDUFA3']",NDUFA3
+type 1 diabetes mellitus,pancreatic epsilon cell,"['RASGRF2-AS1', 'RAB3IP', 'NDUFB2', 'LINC02024', 'POLR2G']",NDUFB2
+type 1 diabetes mellitus,pancreatic epsilon cell,"['PIP5KL1', 'ZCCHC24', 'AGAP4', 'RPS26', 'PANK3']",RPS26
+type 1 diabetes mellitus,pancreatic epsilon cell,"['INS', 'LAX1', 'GATAD2B', 'GABARAPL1', 'IPO7']",INS
+type 1 diabetes mellitus,pancreatic epsilon cell,"['CSKMT', 'PAK5', 'MT-ND1', 'KCNS1', 'DNAJB13']",MT-ND1
+type 1 diabetes mellitus,pancreatic epsilon cell,"['C4orf36', 'NDUFA1', 'SPON2', 'PARM1', 'MINCR']",NDUFA1
+type 1 diabetes mellitus,pancreatic epsilon cell,"['DNAJC27-AS1', 'NDUFS7', 'ALG6', 'ALDH1L1-AS1', 'TP53TG3D']",NDUFS7
+type 1 diabetes mellitus,pancreatic epsilon cell,"['AWAT2', 'PLXNC1', 'AKIP1', 'LTBP3', 'NDUFB1']",NDUFB1
+type 1 diabetes mellitus,pancreatic epsilon cell,"['COMMD6', 'LINC01180', 'SCUBE1', 'APBB3', 'FOXP4-AS1']",COMMD6
+type 1 diabetes mellitus,pancreatic epsilon cell,"['TMEM258', 'LINC02731', 'TMEM225B', 'MYO5C', 'CASC8']",TMEM258
+type 1 diabetes mellitus,pancreatic epsilon cell,"['NDUFA11', 'NDFIP1', 'DPEP1', 'LAP3', 'TRMU']",NDUFA11
+type 1 diabetes mellitus,pancreatic epsilon cell,"['SOX5', 'SLC26A2', 'IL11RA', 'CCDC62', 'NDUFA13']",NDUFA13
+type 1 diabetes mellitus,pancreatic epsilon cell,"['INS', 'KLHDC8A', 'SLC25A22', 'NLRP12', 'ZBTB43']",INS
+type 1 diabetes mellitus,pancreatic epsilon cell,"['EMC10', 'MT-ND1', 'BMI1', 'GOLGA6L9', 'SPATA5L1']",MT-ND1
+type 1 diabetes mellitus,pancreatic epsilon cell,"['NDUFB2', 'MAP3K2-DT', 'NTRK2', 'PRSS21', 'LINC02322']",NDUFB2
+type 1 diabetes mellitus,pancreatic epsilon cell,"['ETV7-AS1', 'KIF20B', 'LINC00239', 'NDUFA11', 'ASPHD1']",NDUFA11
+type 1 diabetes mellitus,pancreatic epsilon cell,"['NDUFA3', 'PCMTD1', 'RRS1', 'PCDH20', 'C6orf226']",NDUFA3
+type 1 diabetes mellitus,pancreatic epsilon cell,"['TMPRSS11D', 'PDE8B', 'EXOC1', 'CSTB', 'NDUFS7']",NDUFS7
+type 1 diabetes mellitus,pancreatic epsilon cell,"['PYDC2', 'PTDSS1', 'NDUFA1', 'HMGXB4', 'TACR1']",NDUFA1
+type 1 diabetes mellitus,pancreatic epsilon cell,"['MMRN1', 'C1QL4', 'CASC23', 'RPS26', 'KTN1-AS1']",RPS26
+type 1 diabetes mellitus,pancreatic d cell,"['PSMD7', 'NFATC1', 'ELMO3', 'CLNS1A', 'H1-4']",PSMD7
+type 1 diabetes mellitus,pancreatic d cell,"['SPTAN1', 'UBE2G1', 'LINC00461', 'BAX', 'ZNF532']",UBE2G1
+type 1 diabetes mellitus,pancreatic d cell,"['INMT', 'PKMYT1', 'SEMA3C', 'BLTP1', 'PUS10']",BLTP1
+type 1 diabetes mellitus,pancreatic d cell,"['TLL2', 'LINC02752', 'LRP5', 'NDUFC1', 'SLITRK1']",NDUFC1
+type 1 diabetes mellitus,pancreatic d cell,"['MCHR1', 'PPP1R9A', 'PTPN11', 'CREB3', 'BGLAP']",PTPN11
+type 1 diabetes mellitus,pancreatic d cell,"['ENTHD1', 'FKBP1A', 'BGLAP', 'KLHDC10', 'GAST']",FKBP1A
+type 1 diabetes mellitus,pancreatic d cell,"['F8A3', 'NDUFAF3', 'ATF7IP2', 'UBD', 'ZNF569']",NDUFAF3
+type 1 diabetes mellitus,pancreatic d cell,"['MBNL2', 'MUS81', 'PRKACG', 'HLA-A', 'C9orf40']",HLA-A
+type 1 diabetes mellitus,pancreatic d cell,"['CACNA1D', 'SPRY2', 'MEFV', 'OPN3', 'TCF4-AS1']",CACNA1D
+type 1 diabetes mellitus,pancreatic d cell,"['NDUFS5', 'TTC7A', 'THOC5', 'BLOC1S6', 'LINC01563']",NDUFS5
+type 1 diabetes mellitus,pancreatic d cell,"['PWRN2', 'NDUFS4', 'SPRING1', 'LINC02801', 'UGT2B10']",NDUFS4
+type 1 diabetes mellitus,pancreatic d cell,"['NDUFB2', 'IQGAP1', 'PDXK', 'COX7A1', 'MYT1']",NDUFB2
+type 1 diabetes mellitus,pancreatic d cell,"['EGLN2', 'ARAP1-AS1', 'SPC24', 'AMZ2', 'PRRG4']",AMZ2
+type 1 diabetes mellitus,pancreatic d cell,"['VPS72', 'APMAP', 'HCFC1', 'CUL4B', 'ASCL2']",ASCL2
+type 1 diabetes mellitus,pancreatic d cell,"['TOGARAM2', 'GRB14', 'TMEM39A', 'ZNF337', 'MAL2']",MAL2
+type 1 diabetes mellitus,pancreatic d cell,"['DEXI', 'DRC7', 'OAZ3', 'BTG3', 'ASF1A']",DEXI
+type 1 diabetes mellitus,pancreatic d cell,"['STON2', 'C2orf15', 'LINC01526', 'LEMD1', 'LIMCH1']",LIMCH1
+type 1 diabetes mellitus,pancreatic d cell,"['IFT74', 'FYB2', 'PFDN6', 'IGFBP7', 'DDIT4L']",IGFBP7
+type 1 diabetes mellitus,pancreatic d cell,"['MMP8', 'RPS6', 'ITM2A', 'TARS3', 'CDKN2A']",CDKN2A
+type 1 diabetes mellitus,pancreatic d cell,"['MTCL1', 'LINC01975', 'IMPDH2', 'ADGRE5', 'FAM87A']",IMPDH2
+type 1 diabetes mellitus,pancreatic ductal cell,"['MRPL18', 'TNF', 'ROPN1', 'SDC4', 'EIF3H']",TNF
+type 1 diabetes mellitus,pancreatic ductal cell,"['IL6-AS1', 'LCE1E', 'OPCML', 'NDUFB5', 'SFSWAP']",NDUFB5
+type 1 diabetes mellitus,pancreatic ductal cell,"['LINC02585', 'TGFB2-AS1', 'OXCT2', 'FGGY', 'ACOT6']",FGGY
+type 1 diabetes mellitus,pancreatic ductal cell,"['TMEM91', 'FAM227B', 'MTFMT', 'SELENBP1', 'ATXN2']",ATXN2
+type 1 diabetes mellitus,pancreatic ductal cell,"['IGBP1-AS2', 'RNF216', 'CFAP61', 'LINC01553', 'AIFM2']",RNF216
+type 1 diabetes mellitus,pancreatic ductal cell,"['ZMYND15', 'ABHD3', 'RPGRIP1L', 'ACTR2', 'ABCG2']",RPGRIP1L
+type 1 diabetes mellitus,pancreatic ductal cell,"['TRIB2', 'SLC25A45', 'IDI1', 'CDK6-AS1', 'AHSA1']",TRIB2
+type 1 diabetes mellitus,pancreatic ductal cell,"['CLIC1', 'CGN', 'MYOSLID', 'NIT1', 'WDR26']",CLIC1
+type 1 diabetes mellitus,pancreatic ductal cell,"['LIMCH1', 'PSMF1', 'VPS13B-DT', 'LINC02525', 'GUCY1B1']",LIMCH1
+type 1 diabetes mellitus,pancreatic ductal cell,"['MT-ND4', 'TPRG1-AS1', 'UBXN7-AS1', 'HMBOX1', 'TMBIM6']",MT-ND4
+type 1 diabetes mellitus,pancreatic ductal cell,"['MRM3', 'INSR', 'FCHSD2', 'EVPL', 'SRARP']",INSR
+type 1 diabetes mellitus,pancreatic ductal cell,"['SLC26A8', 'SDHD', 'C13orf46', 'PCDHGB2', 'MAGI3']",MAGI3
+type 1 diabetes mellitus,pancreatic ductal cell,"['GMPPA', 'TAP1', 'UGT2B15', 'MYCBPAP', 'NGDN']",TAP1
+type 1 diabetes mellitus,pancreatic ductal cell,"['INTS4', 'CYP2C18', 'ANKRD34C-AS1', 'BNC2', 'SMIM20']",SMIM20
+type 1 diabetes mellitus,pancreatic ductal cell,"['HNRNPH3', 'GRPEL1', 'PPP1R15A', 'HLA-DMB', 'CHMP7']",HLA-DMB
+type 1 diabetes mellitus,pancreatic ductal cell,"['PSG8', 'C1QBP', 'RAX2', 'ZNF329', 'PSMD7']",PSMD7
+type 1 diabetes mellitus,pancreatic ductal cell,"['AGO3', 'BCAR3-AS1', 'ADGRG4', 'MINAR1', 'LINC02433']",AGO3
+type 1 diabetes mellitus,pancreatic ductal cell,"['GUCA1C', 'SYBU', 'UCHL3', 'TMEM170A', 'WDFY3']",UCHL3
+type 1 diabetes mellitus,pancreatic ductal cell,"['MRPL4', 'CARMIL1', 'PCK2', 'PIGT', 'CLDN25']",CARMIL1
+type 1 diabetes mellitus,pancreatic ductal cell,"['GSN', 'SMCR2', 'ZNF146', 'ATF4', 'CC2D1B']",GSN
+type 1 diabetes mellitus,endothelial cell,"['LINC01063', 'PIGF', 'USP16', 'NDUFA13', 'MBD4']",NDUFA13
+type 1 diabetes mellitus,endothelial cell,"['H4C3', 'MAGI1-AS1', 'PIEZO2', 'CNIH3-AS1', 'RPL27']",H4C3
+type 1 diabetes mellitus,endothelial cell,"['OR2L2', 'ANKRD45', 'NDUFA6', 'OAS1', 'OLR1']",NDUFA6
+type 1 diabetes mellitus,endothelial cell,"['EPHA2', 'MT-ND4L', 'LHFPL6', 'PLEKHB1', 'PCDH10']",MT-ND4L
+type 1 diabetes mellitus,endothelial cell,"['BRD2', 'ARL14EP', 'DNAH5', 'TTC9B', 'TTC6']",BRD2
+type 1 diabetes mellitus,endothelial cell,"['CFI', 'KDR', 'PRNT', 'NUP133', 'RPL35']",KDR
+type 1 diabetes mellitus,endothelial cell,"['APP-DT', 'EDNRB', 'GIMAP7', 'TTF1', 'CLHC1']",EDNRB
+type 1 diabetes mellitus,endothelial cell,"['ATXN7L3B', 'FOXA1', 'GJB7', 'SH3GL2', 'XRCC5']",ATXN7L3B
+type 1 diabetes mellitus,endothelial cell,"['SASH1', 'DIPK1B', 'ARHGAP26', 'NUPR1', 'KLHDC8B']",NUPR1
+type 1 diabetes mellitus,endothelial cell,"['ZNF330', 'DUSP4', 'DNAH12', 'ADPRS', 'MTCH1']",MTCH1
+type 1 diabetes mellitus,endothelial cell,"['KISS1', 'BMT2', 'CCDC9B', 'NDUFS5', 'SPC24']",NDUFS5
+type 1 diabetes mellitus,endothelial cell,"['ZNF433', 'C4orf46', 'NDUFC1', 'HECW2', 'C5']",NDUFC1
+type 1 diabetes mellitus,endothelial cell,"['HPX', 'CDK16', 'KLF3', 'TXNRD2', 'PYROXD1']",KLF3
+type 1 diabetes mellitus,endothelial cell,"['NADK', 'ASAP1', 'BHLHA15', 'TTLL1-AS1', 'RPL17']",ASAP1
+type 1 diabetes mellitus,endothelial cell,"['CBFA2T2', 'JAK1', 'ARHGEF2-AS2', 'SCAMP1', 'LEKR1']",JAK1
+type 1 diabetes mellitus,endothelial cell,"['CHMP7', 'OR1N2', 'CTBP2', 'ZNF701', 'SLC24A4']",CTBP2
+type 1 diabetes mellitus,endothelial cell,"['MRPL37', 'SPOCD1', 'GNG7', 'NDUFB2', 'S100A5']",NDUFB2
+type 1 diabetes mellitus,endothelial cell,"['CNPY3', 'PRKACA', 'CLEC14A', 'PCDHAC2', 'CD44']",CD44
+type 1 diabetes mellitus,endothelial cell,"['RAB42', 'GPKOW', 'NDUFC2', 'LINC00681', 'DRAP1']",NDUFC2
+type 1 diabetes mellitus,endothelial cell,"['LINC02361', 'EVA1C', 'SMPDL3B', 'DDX27', 'KPNA2']",KPNA2
+type 1 diabetes mellitus,unknown,"['SPINK5', 'LINC01492', 'HSPB1', 'PTEN', 'DNTTIP2']",PTEN
+type 1 diabetes mellitus,unknown,"['NID2', 'IGFBP7', 'ITLN2', 'SLC11A2', 'AGPAT4']",IGFBP7
+type 1 diabetes mellitus,unknown,"['FUT8', 'MT1F', 'COBL', 'CSTF3', 'LAMA1']",COBL
+type 1 diabetes mellitus,unknown,"['MAP3K2-DT', 'SOX4', 'GPRACR', 'SNRPN', 'FAM219A']",SOX4
+type 1 diabetes mellitus,unknown,"['CTXND1', 'NUP93-DT', 'DIRAS2', 'TTC39C-AS1', 'B4GALT3']",DIRAS2
+type 1 diabetes mellitus,unknown,"['MYO10', 'TMTC2', 'UBL3', 'LINC00324', 'MT-ND5']",MT-ND5
+type 1 diabetes mellitus,unknown,"['INS', 'PSD2', 'LINC01352', 'CIART', 'GIHCG']",INS
+type 1 diabetes mellitus,unknown,"['LAMTOR5', 'DGKH', 'SPINK4', 'SPIRE1', 'UBE2N']",SPIRE1
+type 1 diabetes mellitus,unknown,"['LINC02447', 'KCNK2', 'SP110', 'TNIK', 'UBLCP1']",UBLCP1
+type 1 diabetes mellitus,unknown,"['KLHL36', 'EMC1-AS1', 'GJB2', 'CLEC2B', 'CLEC3A']",CLEC2B
+type 1 diabetes mellitus,unknown,"['NDUFAB1', 'THSD4', 'NUP93', 'ADCY9', 'H3-3A']",NDUFAB1
+type 1 diabetes mellitus,unknown,"['M6PR', 'SLF2', 'ZNF474', 'PBXIP1', 'LINC01345']",M6PR
+type 1 diabetes mellitus,unknown,"['HERC5', 'ATP10B', 'KRTAP5-1', 'TEKT5', 'PITPNA']",ATP10B
+type 1 diabetes mellitus,unknown,"['HIPK1', 'C2CD2', 'TMEM37', 'TRMT2B', 'MGAT5']",HIPK1
+type 1 diabetes mellitus,unknown,"['GBP2', 'ANP32A', 'GMFG', 'RALBP1', 'FOXN3']",FOXN3
+type 1 diabetes mellitus,unknown,"['ACYP2', 'CYB5A', 'SPRR2B', 'CLIC1', 'ATP13A5-AS1']",CLIC1
+type 1 diabetes mellitus,unknown,"['PF4V1', 'SRRM2-AS1', 'MT-ND6', 'HPR', 'NUP205']",MT-ND6
+type 1 diabetes mellitus,unknown,"['GLIS2-AS1', 'ATAD3C', 'YIPF6', 'UCHL3', 'TIMM9']",UCHL3
+type 1 diabetes mellitus,unknown,"['TRAK1', 'LINC01344', 'NDUFA3', 'RAP1B', 'CDIPT']",NDUFA3
+type 1 diabetes mellitus,unknown,"['LRRC3B', 'PAX2', 'MIR34AHG', 'MSANTD1', 'PDGFRB']",PDGFRB
+type 1 diabetes mellitus,pancreatic a cell,"['LINC00970', 'POT1-AS1', 'SCGN', 'POMK', 'PTK7']",SCGN
+type 1 diabetes mellitus,pancreatic a cell,"['C4orf48', 'CYBRD1', 'FOLR1', 'ACSM2B', 'MTCH1']",MTCH1
+type 1 diabetes mellitus,pancreatic a cell,"['FSIP1', 'ZNF841', 'CCDC127', 'HBP1', 'ACP1']",HBP1
+type 1 diabetes mellitus,pancreatic a cell,"['C1orf105', 'C6orf136', 'SNX8', 'PCDHB8', 'EXPH5']",C6orf136
+type 1 diabetes mellitus,pancreatic a cell,"['GARRE1', 'GP2', 'SCAMP2', 'RAB11FIP3', 'OPTN']",GP2
+type 1 diabetes mellitus,pancreatic a cell,"['NPIPA1', 'DPPA5', 'IFIT3', 'ATXN7L3B', 'DHRS4L2']",ATXN7L3B
+type 1 diabetes mellitus,pancreatic a cell,"['PAH', 'ANXA5', 'CDK17', 'PRSS12', 'SEC61G']",ANXA5
+type 1 diabetes mellitus,pancreatic a cell,"['MRPL40', 'ZNF843', 'GCFC2', 'ARHGEF7-AS2', 'MT-ND3']",MT-ND3
+type 1 diabetes mellitus,pancreatic a cell,"['PCED1B', 'HMX2', 'ASB1', 'PM20D2', 'SLC5A1']",SLC5A1
+type 1 diabetes mellitus,pancreatic a cell,"['DNASE1L1', 'C2-AS1', 'KPNA7', 'EMSY', 'ESCO2']",EMSY
+type 1 diabetes mellitus,pancreatic a cell,"['SHH', 'ATF6B', 'OCEL1', 'ZNHIT2', 'MIAT']",ATF6B
+type 1 diabetes mellitus,pancreatic a cell,"['RNF216', 'UNC93B1', 'C16orf87', 'FADD', 'GOLGA8M_ENSG00000261480']",RNF216
+type 1 diabetes mellitus,pancreatic a cell,"['RAB26', 'SETD2', 'GPR141', 'PLA2G4A', 'BLTP1']",BLTP1
+type 1 diabetes mellitus,pancreatic a cell,"['KLF5', 'TMEM167A', 'KANSL1', 'SSB', 'FRY']",KANSL1
+type 1 diabetes mellitus,pancreatic a cell,"['OPN3', 'ZDHHC11', 'ZBTB20-AS5', 'DPP4', 'AIFM2']",DPP4
+type 1 diabetes mellitus,pancreatic a cell,"['AGK-DT', 'INS', 'CMIP', 'MAP1A', 'LINC01374']",INS
+type 1 diabetes mellitus,pancreatic a cell,"['VEZT', 'SND1', 'TTC12', 'GPATCH3', 'HSPA5']",SND1
+type 1 diabetes mellitus,pancreatic a cell,"['FBXO42', 'MARK2', 'ASAP1', 'MAB21L2', 'MYSM1']",ASAP1
+type 1 diabetes mellitus,pancreatic a cell,"['C22orf31', 'LINC01780', 'MRPL19', 'HECTD4', 'ZNF391']",HECTD4
+type 1 diabetes mellitus,pancreatic a cell,"['PYY', 'FAM66B', 'GGN', 'CNOT8', 'SLC44A4']",SLC44A4
+type 1 diabetes mellitus,pancreatic stellate cell,"['KIF9', 'NDUFB1', 'TRMU', 'PTPN21', 'SDK2']",NDUFB1
+type 1 diabetes mellitus,pancreatic stellate cell,"['ZNF875', 'TAL2', 'INSR', 'PDLIM5', 'TNK2-AS1']",INSR
+type 1 diabetes mellitus,pancreatic stellate cell,"['MT-ND4', 'RELL2', 'HNF4A', 'REPIN1', 'ROS1']",MT-ND4
+type 1 diabetes mellitus,pancreatic stellate cell,"['CTSB', 'FGF11', 'IFT122', 'DCHS2', 'NDUFB10']",NDUFB10
+type 1 diabetes mellitus,pancreatic stellate cell,"['DUOX2', 'SLC1A5', 'HBD', 'YTHDF1', 'GPR84']",SLC1A5
+type 1 diabetes mellitus,pancreatic stellate cell,"['NUP188', 'UNC5B', 'MT-ND3', 'LAPTM4A-DT', 'STAT3']",MT-ND3
+type 1 diabetes mellitus,pancreatic stellate cell,"['LEMD1-DT', 'PHKA2-AS1', 'PTRHD1', 'FAM83A-AS1', 'ZNF611']",PTRHD1
+type 1 diabetes mellitus,pancreatic stellate cell,"['THAP9', 'NDUFS6', 'ACP5', 'LGMN', 'LINC01611']",NDUFS6
+type 1 diabetes mellitus,pancreatic stellate cell,"['LINC02324', 'AP4S1', 'IQCB1', 'KCNJ8', 'SGK3']",KCNJ8
+type 1 diabetes mellitus,pancreatic stellate cell,"['IL1R1', 'ZNF519', 'UPRT', 'STK17B', 'KCNH5']",IL1R1
+type 1 diabetes mellitus,pancreatic stellate cell,"['HECTD3', 'GPR180', 'CYTL1', 'LINC00678', 'CTRB1']",CTRB1
+type 1 diabetes mellitus,pancreatic stellate cell,"['NEDD1', 'NF1', 'ZNF350-AS1', 'CACHD1', 'TAPBP']",TAPBP
+type 1 diabetes mellitus,pancreatic stellate cell,"['PLEK2', 'ASAP1', 'HNRNPA0', 'ANXA10', 'IGSF21']",ASAP1
+type 1 diabetes mellitus,pancreatic stellate cell,"['PSG4', 'TEP1', 'INS', 'PLAC8', 'MMP16']",INS
+type 1 diabetes mellitus,pancreatic stellate cell,"['IMPDH2', 'GRID2IP', 'ZNF677', 'COMMD4', 'CARD18']",IMPDH2
+type 1 diabetes mellitus,pancreatic stellate cell,"['RELL2', 'LINC01767', 'EBF1', 'MYO18B', 'ARFGAP3']",EBF1
+type 1 diabetes mellitus,pancreatic stellate cell,"['SND1', 'RORA-AS1', 'VPS18', 'LRRC66', 'GFRA3']",SND1
+type 1 diabetes mellitus,pancreatic stellate cell,"['ATP13A1', 'MIR3663HG', 'PRND', 'MT-ND5', 'PCDH12']",MT-ND5
+type 1 diabetes mellitus,pancreatic stellate cell,"['PTGS1', 'PHYHD1', 'IFITM2', 'SCARNA9', 'LINC01208']",PTGS1
+type 1 diabetes mellitus,pancreatic stellate cell,"['KANK4', 'RERE-AS1', 'NDUFA13', 'VSIG10', 'NTSR2']",NDUFA13
+type 1 diabetes mellitus,pancreatic acinar cell,"['CUL9', 'IPO4', 'GEMIN6', 'CMTM7', 'ZNF652']",ZNF652
+type 1 diabetes mellitus,pancreatic acinar cell,"['FFAR4', 'SGF29', 'WARS2-IT1', 'RGCC', 'STBD1']",SGF29
+type 1 diabetes mellitus,pancreatic acinar cell,"['MAP2', 'STARD9', 'SMIM19', 'GATD3', 'MOSPD1']",GATD3
+type 1 diabetes mellitus,pancreatic acinar cell,"['FST', 'H3-3A', 'NDUFS3', 'FAM53A', 'TSFM']",NDUFS3
+type 1 diabetes mellitus,pancreatic acinar cell,"['TRGC1', 'STRA8', 'R3HCC1L', 'TRIM7-AS1', 'COBL']",COBL
+type 1 diabetes mellitus,pancreatic acinar cell,"['FBXW9', 'TBC1D8', 'NDUFC1', 'LIPC-AS1', 'TAF5L']",NDUFC1
+type 1 diabetes mellitus,pancreatic acinar cell,"['KCNK16', 'PGAP3', 'OR10K1', 'LINC02172', 'VWA8']",PGAP3
+type 1 diabetes mellitus,pancreatic acinar cell,"['EIF3C', 'KCTD6', 'CHODL', 'YTHDF3-DT', 'SLC8A1-AS1']",EIF3C
+type 1 diabetes mellitus,pancreatic acinar cell,"['H2AC15', 'ZNF678', 'SCRN1', 'TLE3', 'SPRYD3']",SPRYD3
+type 1 diabetes mellitus,pancreatic acinar cell,"['ERICH6', 'BCL2L15', 'SORBS2', 'PPM1F-AS1', 'HMGCL']",BCL2L15
+type 1 diabetes mellitus,pancreatic acinar cell,"['SLC16A4', 'LINC01991', 'CYLD-AS1', 'SLC2A4', 'RSPH3']",RSPH3
+type 1 diabetes mellitus,pancreatic acinar cell,"['RAF1', 'PPFIA2', 'ZNF25', 'RLIM', 'SCGB1B2P']",RAF1
+type 1 diabetes mellitus,pancreatic acinar cell,"['CCNO', 'NVL', 'SPIRE1', 'FKBP1B', 'FBXO46']",SPIRE1
+type 1 diabetes mellitus,pancreatic acinar cell,"['NDUFS5', 'KIAA2012-AS1', 'RBM15', 'NMT2', 'C1QTNF9']",NDUFS5
+type 1 diabetes mellitus,pancreatic acinar cell,"['LIN54', 'SUOX', 'RELL2', 'BBS9', 'MTHFD2']",SUOX
+type 1 diabetes mellitus,pancreatic acinar cell,"['RASAL2-AS1', 'DMWD', 'FKRP', 'MOCS2', 'TRIM17']",FKRP
+type 1 diabetes mellitus,pancreatic acinar cell,"['SLC20A2', 'SDCBP2-AS1', 'DYNLT1', 'LEMD2', 'ALG5']",LEMD2
+type 1 diabetes mellitus,pancreatic acinar cell,"['ARHGEF6', 'ETV3', 'CRHR2', 'TEX26-AS1', 'NDUFB6']",NDUFB6
+type 1 diabetes mellitus,pancreatic acinar cell,"['LINC02730', 'C3orf20', 'LINC01435', 'ORMDL3', 'TMEM223']",ORMDL3
+type 1 diabetes mellitus,pancreatic acinar cell,"['PCMTD2', 'LYST', 'CTBP1', 'SPATA1', 'TATDN3']",TATDN3
+type 1 diabetes mellitus,pp cell,"['CTRB1', 'SPATA4', 'CCDC198', 'TRMT9B', 'METRNL']",CTRB1
+type 1 diabetes mellitus,pp cell,"['NDUFA9', 'IRX2', 'FAM78B', 'GBP4', 'PCDHB6']",NDUFA9
+type 1 diabetes mellitus,pp cell,"['ALG2', 'C1orf122', 'SLC22A31', 'NUP54', 'MAP1LC3B2']",C1orf122
+type 1 diabetes mellitus,pp cell,"['COX5B', 'SPICE1', 'RBPJ', 'CLDN4', 'LINC02872']",RBPJ
+type 1 diabetes mellitus,pp cell,"['HECTD4', 'MYBPC3', 'STT3B', 'KIRREL2', 'BRIP1']",HECTD4
+type 1 diabetes mellitus,pp cell,"['LINC01641', 'MAPK1', 'CNTF', 'TBC1D8', 'LINC01415']",MAPK1
+type 1 diabetes mellitus,pp cell,"['CCDC90B', 'HMGN4', 'AKAP7', 'BRAF', 'THORLNC']",BRAF
+type 1 diabetes mellitus,pp cell,"['B3GALNT1', 'HIPK1', 'MVP', 'SNRPD2', 'LRRC8D-DT']",HIPK1
+type 1 diabetes mellitus,pp cell,"['IL6ST', 'SLC13A5', 'NISCH', 'TRAM1L1', 'EIF2B5-DT']",IL6ST
+type 1 diabetes mellitus,pp cell,"['LINC01714', 'IFITM5', 'KDM5A', 'SEPTIN2', 'IK']",SEPTIN2
+type 1 diabetes mellitus,pp cell,"['NDUFA13', 'CKAP4', 'TANGO2', 'OSR1', 'ABRAXAS2']",NDUFA13
+type 1 diabetes mellitus,pp cell,"['IARS2', 'DIXDC1', 'KDM2A', 'GALNT7', 'MT-ND3']",MT-ND3
+type 1 diabetes mellitus,pp cell,"['NDUFS1', 'PLEKHN1', 'FAM81A', 'DLX6-AS1', 'KCNJ6']",NDUFS1
+type 1 diabetes mellitus,pp cell,"['LINC00954', 'SLC25A5', 'JAK1', 'LINC01742', 'SEMA3G']",JAK1
+type 1 diabetes mellitus,pp cell,"['ENSA', 'PNMA3', 'RBM17', 'RNU6ATAC35P', 'ZSCAN20']",RBM17
+type 1 diabetes mellitus,pp cell,"['FICD', 'TAFA3', 'PLA2G12A', 'LYRM4', 'IL6R']",IL6R
+type 1 diabetes mellitus,pp cell,"['FAM72C', 'ALDH2', 'ESRRB', 'NSF', 'NAGPA']",ALDH2
+type 1 diabetes mellitus,pp cell,"['ZKSCAN2-DT', 'PDLIM4', 'GFPT1', 'LRRC28', 'TRIB3']",PDLIM4
+type 1 diabetes mellitus,pp cell,"['PPP1R14B', 'SPIB', 'NOTCH1', 'MAGEA10', 'FHIT']",PPP1R14B
+type 1 diabetes mellitus,pp cell,"['METTL15', 'NDUFA3', 'OR5H14', 'LINC01954', 'DOCK8']",NDUFA3
+type 1 diabetes mellitus,type b pancreatic cell,"['SULT1B1', 'TOMM40', 'OPRD1', 'BMT2', 'MLEC']",OPRD1
+type 1 diabetes mellitus,type b pancreatic cell,"['FAN1', 'C20orf173', 'EFNB1', 'ALDH2', 'MARCHF10']",ALDH2
+type 1 diabetes mellitus,type b pancreatic cell,"['TP53BP1', 'SLC12A2', 'H1-10', 'NDUFS8', 'DACT2']",NDUFS8
+type 1 diabetes mellitus,type b pancreatic cell,"['ARHGAP29', 'EPB41L5', 'ITGB3BP', 'TBC1D25', 'FBXW7']",ITGB3BP
+type 1 diabetes mellitus,type b pancreatic cell,"['SH3PXD2A', 'PABPC1L2B', 'MIEN1', 'BHLHE40', 'LINC01396']",MIEN1
+type 1 diabetes mellitus,type b pancreatic cell,"['CABP7', 'HMX1', 'NDRG3', 'LINC02101', 'SMTNL1']",CABP7
+type 1 diabetes mellitus,type b pancreatic cell,"['C6orf136', 'MEG3', 'PLEKHG4B', 'DCTN2', 'ZDHHC12']",C6orf136
+type 1 diabetes mellitus,type b pancreatic cell,"['FGF10', 'TTC29', 'SEL1L2', 'CCDC42', 'IGFBP7']",IGFBP7
+type 1 diabetes mellitus,type b pancreatic cell,"['KCNAB3', 'SEPTIN8', 'SLC7A10', 'BCL9L', 'ZMAT5']",ZMAT5
+type 1 diabetes mellitus,type b pancreatic cell,"['TYMS', 'TJP2', 'ARHGEF10L', 'PFKL', 'ITGAD']",PFKL
+type 1 diabetes mellitus,type b pancreatic cell,"['LINC02485', 'MORC1', 'GNAL', 'TENT4B', 'TAB1']",TENT4B
+type 1 diabetes mellitus,type b pancreatic cell,"['SRFBP1', 'FARP2', 'PFKFB4', 'PLA2G2F', 'TPRG1-AS1']",FARP2
+type 1 diabetes mellitus,type b pancreatic cell,"['MANEAL', 'EIF5', 'ODF3L1', 'PRDM10', 'CDR2L']",MANEAL
+type 1 diabetes mellitus,type b pancreatic cell,"['RPL22L1', 'TMEM51-AS1', 'AGER', 'LINC01882', 'MTCH1']",MTCH1
+type 1 diabetes mellitus,type b pancreatic cell,"['DBNDD2', 'MID1IP1', 'KLF3', 'DSG2', 'TOMM40L']",KLF3
+type 1 diabetes mellitus,type b pancreatic cell,"['KIF24', 'CEP295NL', 'SS18L2', 'FLVCR1', 'MYO1H']",FLVCR1
+type 1 diabetes mellitus,type b pancreatic cell,"['STARD8', 'RSPH3', 'DRG1', 'NHEG1', 'TNPO1']",RSPH3
+type 1 diabetes mellitus,type b pancreatic cell,"['GLIS3', 'RHOD', 'CCDC137', 'RNF32', 'ZNF408']",GLIS3
+type 1 diabetes mellitus,type b pancreatic cell,"['FAM50A', 'CDK19', 'TAS2R50', 'TAS2R10', 'ASCL2']",ASCL2
+type 1 diabetes mellitus,type b pancreatic cell,"['OGFRL1', 'ZNF618', 'RSPH10B2', 'LEMD2', 'TRIM50']",LEMD2

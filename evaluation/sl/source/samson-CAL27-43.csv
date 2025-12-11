@@ -1,0 +1,61 @@
+gene a,gene b,cell line,interaction
+PLK1,NPM1,CAL27,synthetic lethality
+PARP1,KIF11,CAL27,synthetic lethality
+XPA,POLE,CAL27,synthetic lethality
+TMEM173,MRE11,CAL27,synthetic lethality
+KIF11,KDM5C,CAL27,synthetic lethality
+SF3B1,PARP6,CAL27,synthetic lethality
+CDKN2B,TAF1,CAL27,synthetic lethality
+FANCD2,RAD1,CAL27,synthetic lethality
+CHEK2,TOP2A,CAL27,synthetic lethality
+UBE2I,BAP1,CAL27,synthetic lethality
+CHEK1,PARP6,CAL27,synthetic lethality
+DGKE,NF2,CAL27,synthetic lethality
+TDP2,BAP1,CAL27,synthetic lethality
+MRE11,SAE1,CAL27,synthetic lethality
+CHEK1,FANCD2,CAL27,synthetic lethality
+DUT,BRCA2,CAL27,synthetic lethality
+MYC,TOP2A,CAL27,synthetic lethality
+TOP1,TTK,CAL27,synthetic lethality
+CDC7,PARP1,CAL27,synthetic lethality
+MUTYH,KAT5,CAL27,synthetic lethality
+PLK1,RB1,CAL27,non-sl
+RAD54L,NPM1,CAL27,non-sl
+BLM,PARP1,CAL27,non-sl
+KIF11,MRE11,CAL27,non-sl
+XPA,SETD2,CAL27,non-sl
+POLE,KDM5C,CAL27,non-sl
+TMEM173,NOTCH1,CAL27,non-sl
+UHRF1,MRE11,CAL27,non-sl
+KIF11,SF3B1,CAL27,non-sl
+PARP16,KDM5C,CAL27,non-sl
+HDAC2,SF3B1,CAL27,non-sl
+PARP6,CDKN2A,CAL27,non-sl
+PARP3,CDKN2B,CAL27,non-sl
+TAF1,BRAF,CAL27,non-sl
+PRKACA,FANCD2,CAL27,non-sl
+RAD1,NF2,CAL27,non-sl
+GEN1,CHEK2,CAL27,non-sl
+TOP2A,MRE11,CAL27,non-sl
+UBE2I,GATA3,CAL27,non-sl
+POLQ,BAP1,CAL27,non-sl
+TP53BP1,CHEK1,CAL27,non-sl
+PARP6,CDKN2B,CAL27,non-sl
+DGKE,STK11,CAL27,non-sl
+EHMT2,NF2,CAL27,non-sl
+TDP2,CDKN2A,CAL27,non-sl
+CARM1,BAP1,CAL27,non-sl
+BTK,MRE11,CAL27,non-sl
+SAE1,MYC,CAL27,non-sl
+PIK3CA,CHEK1,CAL27,non-sl
+POLQ,FANCD2,CAL27,non-sl
+DUT,CDKN2A,CAL27,non-sl
+PARP3,BRCA2,CAL27,non-sl
+TTK,MYC,CAL27,non-sl
+TOP2A,NF1,CAL27,non-sl
+TOP1,RAD50,CAL27,non-sl
+TTK,NOTCH1,CAL27,non-sl
+CDC7,CDKN2A,CAL27,non-sl
+BRD4,PARP1,CAL27,non-sl
+CECR2,MUTYH,CAL27,non-sl
+KAT5,NF1,CAL27,non-sl

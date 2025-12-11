@@ -1,0 +1,22 @@
+# Include documentation
+include README.md
+include LICENSE
+
+# Include package data
+recursive-include medea/tool_space *.json
+recursive-include medea/agents *.py
+
+# Exclude evaluation and results from package
+recursive-exclude evaluation *
+recursive-exclude results *
+recursive-exclude plots *
+
+# Exclude development files
+exclude .env
+exclude .gitignore
+exclude *.log
+exclude agent.log
+
+# Exclude virtual environment
+prune medea/
+

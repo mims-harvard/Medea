@@ -1,0 +1,181 @@
+gene a,gene b,cell line,interaction
+UHRF1,POLE,A549,synthetic lethality
+BRD4,ATM,A549,synthetic lethality
+MGMT,AHR,A549,synthetic lethality
+APC,SIRT1,A549,synthetic lethality
+BRAF,GATA3,A549,synthetic lethality
+MYC,KIFC1,A549,synthetic lethality
+TOP1,BLM,A549,synthetic lethality
+BRCA2,PRMT5,A549,synthetic lethality
+PIK3CA,MPHOSPH8,A549,synthetic lethality
+GNAQ,TOP1,A549,synthetic lethality
+TMEM173,RAD17,A549,synthetic lethality
+BRAF,CDK7,A549,synthetic lethality
+MAP2K1,ERCC4,A549,synthetic lethality
+MAP2K1,EP300,A549,synthetic lethality
+DUT,VHL,A549,synthetic lethality
+PALB2,APEX1,A549,synthetic lethality
+FANCD2,EP300,A549,synthetic lethality
+RAD51,RB1,A549,synthetic lethality
+MRE11,MET,A549,synthetic lethality
+RAD50,TNKS,A549,synthetic lethality
+USP1,FANCM,A549,synthetic lethality
+NF2,MYC,A549,synthetic lethality
+KMT2D,TYMS,A549,synthetic lethality
+FBXW7,SETD7,A549,synthetic lethality
+GNAQ,RAD17,A549,synthetic lethality
+PIF1,MAP2K1,A549,synthetic lethality
+TDP2,RAD17,A549,synthetic lethality
+PIF1,KDM6A,A549,synthetic lethality
+PARP10,KDM6A,A549,synthetic lethality
+POLG,KDM5C,A549,synthetic lethality
+BRD9,MRE11,A549,synthetic lethality
+HDAC1,MYC,A549,synthetic lethality
+NF2,PARP14,A549,synthetic lethality
+CDK9,GNAS,A549,synthetic lethality
+TOP1,TYMS,A549,synthetic lethality
+HRAS,STK11,A549,synthetic lethality
+KAT5,CHEK2,A549,synthetic lethality
+PARG,KMT2D,A549,synthetic lethality
+RAD52,PARP1,A549,synthetic lethality
+ERCC2,RAD54B,A549,synthetic lethality
+AKT1,FBXW7,A549,synthetic lethality
+ATR,POLG,A549,synthetic lethality
+PRKDC,MSH6,A549,synthetic lethality
+FBXW7,VRK1,A549,synthetic lethality
+SRC,FAT1,A549,synthetic lethality
+BRD9,ERCC1,A549,synthetic lethality
+PALB2,TOP3B,A549,synthetic lethality
+MAP2K1,KDM6A,A549,synthetic lethality
+APC,KIF11,A549,synthetic lethality
+EGFR,KIF11,A549,synthetic lethality
+RAD50,REV3L,A549,synthetic lethality
+SRC,VHL,A549,synthetic lethality
+UBE2A,NF1,A549,synthetic lethality
+XRCC6,SF3B1,A549,synthetic lethality
+MAP2K1,PARP9,A549,synthetic lethality
+ATM,KDM6A,A549,synthetic lethality
+SMO,STK11,A549,synthetic lethality
+TMEM173,FAT1,A549,synthetic lethality
+POLB,RAD50,A549,synthetic lethality
+HSP90AA1,FBXW7,A549,synthetic lethality
+UHRF1,BRCA1,A549,non-sl
+EZH2,POLE,A549,non-sl
+BRD4,RAD17,A549,non-sl
+FOXK1,ATM,A549,non-sl
+WEE1,MGMT,A549,non-sl
+AHR,RAD54B,A549,non-sl
+HDAC6,APC,A549,non-sl
+SIRT1,SMAD4,A549,non-sl
+BRAF,MSH2,A549,non-sl
+LIG4,GATA3,A549,non-sl
+POLM,MYC,A549,non-sl
+KIFC1,SMAD4,A549,non-sl
+TOP1,ATM,A549,non-sl
+BLM,POLE,A549,non-sl
+HLTF,BRCA2,A549,non-sl
+PRMT5,CASP8,A549,non-sl
+BUB1B,PIK3CA,A549,non-sl
+MPHOSPH8,RAD54B,A549,non-sl
+EED,GNAQ,A549,non-sl
+TOP1,ATR,A549,non-sl
+TMEM173,TP53,A549,non-sl
+CASP8,RAD17,A549,non-sl
+BRAF,MRE11,A549,non-sl
+CDK7,POLE,A549,non-sl
+CECR2,MAP2K1,A549,non-sl
+ERCC4,RAD17,A549,non-sl
+CHD2,MAP2K1,A549,non-sl
+EP300,RAD50,A549,non-sl
+DUT,NBN,A549,non-sl
+HRAS,VHL,A549,non-sl
+WEE1,PALB2,A549,non-sl
+TOP3B,APEX1,A549,non-sl
+VRK1,FANCD2,A549,non-sl
+EP300,RAD54B,A549,non-sl
+RAD51,TET2,A549,non-sl
+XPA,RB1,A549,non-sl
+APEX1,MRE11,A549,non-sl
+MET,RAD54B,A549,non-sl
+WRN,RAD50,A549,non-sl
+TNKS,PTEN,A549,non-sl
+USP1,RAD50,A549,non-sl
+APEX1,FANCM,A549,non-sl
+TRIP12,NF2,A549,non-sl
+MYC,SF3B1,A549,non-sl
+KIF11,KMT2D,A549,non-sl
+TYMS,SF3B1,A549,non-sl
+WEE1,FBXW7,A549,non-sl
+SETD7,RAD50,A549,non-sl
+DNMT1,GNAQ,A549,non-sl
+CDC7,RAD17,A549,non-sl
+PIF1,RAD50,A549,non-sl
+MAP2K1,BRIP1,A549,non-sl
+TDP2,RAD50,A549,non-sl
+ERCC2,RAD17,A549,non-sl
+PIF1,TP53,A549,non-sl
+WRN,KDM6A,A549,non-sl
+PARP10,RAD17,A549,non-sl
+PRKDC,KDM6A,A549,non-sl
+POLG,RAD17,A549,non-sl
+POLM,KDM5C,A549,non-sl
+BRD9,TP53,A549,non-sl
+APEX2,MRE11,A549,non-sl
+HDAC1,SETD2,A549,non-sl
+PRKDC,MYC,A549,non-sl
+XPA,NF2,A549,non-sl
+PARP14,TP53,A549,non-sl
+CDK9,RAD17,A549,non-sl
+DUT,GNAS,A549,non-sl
+TOP1,BAP1,A549,non-sl
+TYMS,POLE,A549,non-sl
+HRAS,TOP1,A549,non-sl
+POLK,STK11,A549,non-sl
+KAT5,BRCA1,A549,non-sl
+CHEK2,NF1,A549,non-sl
+PARG,BRIP1,A549,non-sl
+WRN,KMT2D,A549,non-sl
+RAD52,RAD50,A549,non-sl
+PARP1,CDKN2A,A549,non-sl
+ERCC2,MAP2K1,A549,non-sl
+RAD1,RAD54B,A549,non-sl
+AKT1,RB1,A549,non-sl
+KRAS,FBXW7,A549,non-sl
+XPA,ATR,A549,non-sl
+POLG,PTEN,A549,non-sl
+PRKDC,BRCA2,A549,non-sl
+HLTF,MSH6,A549,non-sl
+LIG1,FBXW7,A549,non-sl
+VRK1,PTEN,A549,non-sl
+SRC,RAD50,A549,non-sl
+LIG3,FAT1,A549,non-sl
+BRD9,RAD50,A549,non-sl
+MAPK1,ERCC1,A549,non-sl
+LIG3,PALB2,A549,non-sl
+TOP3B,SMAD4,A549,non-sl
+RAD54L,MAP2K1,A549,non-sl
+HDAC2,KDM6A,A549,non-sl
+HLTF,APC,A549,non-sl
+KIF11,MGMT,A549,non-sl
+EGFR,ATM,A549,non-sl
+KIF11,MRE11,A549,non-sl
+FEN1,RAD50,A549,non-sl
+REV3L,POLE,A549,non-sl
+SRC,RAD17,A549,non-sl
+HSP90AA1,VHL,A549,non-sl
+UBE2A,TP53,A549,non-sl
+WRN,NF1,A549,non-sl
+XRCC6,SMARCA4,A549,non-sl
+EHMT2,SF3B1,A549,non-sl
+MAP2K1,ATM,A549,non-sl
+PARP9,RAD50,A549,non-sl
+FGFR3,ATM,A549,non-sl
+HDAC6,KDM6A,A549,non-sl
+SMO,PTEN,A549,non-sl
+TOP3B,STK11,A549,non-sl
+TMEM173,PTEN,A549,non-sl
+POLK,FAT1,A549,non-sl
+POLB,RAD17,A549,non-sl
+KAT5,RAD50,A549,non-sl
+HSP90AA1,RAD50,A549,non-sl
+LIG3,FBXW7,A549,non-sl
