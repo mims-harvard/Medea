@@ -10,6 +10,7 @@ test*
 agents/__pycache__
 action_space/__pycache__
 tool_space/__pycache__
+tool_space/prepare_txdata.py
 figures/*
 figures/
 sbatch_logs/
