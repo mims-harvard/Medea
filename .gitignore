@@ -24,6 +24,7 @@ targetID-semantic*
 test.script
 sample.json
 medea.script
+demo.py
 
 # temp file
 task.script
