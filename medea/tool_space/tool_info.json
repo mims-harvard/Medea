@@ -298,7 +298,7 @@
         "name": "compass_predict",
         "type": "tool",
         "description": "This tool leverages Immune-Compass, a research framework for concept feature extraction and Immune Checkpoint Inhibitor (ICI) response prediction, to analyze bulk transcriptomic data from a single patient. It provides insights into cell-type-level immune-related concepts that are highly correlated with ICI responsiveness. These high-level concepts include immune cell types, states, and oncogenic pathways in the tumor microenvironment, creating a detailed multidimensional landscape of the cancer-immunity interplay.",
-        "import_path": "from medea.tool_space.immune_compass import compass_predict",
+        "import_path": "from medea.tool_space.compass import compass_predict",
         "input_params": [
             {
                 "name": "df_tpm",

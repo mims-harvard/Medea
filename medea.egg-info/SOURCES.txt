@@ -31,7 +31,7 @@ medea/tool_space/gpt_utils.py
 medea/tool_space/human_protein_atlas.py
 medea/tool_space/humanbase.py
 medea/tool_space/id_checkers.py
-medea/tool_space/immune_compass.py
+medea/tool_space/compass.py
 medea/tool_space/instructions.py
 medea/tool_space/open_alex.py
 medea/tool_space/open_scholar.py
