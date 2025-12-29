@@ -57,9 +57,9 @@
                         "param_type": "str",
                         "required": true,
                         "allow_empty": false,
-                        "allowed_values": ["scgpt", "pinnacle"],
-                        "default": "scgpt",
-                        "description": "The name of the model mentioned in the proposal to use for validation. MUST be either 'scgpt' or 'pinnacle'. Case-insensitive."
+                        "allowed_values": ["pinnacle"],
+                        "default": "pinnacle",
+                        "description": "The name of the model mentioned in the proposal to use for validation. Case-insensitive."
                     }
                 ],
                 "returns": "True if the disease and cell_type context are valid. If gene_list is provided, also validates embedding availability for those genes; otherwise, skips gene validation."
