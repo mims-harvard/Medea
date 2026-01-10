@@ -460,7 +460,7 @@ Code Snippet:
 Error: 
 {error_msg}
 ---
-Feeback from CodeQulityChecker (if any):
+Feeback from AnalysisQulityChecker (if any):
 {feedback}
 '''
 
@@ -940,7 +940,7 @@ Agent Hypothesis:
 """
 
 
-HYPOTHESIS_FORMULATOR = """Provide a clear, concise, and logically structured response to answer the user query that synthesizes the insight from the panel discussion and integrating aligned hypotheses from the agents. Ensure your final answer is precise, logically structured, and scientifically rigorous.
+HYPOTHESIS_FORMULATOR = """Provide a clear, concise, and logically structured response to answer the user query that synthesizes the insight from the panel discussion and integrating aligned hypotheses from the modules. Ensure your final answer is precise, logically structured, and scientifically rigorous.
 
 User Query:
 {query}
@@ -959,7 +959,7 @@ Key Requirements:
 
 
 RECONCILE_PROMPT = """
-You are an expert in processing and normalizing open-ended reasoning answers that address the user query precisely from multiple agents. Your task is to clean a given dictionary where each key is an agent's open-ended answer (which might vary in wording but express essentially the same meaning) and each value is the weight assigned to that answer. The goal is to merge similar answers to facilitate majority or weighted votes.
+You are an expert in processing and normalizing open-ended reasoning answers that address the user query precisely from multiple modules. Your task is to clean a given dictionary where each key is an agent's open-ended answer (which might vary in wording but express essentially the same meaning) and each value is the weight assigned to that answer. The goal is to merge similar answers to facilitate majority or weighted votes.
 
 Instructions:
 	1.	Identify Similar Answers:
@@ -973,16 +973,21 @@ Instructions:
 	    - Return a new dictionary where each key is a normalized answer (representing a unique reasoning conclusion) and its value is the total aggregated weight.
 
 Output Format:
-- The output should be a valid Python dictionary only.
-- Return ONLY the Python dictionary format. No explanations, no additional text, no markdown formatting.
+- The output MUST be ONLY a valid dictionary (JSON or Python format).
+- Start directly with { and end with }
+- NO explanations, NO additional text, NO markdown formatting (no ```).
+- If using JSON mode, you may wrap in: {"normalized_votes": {your_result}}
 
-CORRECT Example:
-✅ {'gene A is best': 0.8, 'gene B shows promise': 0.2}
+CORRECT Examples:
+✅ {'answer A': 0.8, 'answer B': 0.2}
+✅ {"normalized_votes": {"answer A": 0.8, "answer B": 0.2}}
 
 WRONG Examples:
 ❌ Here is the normalized dictionary: {'key': 'value'}
 ❌ Based on analysis, the result is: {...}
 ❌ The answer is {'key': 'value'}
+❌ ```python\n{'key': 0.998}\n```
+❌ ```json\n{"key": 0.998}\n```
 
 ======
 Given the following user query and dictionaries, proceed with these instructions to clean and normalize any similar dictionaries provided.

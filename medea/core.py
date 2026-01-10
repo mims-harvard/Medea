@@ -46,7 +46,7 @@ def experiment_analysis(
         ...     analysis_module
         ... )
     """
-    from .agents.utils import Proposal
+    from .modules.utils import Proposal
     
     # Generate research plan
     research_plan_task_dict = {"user_query": query}
@@ -210,7 +210,7 @@ def medea(
         >>> 
         >>> print(result['CGRH'])  # Final hypothesis from panel discussion
     """
-    from .agents.discussion import multi_round_discussion
+    from .modules.discussion import multi_round_discussion
     
     print(f"\n[MEDEA] Starting parallel execution: Research Planning + In-silico Experiment + Literature Reasoning", flush=True)
     

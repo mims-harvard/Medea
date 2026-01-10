@@ -9,7 +9,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text(encoding='utf-8')
 
 setup(
-    name="medea-ai",
+    name="medea",
     version="1.0.0",
     author="Medea Team",
     author_email="",

@@ -7,16 +7,16 @@ from agentlite.actions.BaseAction import BaseAction
 
 from typing import List
 import streamlit as st
-from agents.utils import FlushAgentLogger as AgentLogger
-from agents.utils import Proposal
-from agents.proposal import ProposalAgent, ResearchPlanDraft, ContextVerification, IntegrityVerification
-from agents.experiment_analysis import CodeDebug, AnalysisExecution, CodeGenerator, CodeQulityChecker, Analysis
-from agents.literature_reasoning import LiteratureReasoning, OpenScholarReasoning
-from agents.logger import UILogger
-from agents.agent_llms import AgentLLM, LLMConfig, parse_action
-from agents.BasePrompt import BasePromptGen
-from agents.prompt_template import *
-from agents.agent_llms import *
+from modules.utils import FlushAgentLogger as AgentLogger
+from modules.utils import Proposal
+from modules.proposal import ProposalAgent, ResearchPlanDraft, ContextVerification, IntegrityVerification
+from modules.experiment_analysis import CodeDebug, AnalysisExecution, CodeGenerator, AnalysisQulityChecker, Analysis
+from modules.literature_reasoning import LiteratureReasoning, OpenScholarReasoning
+from modules.logger import UILogger
+from modules.agent_llms import AgentLLM, LLMConfig, parse_action
+from modules.BasePrompt import BasePromptGen
+from modules.prompt_template import *
+from modules.agent_llms import *
 from tool_space.gpt_utils import chat_completion
 # Agent temp
 research_plan_agent_tmp = 0.4
@@ -55,7 +55,7 @@ class MedeaSystem(BaseAction):
                             IntegrityVerification(tmp=proposal_act_tmp, max_iter=0),]
     
         coding_actions = [CodeGenerator(tmp=coding_act_tmp), 
-                          CodeQulityChecker(tmp=coding_act_tmp), 
+                          AnalysisQulityChecker(tmp=coding_act_tmp), 
                           CodeDebug(tmp=coding_act_tmp), 
                           AnalysisExecution()]
         
@@ -280,7 +280,7 @@ if __name__ == "__main__":
                         ]
 
     coding_actions = [CodeGenerator(tmp=coding_act_tmp), 
-                        CodeQulityChecker(tmp=coding_act_tmp), 
+                        AnalysisQulityChecker(tmp=coding_act_tmp), 
                         CodeDebug(tmp=coding_act_tmp), 
                         AnalysisExecution()
                     ]

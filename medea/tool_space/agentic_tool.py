@@ -1,10 +1,11 @@
-import sys
-sys.path.insert(0, '.')
+import os
 from multiprocessing import freeze_support
-from agents.literature_reasoning import *
 from agentlite.commons import TaskPackage
-from agents.agent_llms import LLMConfig, AgentLLM
-from agents.utils import FlushAgentLogger as AgentLogger, ReasoningPackage
+
+# Use relative imports within the package
+from ..modules.literature_reasoning import *
+from ..modules.agent_llms import LLMConfig, AgentLLM
+from ..modules.utils import FlushAgentLogger as AgentLogger, ReasoningPackage
 
 
 def reasoning_module(query: str, reason_agent):

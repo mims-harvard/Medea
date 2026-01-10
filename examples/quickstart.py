@@ -26,7 +26,7 @@ from medea import (
     CodeGenerator,
     AnalysisExecution,
     CodeDebug,
-    CodeQulityChecker,
+    AnalysisQulityChecker,
     # Literature reasoning actions
     LiteratureSearch,
     PaperJudge,
@@ -85,7 +85,7 @@ def main():
         CodeGenerator(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o")),
         AnalysisExecution(),
         CodeDebug(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o")),
-        CodeQulityChecker(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o"), max_iter=2),
+        AnalysisQulityChecker(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o"), max_iter=2),
     ]
     
     # Literature reasoning actions
@@ -98,7 +98,7 @@ def main():
     # ========================================================================
     # Step 3: Initialize Agents
     # ========================================================================
-    print("[Setup] Initializing agents...")
+    print("[Setup] Initializing modules...")
     
     research_planning_module = ResearchPlanning(
         llm=research_plan_llm,

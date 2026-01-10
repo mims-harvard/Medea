@@ -310,16 +310,16 @@ class AnalysisExecution(BaseAction):
         # Prepend path setup to make tool_space imports work
         path_setup = """import sys
 import os
-# Add parent directory to path so tool_space can be imported as medea_ai.tool_space
+# Add parent directory to path so tool_space can be imported as medea.tool_space
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 """
         
-        # Replace tool_space imports with medea_ai.tool_space
+        # Replace tool_space imports with medea.tool_space
         code_to_run = code_snippet.code_snippet.replace(
-            'from tool_space.', 'from medea_ai.tool_space.'
+            'from tool_space.', 'from medea.tool_space.'
         ).replace(
-            'import tool_space.', 'import medea_ai.tool_space.'
+            'import tool_space.', 'import medea.tool_space.'
         )
         
         # write the modified code snippet to a file
@@ -429,7 +429,7 @@ class CodeDebug(BaseAction):
         return f"{code_snippet}: debugged, call AnalysisExecution next."
 
 
-class CodeQulityChecker(BaseAction):
+class AnalysisQulityChecker(BaseAction):
     """Checks code quality and provides feedback for improvement."""
     
     def __init__(self, llm_provider: str = None, tmp: float = 0.4, max_iter: int = 3) -> None:
@@ -504,7 +504,7 @@ class CodeQulityChecker(BaseAction):
         return f"{code_snippet}: Passed, call Finish action next."
 
 
-class CodingFinishAction(BaseAction):
+class AnalysisFinishAction(BaseAction):
     """Completes the coding task with the final refined code snippet."""
     
     def __init__(self) -> None:
@@ -527,7 +527,7 @@ class CodingFinishAction(BaseAction):
         }
 
 
-FinishAct = CodingFinishAction()
+FinishAct = AnalysisFinishAction()
 
 
 class Analysis(BaseAgent):
@@ -554,7 +554,7 @@ class Analysis(BaseAgent):
                 CodeGenerator(llm_provider=os.getenv("BACKBONE_LLM")), 
                 AnalysisExecution(), 
                 CodeDebug(llm_provider=os.getenv("BACKBONE_LLM")),
-                CodeQulityChecker(llm_provider=os.getenv("BACKBONE_LLM")), 
+                AnalysisQulityChecker(llm_provider=os.getenv("BACKBONE_LLM")), 
             ]
         
         name = "analysis_agent"

@@ -379,7 +379,7 @@
         "name": "scientific_reasoning_agent",
         "type": "tool",
         "description": "Advanced literature synthesis tool powered by OpenScholar AI that queries 8M+ peer-reviewed research papers to provide evidence-based scientific reasoning. Use strategically for complex biological questions requiring comprehensive literature context, therapeutic mechanism validation, or clinical translation insights. Ideal for synthesizing contradictory findings, identifying research gaps, or supporting high-stakes decisions. IMPORTANT: High computational cost - limit to 1 query per analysis for critical knowledge gaps that cannot be resolved through other tools. IMPORTANT: scientific_reasoning_agent makes 10+ internal API calls and is extremely expensive; use ONLY as final validation step, never for intermediate analysis.",
-        "import_path": "from medea.tool_space.agent_tool import scientific_reasoning_agent",
+        "import_path": "from medea.tool_space.agentic_tool import scientific_reasoning_agent",
         "input_params": [
             {
                 "name": "user_instruction",

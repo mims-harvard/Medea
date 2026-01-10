@@ -1,2 +1,2 @@
 [console_scripts]
-prism-eval = prism_ai.cli:main
+medea-eval = medea.cli:main

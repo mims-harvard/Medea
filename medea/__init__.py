@@ -12,7 +12,7 @@ __author__ = "Medea Team"
 from .core import medea, experiment_analysis, literature_reasoning
 
 # Agent classes for custom workflows
-from .agents import (
+from .modules import (
     ResearchPlanning,
     Analysis,
     LiteratureReasoning,
@@ -21,30 +21,30 @@ from .agents import (
 )
 
 # Action classes for custom agent configurations
-from .agents.research_planning import (
+from .modules.research_planning import (
     ResearchPlanDraft,
     ContextVerification,
     IntegrityVerification
 )
 
-from .agents.experiment_analysis import (
+from .modules.experiment_analysis import (
     CodeGenerator,
     AnalysisExecution,
     CodeDebug,
-    CodeQulityChecker
+    AnalysisQulityChecker
 )
 
-from .agents.literature_reasoning import (
+from .modules.literature_reasoning import (
     LiteratureSearch,
     PaperJudge,
     OpenScholarReasoning
 )
 
 # Utility classes
-from .agents.utils import Proposal, CodeSnippet
+from .modules.utils import Proposal, CodeSnippet
 
 # Panel discussion
-from .agents.discussion import multi_round_discussion
+from .modules.discussion import multi_round_discussion
 
 __all__ = [
     # Core functions
@@ -68,7 +68,7 @@ __all__ = [
     'CodeGenerator',
     'AnalysisExecution',
     'CodeDebug',
-    'CodeQulityChecker',
+    'AnalysisQulityChecker',
     
     # Literature reasoning actions
     'LiteratureSearch',

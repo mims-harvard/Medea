@@ -4,6 +4,7 @@ import json
 import os, re, ast, sys
 import time
 import base64
+from typing import Optional
 
 # Use relative imports within package
 from ..tool_space.gpt_utils import chat_completion
@@ -47,6 +48,144 @@ def sanitize_prompt_content(text):
         text = re.sub(pattern, '', text, flags=re.IGNORECASE)
     
     return text
+
+
+def parse_llm_dict_output(output_str: str) -> Optional[dict]:
+    """
+    Robustly parse dictionary from LLM output using multiple strategies.
+    
+    Args:
+        output_str: LLM output string potentially containing a dictionary
+        
+    Returns:
+        Parsed dictionary or None if parsing fails
+    """
+    if not output_str or not isinstance(output_str, str):
+        return None
+    
+    cleaned = output_str.strip()
+    
+    # Remove markdown code fences
+    if "```" in cleaned:
+        # Remove markdown with optional language specifier
+        cleaned = re.sub(r'```(?:python|json|dict)?\s*\n?', '', cleaned, flags=re.IGNORECASE)
+        cleaned = re.sub(r'\n?```\s*', '', cleaned)
+        cleaned = cleaned.strip()
+    
+    # Extract first JSON/dict object from text
+    # This handles cases like "Here is the result: {dict}"
+    dict_pattern = r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}'
+    match = re.search(dict_pattern, cleaned)
+    if match:
+        cleaned = match.group(0).strip()
+    
+    # Try parsing with multiple methods
+    parse_methods = [
+        # Method 1: Direct JSON parsing (most reliable)
+        ("json.loads", lambda s: json.loads(s)),
+        
+        # Method 2: AST literal eval (handles Python dicts)
+        ("ast.literal_eval", lambda s: ast.literal_eval(s)),
+        
+        # Method 3: Handle nested JSON (for {"normalized_votes": {...}})
+        ("nested json", lambda s: json.loads(s).get("normalized_votes", json.loads(s))),
+        
+        # Method 4: Convert single quotes to double quotes for JSON
+        ("json with quote fix", lambda s: json.loads(s.replace("'", '"'))),
+        
+        # Method 5: Handle escaped quotes
+        ("unescape quotes", lambda s: ast.literal_eval(
+            s.replace('\\"', '"').replace("\\'", "'")
+        )),
+        
+        # Method 6: Aggressive cleanup for malformed JSON
+        ("aggressive cleanup", lambda s: json.loads(
+            s.replace("'", '"')
+             .replace('True', 'true')
+             .replace('False', 'false')
+             .replace('None', 'null')
+        )),
+    ]
+    
+    for method_name, parser_func in parse_methods:
+        try:
+            result = parser_func(cleaned)
+            if isinstance(result, dict) and len(result) > 0:
+                return result
+        except (json.JSONDecodeError, ValueError, SyntaxError, TypeError, AttributeError):
+            continue
+    
+    return None
+
+
+def reconcile_votes_with_llm(certainty_vote: dict, query: str, max_attempts: int = 4) -> dict:
+    """
+    Reconcile and normalize vote dictionary using LLM with robust parsing.
+    
+    Args:
+        certainty_vote: Dictionary of {answer: weight}
+        query: User query for context
+        max_attempts: Maximum parsing attempts
+        
+    Returns:
+        Reconciled dictionary or original if all attempts fail
+    """
+    # Skip if only one unique answer
+    if len(certainty_vote) <= 1:
+        print(f"[Vote Reconciliation] Only one unique answer, skipping.", flush=True)
+        return certainty_vote
+    
+    original_vote = certainty_vote.copy()
+    model_name = os.getenv("BACKBONE_LLM", "gpt-4o")
+    use_json_mode = "gpt" in model_name.lower() or "openai" in model_name.lower()
+    
+    for attempt_num in range(1, max_attempts + 1):
+        try:
+            # Prepare prompt
+            safe_query = sanitize_prompt_content(str(query))
+            safe_vote_content = sanitize_prompt_content(json.dumps(certainty_vote, indent=2))
+            
+            # Use the same prompt but enable JSON mode for better structured output
+            prompt = RECONCILE_PROMPT + f"\n\nUser query: {safe_query}\n\nDictionary:\n{safe_vote_content}"
+            messages = [{"role": "user", "content": prompt}]
+            
+            # Call LLM with JSON mode if supported (for guaranteed valid JSON output)
+            if use_json_mode:
+                output = chat_completion(
+                    messages, 
+                    model=model_name, 
+                    mod='dialog',
+                    response_format={"type": "json_object"}
+                )
+            else:
+                output = chat_completion(messages, model=model_name, mod='dialog')
+            
+            # Parse the output
+            parsed_vote = parse_llm_dict_output(output)
+            
+            # Validate parsed result
+            if parsed_vote and isinstance(parsed_vote, dict) and len(parsed_vote) > 0:
+                # Ensure all values are numeric
+                if all(isinstance(v, (int, float)) for v in parsed_vote.values()):
+                    print(f"[Vote Reconciliation] ✓ Successfully reconciled on attempt {attempt_num}", flush=True)
+                    return parsed_vote
+                else:
+                    raise ValueError("Non-numeric values in dictionary")
+            else:
+                raise ValueError("Failed to parse valid dictionary")
+                
+        except Exception as e:
+            if attempt_num < max_attempts:
+                print(f"[Vote Reconciliation] Attempt {attempt_num} failed: {str(e)[:80]}", flush=True)
+                # Add debug logging for development
+                if os.getenv("MEDEA_DEBUG", "").lower() == "true":
+                    print(f"[Debug] LLM output: {output[:300]}", flush=True)
+            else:
+                print(f"[Vote Reconciliation] All attempts failed. Using original votes.", flush=True)
+                if os.getenv("MEDEA_DEBUG", "").lower() == "true":
+                    print(f"[Debug] Final output: {output[:400]}", flush=True)
+    
+    return original_vote
 
 def encode_complex_content(content):
     """
@@ -164,73 +303,9 @@ def parse_output(tmp, query, rounds, vote_merge=True, attempt=4):
         tmp['vote_'+str(rounds)] = [tmp['llm_0_pred_'+str(rounds)], tmp['llm_1_pred_'+str(rounds)], tmp['llm_2_pred_'+str(rounds)]]
         tmp['exps_'+str(rounds)] = [tmp['llm_0_exp_'+str(rounds)], tmp['llm_1_exp_'+str(rounds)], tmp['llm_2_exp_'+str(rounds)]]
         
-        # ========== 
-        # Clean the votes:
+        # ========== VOTE RECONCILIATION ==========
         if vote_merge:
-            original_vote = certainty_vote.copy()  # Keep backup in case parsing fails
-            while attempt > 0:
-                try:
-                    # Convert the string to a Python dictionary safely
-                    safe_query = sanitize_prompt_content(str(query))
-                    safe_vote_content = sanitize_prompt_content(str(certainty_vote))
-                    reconcile_content = RECONCILE_PROMPT + "\n\nUser query: " + safe_query + "\nDictionary: \n" + safe_vote_content
-                    safe_reconcile_content = sanitize_prompt_content(reconcile_content)
-                    messages = [{"role": "user", "content": safe_reconcile_content}]
-                    cleaned_output = chat_completion(messages, model=os.getenv("BACKBONE_LLM"), mod='dialog')
-                    cleaned_output = cleaned_output.strip()
-                    
-                    # Remove potential markdown formatting (e.g., ```python ... ```)
-                    if cleaned_output.startswith("```"):
-                        # Remove markdown fences
-                        cleaned_output = re.sub(r'^```(?:python|json)?\n?', '', cleaned_output)
-                        cleaned_output = re.sub(r'\n?```$', '', cleaned_output)
-                        cleaned_output = cleaned_output.strip()
-                    
-                    # Try multiple parsing strategies
-                    parsed_vote = None
-                    
-                    # Strategy 1: Direct ast.literal_eval
-                    try:
-                        parsed_vote = ast.literal_eval(cleaned_output)
-                    except (ValueError, SyntaxError):
-                        pass
-                    
-                    # Strategy 2: Try JSON parsing
-                    if parsed_vote is None:
-                        try:
-                            parsed_vote = json.loads(cleaned_output)
-                        except json.JSONDecodeError:
-                            pass
-                    
-                    # Strategy 3: Fix common quote issues and retry
-                    if parsed_vote is None:
-                        try:
-                            # Escape problematic quotes
-                            fixed_output = cleaned_output.replace("\\'", "'").replace('\\"', '"')
-                            # Try to extract just the dict part
-                            dict_match = re.search(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', fixed_output)
-                            if dict_match:
-                                parsed_vote = ast.literal_eval(dict_match.group(0))
-                        except (ValueError, SyntaxError):
-                            pass
-                    
-                    if parsed_vote and isinstance(parsed_vote, dict):
-                        certainty_vote = parsed_vote
-                        break
-                    else:
-                        raise ValueError("Could not parse vote dictionary")
-                        
-                except Exception as e:
-                    attempt -= 1
-                    if attempt > 0:
-                        # Silently retry
-                        pass
-                    else:
-                        # Last attempt failed, use original vote
-                        print(f"[Vote Reconciliation] Failed to parse after all attempts. Using original votes.", flush=True)
-                        certainty_vote = original_vote
-
-            # print("Converted Vote dictionary:", cleaned_output, flush=True)
+            certainty_vote = reconcile_votes_with_llm(certainty_vote, query, max_attempts=attempt)
         # ==========
         for v in certainty_vote:
             print(v, flush=True)

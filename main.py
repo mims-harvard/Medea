@@ -41,14 +41,14 @@ except ImportError:
 # LOCAL APPLICATION IMPORTS
 # ============================================================================
 # Agent LLM infrastructure
-from medea.agents.agent_llms import LLMConfig, AgentLLM
+from medea.modules.agent_llms import LLMConfig, AgentLLM
 
 # Agent implementations
-from medea.agents.experiment_analysis import Analysis, CodeDebug, AnalysisExecution, CodeGenerator, CodeQulityChecker
-from medea.agents.discussion import multi_round_discussion
-from medea.agents.literature_reasoning import LiteratureSearch, OpenScholarReasoning, PaperJudge, LiteratureReasoning
-from medea.agents.research_planning import ContextVerification, ResearchPlanDraft, IntegrityVerification, ResearchPlanning
-from medea.agents.utils import Proposal
+from medea.modules.experiment_analysis import Analysis, CodeDebug, AnalysisExecution, CodeGenerator, AnalysisQulityChecker
+from medea.modules.discussion import multi_round_discussion
+from medea.modules.literature_reasoning import LiteratureSearch, OpenScholarReasoning, PaperJudge, LiteratureReasoning
+from medea.modules.research_planning import ContextVerification, ResearchPlanDraft, IntegrityVerification, ResearchPlanning
+from medea.modules.utils import Proposal
 from medea.core import medea
 
 # Evaluation and utilities
@@ -245,12 +245,6 @@ experiment_setup_dict = {
         'user': sl_query_lineage_openend, 
         'agent': sl_instruction_e5, 
         'judge_prompt': SL_REASON_CHECK 
-    },
-    # Synthetic Lethality Prediction (Multi-choice) [Enrichr+DepMap]
-    'sl_e5_multi':  {
-        'user': sl_query_lineage_multi, 
-        'agent': sl_instruction_e5, 
-        'judge_prompt': MULTI_CHOICE_SL_REASON_CHECK
     },
     # ICI Prediction 
     'immune_gpt4o_tmp1': {
@@ -478,7 +472,7 @@ def medea_unittest(df, user_template=None, agent_template=None):
         CodeGenerator(tmp=analysis_act_tmp, llm_provider=backbone_llm), 
         AnalysisExecution(),
         CodeDebug(tmp=analysis_act_tmp, llm_provider=backbone_llm), 
-        CodeQulityChecker(tmp=analysis_act_tmp, llm_provider=backbone_llm, max_iter=CODE_QAULITY_MAX_ITER), 
+        AnalysisQulityChecker(tmp=analysis_act_tmp, llm_provider=backbone_llm, max_iter=CODE_QAULITY_MAX_ITER), 
     ]
     
     print("=== Init Literature Reasoning Actions ===", flush=True)

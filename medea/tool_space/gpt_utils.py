@@ -22,7 +22,8 @@ def chat_completion(
     mod: str = 'query',
     attemps: int = 3,
     seed: Optional[int] = None,
-    use_openrouter: bool = True
+    use_openrouter: bool = True,
+    response_format: Optional[Dict[str, str]] = None
 ) -> str:
     """
     Unified chat completion function using OpenRouter as the primary API gateway.
@@ -38,6 +39,7 @@ def chat_completion(
         attemps: Number of retry attempts on failure
         seed: Random seed for reproducibility
         use_openrouter: If True, routes through OpenRouter; if False, uses direct APIs
+        response_format: Optional response format (e.g., {"type": "json_object"} for JSON mode)
         
     Returns:
         Model response content as string
@@ -61,9 +63,9 @@ def chat_completion(
     # Route to appropriate handler
     # Force legacy handler for certain models that need direct API access
     if 'deepseek-r1:671b' in model or not use_openrouter:
-        return _legacy_completion(messages, temperature, model, attemps, seed)
+        return _legacy_completion(messages, temperature, model, attemps, seed, response_format)
     else:
-        return _openrouter_completion(messages, temperature, model, attemps, seed)
+        return _openrouter_completion(messages, temperature, model, attemps, seed, response_format)
 
 
 def _openrouter_completion(
@@ -71,7 +73,8 @@ def _openrouter_completion(
     temperature: float,
     model: str,
     attemps: int,
-    seed: int
+    seed: int,
+    response_format: Optional[Dict[str, str]] = None
 ) -> str:
     """
     Handle completion via OpenRouter unified API.
@@ -102,6 +105,10 @@ def _openrouter_completion(
                 "messages": messages,
                 "temperature": temperature,
             }
+            
+            # Add response_format if provided and model supports it (OpenAI models)
+            if response_format and "openai/" in model:
+                request_params["response_format"] = response_format
             
             # Add optional headers for OpenRouter attribution
             extra_headers = {}
@@ -198,7 +205,8 @@ def _legacy_completion(
     temperature: float,
     model: str,
     attemps: int,
-    seed: int
+    seed: int,
+    response_format: Optional[Dict[str, str]] = None
 ) -> str:
     """
     Legacy completion handler for direct API calls (non-OpenRouter).
@@ -218,10 +226,10 @@ def _legacy_completion(
     
     # Handle Azure OpenAI models
     if model in ['o3-mini', 'o3-mini-0131', 'o1-mini-2025-03-01', 'o4-mini-0416']:
-        return _azure_completion(messages, temperature, model, seed)
+        return _azure_completion(messages, temperature, model, seed, response_format)
     
     # Default: treat as Azure
-    return _azure_completion(messages, temperature, model, seed)
+    return _azure_completion(messages, temperature, model, seed, response_format)
 
 
 def _nvidia_deepseek_completion(
@@ -344,7 +352,13 @@ def _gemini_completion(messages: List[Dict[str, str]], temperature: float, model
         return "I cannot help with it - Gemini error"
 
 
-def _azure_completion(messages: List[Dict[str, str]], temperature: float, model: str, seed: int) -> str:
+def _azure_completion(
+    messages: List[Dict[str, str]], 
+    temperature: float, 
+    model: str, 
+    seed: int,
+    response_format: Optional[Dict[str, str]] = None
+) -> str:
     """Handle Azure OpenAI completion."""
     try:
         # Determine API version
@@ -384,6 +398,10 @@ def _azure_completion(messages: List[Dict[str, str]], temperature: float, model:
         if 'o1' not in model and 'o3' not in model and 'o4' not in model:
             request_params["temperature"] = temperature
             request_params["seed"] = seed
+        
+        # Add response_format if provided and supported
+        if response_format and 'o1' not in model and 'o3' not in model and 'o4' not in model:
+            request_params["response_format"] = response_format
         
         response = client.chat.completions.create(**request_params)
         return response.choices[0].message.content

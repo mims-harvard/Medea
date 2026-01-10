@@ -74,4 +74,4 @@ python -m build
 python -m twine upload dist/*
 ```
 
-Then users install with: `pip install medea-ai`
+Then users install with: `pip install medea`

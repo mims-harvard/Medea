@@ -255,10 +255,10 @@ def context_avalibility_checker(disease_name:str, cell_type:str, gene_list:list=
 def humanbase_context_checker(gene_list:list[str]=None, tissue:str=None, top_n=5):
     # Local import to avoid circular dependency
     try:
-        from ..agents.prompt_template import HUMANBASE_CONTEXT_CHECKER
+        from ..modules.prompt_template import HUMANBASE_CONTEXT_CHECKER
     except (ImportError, ValueError):
         # Fallback for when relative import fails
-        from medea.agents.prompt_template import HUMANBASE_CONTEXT_CHECKER
+        from medea.modules.prompt_template import HUMANBASE_CONTEXT_CHECKER
     
     # If gene_list is empty/None, skip gene validation (discovery mode)
     if gene_list is None or len(gene_list) == 0:

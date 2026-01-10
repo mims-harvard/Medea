@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "medea-ai"
+name = "medea"
 version = "1.0.0"
 description = "Multi-Agent Research Planning System for Single-Cell Analysis and Therapeutic Discovery"
 readme = "README.md"
@@ -134,7 +134,7 @@ Documentation = "https://github.com/mims-harvard/Medea-1.0#readme"
 medea-eval = "medea.cli:main"
 
 [tool.setuptools]
-packages = ["medea", "medea.agents", "medea.tool_space"]
+packages = ["medea", "medea.modules", "medea.tool_space"]
 
 [tool.setuptools.package-data]
 medea = ["tool_space/*.json"]

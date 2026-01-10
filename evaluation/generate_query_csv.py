@@ -25,12 +25,6 @@ experiment_setup_dict = {
         'agent': target_id_instruction_1,
         'judge_prompt': TARGETID_REASON_CHECK
     },
-    # Target Normination (Open-ended)
-    'targetid_open_end': {
-        'user': target_id_open_end_query_temp_1, 
-        'agent': target_id_instruction_2, 
-        'judge_prompt': TARGETID_OPEN_END_REASON_CHECK
-    },
     # Synthetic Lethality Prediction (Open-ended) [Enrichr only]
     'sl_e2_open_end':  {
         'user': sl_query_lineage_openend,
@@ -47,12 +41,6 @@ experiment_setup_dict = {
         'user': sl_query_lineage_openend, 
         'agent': sl_instruction_e5, 
         'judge_prompt': SL_REASON_CHECK 
-    },
-    # Synthetic Lethality Prediction (Multi-choice) [Enrichr+DepMap]
-    'sl_e5_multi':  {
-        'user': sl_query_lineage_multi, 
-        'agent': sl_instruction_e5, 
-        'judge_prompt': MULTI_CHOICE_SL_REASON_CHECK
     },
     # ICI Prediction 
     'immune_gpt4o_tmp1': {
