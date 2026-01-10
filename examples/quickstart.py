@@ -26,7 +26,7 @@ from medea import (
     CodeGenerator,
     AnalysisExecution,
     CodeDebug,
-    AnalysisQulityChecker,
+    AnalysisQualityChecker,
     # Literature reasoning actions
     LiteratureSearch,
     PaperJudge,
@@ -85,7 +85,7 @@ def main():
         CodeGenerator(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o")),
         AnalysisExecution(),
         CodeDebug(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o")),
-        AnalysisQulityChecker(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o"), max_iter=2),
+        AnalysisQualityChecker(tmp=temperature, llm_provider=os.getenv("BACKBONE_LLM", "gpt-4o"), max_iter=2),
     ]
     
     # Literature reasoning actions

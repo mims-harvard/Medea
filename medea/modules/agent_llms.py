@@ -121,7 +121,7 @@ class AgentLLM(BaseLLM):
                 temperature=self.temperature,
                 model=self.model,
                 mod='chat',  # Already in message format
-                attemps=max_attempts,
+                attempts=max_attempts,
                 use_openrouter=self.use_openrouter
             )
             return response

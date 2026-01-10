@@ -460,7 +460,7 @@ Code Snippet:
 Error: 
 {error_msg}
 ---
-Feeback from AnalysisQulityChecker (if any):
+Feeback from AnalysisQualityChecker (if any):
 {feedback}
 '''
 

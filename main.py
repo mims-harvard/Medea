@@ -44,7 +44,7 @@ except ImportError:
 from medea.modules.agent_llms import LLMConfig, AgentLLM
 
 # Agent implementations
-from medea.modules.experiment_analysis import Analysis, CodeDebug, AnalysisExecution, CodeGenerator, AnalysisQulityChecker
+from medea.modules.experiment_analysis import Analysis, CodeDebug, AnalysisExecution, CodeGenerator, AnalysisQualityChecker
 from medea.modules.discussion import multi_round_discussion
 from medea.modules.literature_reasoning import LiteratureSearch, OpenScholarReasoning, PaperJudge, LiteratureReasoning
 from medea.modules.research_planning import ContextVerification, ResearchPlanDraft, IntegrityVerification, ResearchPlanning
@@ -401,7 +401,7 @@ literature_reason_act_tmp = DEFAULT_TEMPERATURE
 
 # Iteration limits
 QUALITY_MAX_ITER = args.quality_max_iter
-CODE_QAULITY_MAX_ITER = args.code_quality_max_iter
+CODE_QUALITY_MAX_ITER = args.code_quality_max_iter
 
 # Panel discussion settings
 DEBATE_ROUND = args.debate_rounds
@@ -472,7 +472,7 @@ def medea_unittest(df, user_template=None, agent_template=None):
         CodeGenerator(tmp=analysis_act_tmp, llm_provider=backbone_llm), 
         AnalysisExecution(),
         CodeDebug(tmp=analysis_act_tmp, llm_provider=backbone_llm), 
-        AnalysisQulityChecker(tmp=analysis_act_tmp, llm_provider=backbone_llm, max_iter=CODE_QAULITY_MAX_ITER), 
+        AnalysisQualityChecker(tmp=analysis_act_tmp, llm_provider=backbone_llm, max_iter=CODE_QUALITY_MAX_ITER), 
     ]
     
     print("=== Init Literature Reasoning Actions ===", flush=True)

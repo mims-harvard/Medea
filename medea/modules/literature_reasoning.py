@@ -3,7 +3,7 @@ from agentlite.actions import ThinkAct
 from agentlite.agents import ABCAgent, BaseAgent
 from agentlite.commons import AgentAct, TaskPackage
 from agentlite.commons.AgentAct import ActObsChainType
-from agentlite.agents.agent_utils import act_match, ACION_NOT_FOUND_MESS
+from agentlite.agents.agent_utils import act_match, ACTION_NOT_FOUND_MESS
 from typing import List, Dict, Any
 import os
 import torch
@@ -544,7 +544,7 @@ class LiteratureReasoning(BaseAgent):
             return observation
         if param_parse_flag:
             return WRONG_ACTION_PARAM
-        return ACION_NOT_FOUND_MESS
+        return ACTION_NOT_FOUND_MESS
 
     def __add_inner_actions__(self):
         """Add inner action types based on reasoning type."""

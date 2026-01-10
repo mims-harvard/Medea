@@ -91,10 +91,10 @@ analysis_llm = AgentLLM(LLMConfig({"temperature": 0.5}), llm_name="claude")
 
 **Max iterations**:
 ```python
-from medea import IntegrityVerification, AnalysisQulityChecker
+from medea import IntegrityVerification, AnalysisQualityChecker
 
 IntegrityVerification(max_iter=3)  # Research plan quality
-AnalysisQulityChecker(max_iter=2)      # Code quality
+AnalysisQualityChecker(max_iter=2)      # Code quality
 ```
 
 ## Troubleshooting

@@ -28,7 +28,7 @@ from medea import (
     CodeGenerator,
     AnalysisExecution,
     CodeDebug,
-    AnalysisQulityChecker,
+    AnalysisQualityChecker,
     # Literature reasoning actions
     LiteratureSearch,
     PaperJudge,
@@ -100,7 +100,7 @@ def example_2_experiment_analysis_system():
         CodeGenerator(tmp=0.4, llm_provider="gpt-4o"),
         AnalysisExecution(),
         CodeDebug(tmp=0.4, llm_provider="gpt-4o"),
-        AnalysisQulityChecker(tmp=0.4, llm_provider="gpt-4o", max_iter=2),
+        AnalysisQualityChecker(tmp=0.4, llm_provider="gpt-4o", max_iter=2),
     ]
     
     # Initialize agents
@@ -182,7 +182,7 @@ def example_4_custom_temperature():
         CodeGenerator(tmp=0.5, llm_provider="gpt-4o"),
         AnalysisExecution(),
         CodeDebug(tmp=0.5, llm_provider="gpt-4o"),
-        AnalysisQulityChecker(tmp=0.5, llm_provider="gpt-4o", max_iter=1),
+        AnalysisQualityChecker(tmp=0.5, llm_provider="gpt-4o", max_iter=1),
     ]
     
     # Initialize agents

@@ -742,7 +742,7 @@ class ResearchPlanning(BaseAgent):
             return observation
         if param_parse_flag:
             return WRONG_ACTION_PARAM
-        return ACION_NOT_FOUND_MESS
+        return ACTION_NOT_FOUND_MESS
     
     def __add_inner_actions__(self):
         """Add inner action types based on the reasoning_type."""

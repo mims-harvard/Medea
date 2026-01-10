@@ -429,7 +429,7 @@ class CodeDebug(BaseAction):
         return f"{code_snippet}: debugged, call AnalysisExecution next."
 
 
-class AnalysisQulityChecker(BaseAction):
+class AnalysisQualityChecker(BaseAction):
     """Checks code quality and provides feedback for improvement."""
     
     def __init__(self, llm_provider: str = None, tmp: float = 0.4, max_iter: int = 3) -> None:
@@ -554,7 +554,7 @@ class Analysis(BaseAgent):
                 CodeGenerator(llm_provider=os.getenv("BACKBONE_LLM")), 
                 AnalysisExecution(), 
                 CodeDebug(llm_provider=os.getenv("BACKBONE_LLM")),
-                AnalysisQulityChecker(llm_provider=os.getenv("BACKBONE_LLM")), 
+                AnalysisQualityChecker(llm_provider=os.getenv("BACKBONE_LLM")), 
             ]
         
         name = "analysis_agent"
@@ -783,5 +783,5 @@ class Analysis(BaseAgent):
             return observation
         if param_parse_flag:
             return WRONG_ACTION_PARAM
-        return ACION_NOT_FOUND_MESS
+        return ACTION_NOT_FOUND_MESS
     

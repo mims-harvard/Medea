@@ -31,7 +31,7 @@ from .modules.experiment_analysis import (
     CodeGenerator,
     AnalysisExecution,
     CodeDebug,
-    AnalysisQulityChecker
+    AnalysisQualityChecker
 )
 
 from .modules.literature_reasoning import (
@@ -68,7 +68,7 @@ __all__ = [
     'CodeGenerator',
     'AnalysisExecution',
     'CodeDebug',
-    'AnalysisQulityChecker',
+    'AnalysisQualityChecker',
     
     # Literature reasoning actions
     'LiteratureSearch',

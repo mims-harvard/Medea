@@ -140,7 +140,7 @@ from medea import medea, AgentLLM, LLMConfig
 from medea import ResearchPlanning, Analysis, LiteratureReasoning
 from medea import (
     ResearchPlanDraft, ContextVerification, IntegrityVerification,
-    CodeGenerator, AnalysisExecution, CodeDebug, AnalysisQulityChecker,
+    CodeGenerator, AnalysisExecution, CodeDebug, AnalysisQualityChecker,
     LiteratureSearch, PaperJudge, OpenScholarReasoning
 )
 
@@ -162,7 +162,7 @@ analysis_actions = [
     CodeGenerator(tmp=0.4, llm_provider=backbone_llm),
     AnalysisExecution(),
     CodeDebug(tmp=0.4, llm_provider=backbone_llm),
-    AnalysisQulityChecker(tmp=0.4, llm_provider=backbone_llm, max_iter=2)
+    AnalysisQualityChecker(tmp=0.4, llm_provider=backbone_llm, max_iter=2)
 ]
 
 literature_actions = [
@@ -203,7 +203,7 @@ from medea import experiment_analysis, AgentLLM, LLMConfig
 from medea import ResearchPlanning, Analysis
 from medea import (
     ResearchPlanDraft, ContextVerification, IntegrityVerification,
-    CodeGenerator, AnalysisExecution, CodeDebug, AnalysisQulityChecker
+    CodeGenerator, AnalysisExecution, CodeDebug, AnalysisQualityChecker
 )
 
 # Step 1: Initialize LLMs
@@ -223,7 +223,7 @@ analysis_actions = [
     CodeGenerator(tmp=0.4, llm_provider=backbone_llm),
     AnalysisExecution(),
     CodeDebug(tmp=0.4, llm_provider=backbone_llm),
-    AnalysisQulityChecker(tmp=0.4, llm_provider=backbone_llm, max_iter=2)
+    AnalysisQualityChecker(tmp=0.4, llm_provider=backbone_llm, max_iter=2)
 ]
 
 # Step 3: Create modules
@@ -349,7 +349,7 @@ python main.py --task immune_response --patient-tpm-root /path/to/tpm/data
 # Custom temperature (LLM temperature for all modules)
 python main.py --temperature 0.7
 
-# Custom quality iterations (3 max iteration for IntegrityVerification, 3 max iteration for AnalysisQulityChecker)
+# Custom quality iterations (3 max iteration for IntegrityVerification, 3 max iteration for AnalysisQualityChecker)
 python main.py --quality-max-iter 3 --code-quality-max-iter 3
 
 # Custom debate rounds

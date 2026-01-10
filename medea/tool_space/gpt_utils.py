@@ -20,7 +20,7 @@ def chat_completion(
     temperature: float = 0.4,  # Default temperature for balanced creativity and consistency
     model: Optional[str] = None,
     mod: str = 'query',
-    attemps: int = 3,
+    attempts: int = 3,
     seed: Optional[int] = None,
     use_openrouter: bool = True,
     response_format: Optional[Dict[str, str]] = None
@@ -36,7 +36,7 @@ def chat_completion(
         temperature: Sampling temperature (0.0 to 2.0)
         model: Model identifier (e.g., 'openai/gpt-4o', 'anthropic/claude-3.5-sonnet')
         mod: Message mode - 'query' converts string to user message, 'chat' expects list
-        attemps: Number of retry attempts on failure
+        attempts: Number of retry attempts on failure
         seed: Random seed for reproducibility
         use_openrouter: If True, routes through OpenRouter; if False, uses direct APIs
         response_format: Optional response format (e.g., {"type": "json_object"} for JSON mode)
@@ -63,16 +63,16 @@ def chat_completion(
     # Route to appropriate handler
     # Force legacy handler for certain models that need direct API access
     if 'deepseek-r1:671b' in model or not use_openrouter:
-        return _legacy_completion(messages, temperature, model, attemps, seed, response_format)
+        return _legacy_completion(messages, temperature, model, attempts, seed, response_format)
     else:
-        return _openrouter_completion(messages, temperature, model, attemps, seed, response_format)
+        return _openrouter_completion(messages, temperature, model, attempts, seed, response_format)
 
 
 def _openrouter_completion(
     messages: List[Dict[str, str]],
     temperature: float,
     model: str,
-    attemps: int,
+    attempts: int,
     seed: int,
     response_format: Optional[Dict[str, str]] = None
 ) -> str:
@@ -95,7 +95,7 @@ def _openrouter_completion(
     # Map common model names to OpenRouter format
     model = _normalize_model_name(model)
     
-    for attempt in range(attemps):
+    for attempt in range(attempts):
         try:
             # print(f"[chat_completion] Using OpenRouter with model: {model}", flush=True)
             
@@ -139,13 +139,13 @@ def _openrouter_completion(
             error_str = str(e)
             wait_time = (2 ** attempt) + 1
             
-            print(f"[chat_completion] Attempt {attempt + 1}/{attemps} failed: {error_str[:150]}", flush=True)
+            print(f"[chat_completion] Attempt {attempt + 1}/{attempts} failed: {error_str[:150]}", flush=True)
             
-            if attempt < attemps - 1:
+            if attempt < attempts - 1:
                 print(f"[chat_completion] Retrying in {wait_time}s...", flush=True)
                 time.sleep(wait_time)
             else:
-                print(f"[chat_completion] All {attemps} attempts exhausted.", flush=True)
+                print(f"[chat_completion] All {attempts} attempts exhausted.", flush=True)
                 return f"I cannot help with it - Error: {error_str[:100]}"
     
     return "I cannot help with it - All retries failed"
@@ -204,7 +204,7 @@ def _legacy_completion(
     messages: List[Dict[str, str]],
     temperature: float,
     model: str,
-    attemps: int,
+    attempts: int,
     seed: int,
     response_format: Optional[Dict[str, str]] = None
 ) -> str:
@@ -214,7 +214,7 @@ def _legacy_completion(
     """
     # Handle NVIDIA DeepSeek models
     if 'deepseek-r1:671b' in model:
-        return _nvidia_deepseek_completion(messages, temperature, attemps, seed)
+        return _nvidia_deepseek_completion(messages, temperature, attempts, seed)
     
     # Handle Ollama models
     if model in ['deepseek-r1:70b', 'llama3.3']:
@@ -235,7 +235,7 @@ def _legacy_completion(
 def _nvidia_deepseek_completion(
     messages: List[Dict[str, str]], 
     temperature: float, 
-    attemps: int, 
+    attempts: int, 
     seed: int
 ) -> str:
     """Handle NVIDIA DeepSeek R1 completion."""
@@ -256,7 +256,7 @@ def _nvidia_deepseek_completion(
             api_key=api_key,
         )
         
-        for attempt in range(attemps):
+        for attempt in range(attempts):
             try:
                 completion = client.chat.completions.create(
                     model="deepseek-ai/deepseek-r1",
@@ -276,8 +276,8 @@ def _nvidia_deepseek_completion(
                 return content.strip()
                 
             except Exception as e:
-                print(f"[chat_completion] NVIDIA DeepSeek attempt {attempt + 1}/{attemps} failed: {e}", flush=True)
-                if attempt < attemps - 1:
+                print(f"[chat_completion] NVIDIA DeepSeek attempt {attempt + 1}/{attempts} failed: {e}", flush=True)
+                if attempt < attempts - 1:
                     time.sleep(4)
                 else:
                     return "I cannot help with it - NVIDIA DeepSeek error"
