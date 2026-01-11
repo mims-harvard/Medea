@@ -19,63 +19,64 @@ from dotenv import load_dotenv
 load_dotenv()
 
 experiment_setup_dict = {
-    # Target Normination (Hard multi-choice)
-    'targetid_gpt4o_multi': {
-        'user': target_id_query_temp_5, 
-        'agent': target_id_instruction_1,
+    # Target Normination
+    'targetid_analysis_gpt4o': {
+        'user': target_id_query_temp, 
+        'agent': target_id_instruction,
         'judge_prompt': TARGETID_REASON_CHECK
     },
-    # Synthetic Lethality Prediction (Open-ended) [Enrichr only]
-    'sl_e2_open_end':  {
-        'user': sl_query_lineage_openend,
-        'agent': sl_instruction_e2,
-        'judge_prompt': SL_REASON_CHECK
+    'targetid_analysis_claude': {
+        'user': target_id_query_temp, 
+        'agent': target_id_instruction,
+        'judge_prompt': TARGETID_REASON_CHECK
     },
-    # Synthetic Lethality Prediction (Open-ended) [Enrichr+DepMap]
-    'sl_paperFilter_open_end':  {
+    # TargetID-PINNACLE
+    'targetid_analysis_pinnacle': {
+        'user': target_id_query_temp, 
+        'agent': target_id_instruction,
+        'judge_prompt': TARGETID_REASON_CHECK
+    },
+    # TargetID-TranscriptFormer
+    'targetid_analysis_transcriptformer': {
+        'user': target_id_query_temp, 
+        'agent': target_id_instruction,
+        'judge_prompt': TARGETID_REASON_CHECK
+    },
+    # Synthetic Lethality Prediction
+    'sl_analysis_gpt4o':  {
         'user': sl_query_lineage_openend, 
-        'agent': sl_instruction_e5, 
+        'agent': sl_instruction_default, 
         'judge_prompt': SL_REASON_CHECK 
     },
-    'sl_claude_open_end':  {
+    'sl_analysis_claude':  {
         'user': sl_query_lineage_openend, 
-        'agent': sl_instruction_e5, 
+        'agent': sl_instruction_default, 
         'judge_prompt': SL_REASON_CHECK 
     },
     # ICI Prediction 
-    'immune_gpt4o_tmp1': {
-        'user': immune_query_temp_1, 
-        'agent':immune_instruction_1,
+    'immune_no_instruction_gpt4o': {
+        'user': immune_query_default, 
+        'agent':immune_no_instruction,
         'judge_prompt': IMMUNE_ANS_CHECK
     },
-    'immune_gpt4o_tmp2': {
-        'user': immune_query_temp_2, 
-        'agent':immune_instruction_2,
+    'immune_instruction_a_gpt4o': {
+        'user': immune_query_temp_a, 
+        'agent':immune_instruction_a,
         'judge_prompt': IMMUNE_ANS_CHECK
     },
-    'immune_gpt4o_tmp3': {
-        'user': immune_query_temp_3, 
-        'agent':immune_instruction_3,
+    'immune_instruction_b_gpt4o': {
+        'user': immune_query_temp_b, 
+        'agent':immune_instruction_b,
         'judge_prompt': IMMUNE_ANS_CHECK
     },
-    'immune_gpt4o_tmp4': {
-        'user': immune_query_temp_4, 
-        'agent':immune_instruction_4,
+    'immune_instruction_b_claude': {
+        'user': immune_query_temp_b, 
+        'agent':immune_instruction_b,
         'judge_prompt': IMMUNE_ANS_CHECK
-    },
-    'immune_gpt4o_tmp5': {
-        'user': immune_query_temp_5, 
-        'agent':immune_instruction_5,
-        'judge_prompt': IMMUNE_ANS_CHECK
-    },
-    'immune_gpt4o_tmp6': {
-        'user': immune_query_temp_6, 
-        'agent':immune_instruction_6,
-        'judge_prompt': IMMUNE_ANS_CHECK
-    },
+    }
 }
 
-PROMPT_SETTING = "immune_gpt4o_tmp6"
+PROMPT_SETTING = "immune_instruction_b_gpt4o"
 USER_PROMPT = experiment_setup_dict[PROMPT_SETTING]['user'] # Pick user intruction template (Path: evaluation/query_template.py)
 AGENT_PROMPT = experiment_setup_dict[PROMPT_SETTING]['agent'] # Pick agent intruction template (Path: evaluation/query_template.py)
 LLM_JUDGE_PROMPT = experiment_setup_dict[PROMPT_SETTING]['judge_prompt'] # LLM judge prompt template (Path: evaluation/query_template.py)
