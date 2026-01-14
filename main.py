@@ -237,7 +237,7 @@ experiment_setup_dict = {
         'judge_prompt': SL_REASON_CHECK 
     },
     # ICI Prediction 
-    'immune_no_instruction_gpt4o': {
+    'immune_instruction_none_gpt4o': {
         'user': immune_query_default, 
         'agent':immune_no_instruction,
         'judge_prompt': IMMUNE_ANS_CHECK
@@ -323,13 +323,13 @@ SL_DB_PATH = f"{SL_SOURCE}-{CELL_LINE}-{SAMPLE_SEED}.csv"
 
 # Task 3: Immune Therapy Response (from args)
 IMMUNE_DATASET = args.immune_dataset
-IMMUNE_TMP = PROMPT_SETTING.split("_")[-1]
+IMMUNE_TMP = PROMPT_SETTING.split("_")[-2]
 PATIENT_TABLE_QUERY_PATH = f"{IMMUNE_DATASET}-{IMMUNE_TMP}-query-{SAMPLE_SEED}.csv"
 if args.patient_tpm_root:
     ICI_PATIENT_TPM_ROOT = args.patient_tpm_root
 else:
     medeadb_path = get_env_with_error("MEDEADB_PATH", default=".", required=False)
-    ICI_PATIENT_TPM_ROOT = os.path.join(medeadb_path, "immune-compass/patients")
+    ICI_PATIENT_TPM_ROOT = os.path.join(medeadb_path, "compass/patients")
 PATIENT_TABLE_PATH = f"{IMMUNE_DATASET}-patient-{SAMPLE_SEED}.csv"
 
 # Context mapping for each task
@@ -398,7 +398,7 @@ def medea_unittest(df, user_template=None, agent_template=None):
         agent_template: Template for agent instruction formatting
     """
     
-    # The succ count for each agent (p - Proposal, cg - coding, r - reasoning, h - hypothesis)
+    # The succ count for each agent (p - ResearchPlanning, cg - Analysis, r - LiteratureReasoning, h - Full Agent)
     success_count = {}
     print("User Template: ", user_template, flush=True)
     print("Agent Template: ", agent_template, flush=True)

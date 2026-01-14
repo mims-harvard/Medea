@@ -277,7 +277,7 @@ def main():
     )
     parser.add_argument(
         '--patient-tpm-root', 
-        default=os.path.expanduser(os.getenv("MEDEADB_PATH", "~/MedeaDB")) + "/immune-compass/patients",
+        default=os.path.expanduser(os.getenv("MEDEADB_PATH", "~/MedeaDB")) + "/compass/patients",
         help='Root path for patient TPM data (required for immune_response task)'
     )
     parser.add_argument(

@@ -3,7 +3,11 @@ from agentlite.actions import ThinkAct
 from agentlite.agents import ABCAgent, BaseAgent
 from agentlite.commons import AgentAct, TaskPackage
 from agentlite.commons.AgentAct import ActObsChainType
-from agentlite.agents.agent_utils import act_match, ACTION_NOT_FOUND_MESS
+from agentlite.agents.agent_utils import act_match
+try:
+    from agentlite.agents.agent_utils import ACTION_NOT_FOUND_MESS
+except ImportError:
+    ACTION_NOT_FOUND_MESS = "[Error] Action not found in action list."
 from typing import List, Dict, Any
 import os
 import torch

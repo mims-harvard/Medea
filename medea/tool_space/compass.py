@@ -3,7 +3,7 @@ import os
 from sklearn.preprocessing import StandardScaler
 from .env_utils import get_medeadb_path as _get_medeadb_path
 
-sys.path.insert(0, os.path.join(_get_medeadb_path(), 'immune-compass/COMPASS'))
+sys.path.insert(0, os.path.join(_get_medeadb_path(), 'compass/COMPASS'))
 from compass.tokenizer import CANCER_CODE
 from compass import loadcompass
 import torch
@@ -35,7 +35,7 @@ def compass_predict(
     ):
     # Set default root_path if not provided
     if root_path is None:
-        root_path = os.path.join(_get_medeadb_path(), "immune-compass/checkpoint")
+        root_path = os.path.join(_get_medeadb_path(), "compass/checkpoint")
     
     responder = False
     tpm_path = os.path.join(root_path, ckp_path)
@@ -58,12 +58,4 @@ def compass_predict(
 
     return responder, sorted_cell_concept[0] # return the responsiveness prediction + cell concept scores
 
-
-if __name__ == "__main__":
-    import pandas as pd
-    patient_file = os.path.join(_get_medeadb_path(), "immune-compass/patients/IMVigor210-0257bb-ar-0257bbb.pkl")
-    df_tpm = pd.read_pickle(patient_file)
-    dfpred, sorted_cell_concept = compass_predict(df_tpm, device='cuda')
-    print(sorted_cell_concept)
-    print(dfpred)
     
