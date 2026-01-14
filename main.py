@@ -500,10 +500,10 @@ def medea_unittest(df, user_template=None, agent_template=None):
             end_time = time.time()
 
             # Log check for the query and response
-            success_count, executed_output, reason_output, hypo_output, gpt_feedback = log_check(
+            success_count, executed_output, reason_output, final_output, llm_feedback = log_check(
                 task=TASK,
                 query=X,
-                gpt_query=user_instruction,
+                llm_query=user_instruction,
                 llm_judge_prompt=LLM_JUDGE_PROMPT,
                 response_dict=response,
                 start_time=start_time,
@@ -514,7 +514,7 @@ def medea_unittest(df, user_template=None, agent_template=None):
             )
             
             # Save log
-            log_pack = [executed_output, reason_output, hypo_output, gpt_feedback]
+            log_pack = [executed_output, reason_output, final_output, llm_feedback]
             log_df = log_saver(
                 log_df, 
                 "medea", 
@@ -533,8 +533,8 @@ def medea_unittest(df, user_template=None, agent_template=None):
                 acc_dict,
                 executed_output,
                 reason_output,
-                hypo_output,
-                gpt_feedback,
+                final_output,
+                llm_feedback,
                 success_count,
                 cg_count,
                 reason_count,
@@ -639,15 +639,15 @@ def llm_unitest(df, mod='llm', agent_output_df=None, model=None, user_template=N
             )
             response = {
                 'llm': llm_hypothesis_response,
-                'CGRH': hypothesis_response
+                'final': hypothesis_response
             }
         
         if i == attempts: continue
 
-        success_count, _, _, hypo_output, llm_feedback = log_check(
+        success_count, _, _, final_output, llm_feedback = log_check(
             task=TASK,
             query=user_instruction,
-            gpt_query=user_instruction,
+            llm_query=user_instruction,
             llm_judge_prompt=LLM_JUDGE_PROMPT,
             response_dict=response,
             start_time=0,
@@ -659,7 +659,7 @@ def llm_unitest(df, mod='llm', agent_output_df=None, model=None, user_template=N
         )
 
         # Save log
-        log_pack = [hypo_output, llm_feedback]
+        log_pack = [final_output, llm_feedback]
         log_df = log_saver(
             log_df, 
             mod, 
@@ -673,8 +673,8 @@ def llm_unitest(df, mod='llm', agent_output_df=None, model=None, user_template=N
         
         # Determine the prediction output based on mode
         if mod == 'multi_round_discussion':
-            print(f"[response] {response['CGRH']}", flush=True)
-            prediction_output = hypo_output
+            print(f"[response] {response['final']}", flush=True)
+            prediction_output = final_output
         else:
             print(f"[response] {response['llm']}", flush=True)
             prediction_output = llm_feedback

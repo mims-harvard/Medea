@@ -2,6 +2,7 @@
 # Core Dependencies
 # ============================================================================
 agentlite-llm>=0.1.12
+tooluniverse>=0.1.0
 pandas<2.0.0
 numpy>=2.0.2
 
@@ -41,21 +42,24 @@ keybert>=0.9.0
 # Machine Learning and Deep Learning
 # ============================================================================
 torch>=2.8.0
+torchvision>=0.15.0
 accelerate>=1.10.1
 safetensors>=0.6.2
 peft>=0.17.1
 scikit-learn>=1.6.1
 scipy>=1.13.1
 umap-learn>=0.5.7
+einops>=0.8.0
 
 # ============================================================================
 # Data Processing
 # ============================================================================
-datasets>=4.2.0
-pyarrow>=21.0.0
+datasets>=2.14.0,<3.0.0
+pyarrow>=12.0.0,<18.0.0
 h5py>=3.13.0
 openpyxl>=3.1.5
 dill>=0.4.0
+qnorm>=0.8.1
 
 # ============================================================================
 # Bioinformatics and Biological Databases
@@ -104,6 +108,8 @@ matplotlib>=3.9.4
 seaborn>=0.13.2
 plotly>=6.3.1
 palettable>=3.3.3
+statannotations>=0.6.0
+colorcet>=3.1.0
 
 # ============================================================================
 # Monitoring and Logging
@@ -116,7 +122,7 @@ psutil>=7.1.1
 # Additional Dependencies
 # ============================================================================
 filelock>=3.19.1
-huggingface-hub>=0.35.3
+huggingface-hub>=0.34.0,<1.0
 tiktoken>=0.9.0
 networkx>=3.2.1
 sympy>=1.14.0
@@ -125,3 +131,5 @@ regex>=2025.10.23
 pyyaml>=6.0.3
 certifi>=2025.10.5
 setuptools>=80.9.0
+tidepy>=0.0.1
+gdown>=5.2.0

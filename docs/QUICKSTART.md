@@ -49,7 +49,7 @@ result = medea(
     literature_module=literature_module
 )
 
-print(result['CGRH'])  # Final answer
+print(result['final'])  # Final answer
 ```
 
 ## Examples

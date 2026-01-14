@@ -69,6 +69,10 @@ huggingface-cli login  # Enter your token
 brew install git-lfs  # macOS, or: sudo apt-get install git-lfs (Linux)
 git lfs install
 git clone https://huggingface.co/datasets/mims-harvard/MedeaDB
+
+# OPTIONAL: For machine learning tools (COMPASS, etc.)
+# Clone and configure the tool in the Medea directory
+git clone https://github.com/mims-harvard/COMPASS.git MedeaDB/compass/COMPASS
 ```
 
 **📚 Detailed guide**: See [docs/QUICKSTART.md](docs/QUICKSTART.md)
@@ -188,10 +192,10 @@ result = medea(
 )
 
 # Step 5: Get your answer
-print(result['CGRH'])  # Final hypothesis from panel discussion
-print(result['P'])     # Research plan
-print(result['CG'])    # In-silico experiment result
-print(result['R'])     # Literature reasoning
+print(result['final'])  # Medea (full agent) output
+print(result['P'])     # Research plan from ResearchPlanning module
+print(result['PA'])    # ResearchPlanning + Analysis module output
+print(result['R'])     # LiteratureReasoning output
 ```
 
 ### 🔬 Option 2: Research Planning + In-Silico Experiment Only
@@ -282,6 +286,36 @@ See the [`examples/`](examples/) directory for detailed examples including:
 - Advanced module configuration
 - Panel discussion customization
 
+### 🔧 Using Medea Tools with ToolUniverse
+
+Medea's tools are compatible with [ToolUniverse](https://github.com/mims-harvard/ToolUniverse) framework. This allows you to use Medea's specialized tools in agent systems and tool management frameworks.
+
+**Use Medea tools with ToolUniverse:**
+
+```python
+from tooluniverse.tool_registry import get_tool_registry
+from medea.tool_space import tooluniverse_tools
+
+# Register Medea tools (8 tools available)
+all_tools = get_tool_registry()
+medea_tools = tooluniverse_tools.list_medea_tools()
+print(f"Available Medea tools: {medea_tools}")
+
+# Use a tool
+tool_class = all_tools['load_disease_targets']
+tool = tool_class({})
+
+result = tool.run({
+    'disease_name': 'rheumatoid arthritis',
+    'use_api': True,
+    'attributes': ['otGeneticsPortal', 'chembl']
+})
+
+print(f"Found {result['count']} therapeutic targets")
+```
+
+**Detailed guide**: See [`examples/tooluniverse_integration.py`](examples/tooluniverse_integration.py)
+
 ## Command-Line Interface (CLI) Usage
 
 Medea provides a comprehensive command-line interface for running different evaluation tasks and configurations. The CLI allows you to easily configure all aspects of the system without modifying code.
@@ -334,13 +368,10 @@ python main.py --task sl --cell-line CAL27 --sl-source samson
 
 ```bash
 # Default immune response
-python main.py --task immune_response
+python main.py --task immune_response --patient-tpm-root /path/to/tpm/data
 
 # Custom dataset
-python main.py --task immune_response --immune-dataset IMVigor210
-
-# Custom patient TPM data path
-python main.py --task immune_response --patient-tpm-root /path/to/tpm/data
+python main.py --task immune_response --immune-dataset IMVigor210 --patient-tpm-root /path/to/tpm/data
 ```
 
 #### Agent Configuration

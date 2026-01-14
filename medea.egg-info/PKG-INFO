@@ -42,6 +42,7 @@ Requires-Dist: FlagEmbedding>=1.2.0
 Requires-Dist: transformers>=4.35.0
 Requires-Dist: tokenizers>=0.13.0
 Requires-Dist: torch>=2.0.0
+Requires-Dist: torchvision>=0.15.0
 Requires-Dist: accelerate>=0.20.0
 Requires-Dist: safetensors>=0.3.0
 Requires-Dist: spacy>=3.5.0
@@ -165,7 +166,7 @@ cd Medea
 
 # Create virtual environment with uv (recommended)
 pip install uv
-uv venv medea --python 3.10
+uv venv medea --python 3.11
 source medea/bin/activate  # On Windows: medea\Scripts\activate
 
 # Install Medea
@@ -302,10 +303,10 @@ result = medea(
 )
 
 # Step 5: Get your answer
-print(result['CGRH'])  # Final hypothesis from panel discussion
-print(result['P'])     # Research plan
-print(result['CG'])    # In-silico experiment result
-print(result['R'])     # Literature reasoning
+print(result['final'])  # Medea (full agent) output
+print(result['P'])     # Research plan from ResearchPlanning module
+print(result['PA'])    # ResearchPlanning + Analysis module output
+print(result['R'])     # LiteratureReasoning output
 ```
 
 ### 🔬 Option 2: Research Planning + In-Silico Experiment Only

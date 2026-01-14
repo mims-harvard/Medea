@@ -1,0 +1,304 @@
+{
+  "tools": [
+    {
+      "name": "load_disease_targets",
+      "description": "Load disease-associated therapeutic targets from OpenTargets database. Returns targets with genetic evidence (GWAS) and FDA-approved drugs.",
+      "parameters": {
+        "disease_name": {
+          "type": "string",
+          "description": "Name of the disease to query (e.g., 'rheumatoid arthritis', 'breast cancer')",
+          "required": true
+        },
+        "use_api": {
+          "type": "boolean",
+          "description": "Whether to use OpenTargets API (true) or local files (false)",
+          "required": false,
+          "default": true
+        },
+        "attributes": {
+          "type": "array",
+          "description": "Datasource types to filter by (e.g., 'otGeneticsPortal', 'chembl')",
+          "required": false,
+          "default": ["otGeneticsPortal", "chembl"]
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "targets": {"type": "array", "items": {"type": "string"}},
+          "count": {"type": "integer"},
+          "disease": {"type": "string"}
+        }
+      }
+    },
+    {
+      "name": "load_pinnacle_ppi",
+      "description": "Load cell-type-specific protein embeddings from PINNACLE geometric deep learning model. Returns protein representations in specific cellular contexts.",
+      "parameters": {
+        "cell_type": {
+          "type": "string",
+          "description": "Cell type to load embeddings for (e.g., 'b_cell', 'hepatocyte', 'neuron')",
+          "required": true
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "cell_type": {"type": "string"},
+          "num_genes": {"type": "integer"},
+          "genes": {"type": "array", "items": {"type": "string"}},
+          "embedding_shape": {"type": "string"}
+        }
+      }
+    },
+    {
+      "name": "humanbase_analyze_tissue_coexpression",
+      "description": "Analyze tissue-specific gene co-expression patterns using HumanBase database.",
+      "parameters": {
+        "genes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of gene symbols to analyze",
+          "required": true
+        },
+        "tissue": {
+          "type": "string",
+          "description": "Tissue context (e.g., 'brain', 'liver', 'heart')",
+          "required": true
+        },
+        "max_interactions": {
+          "type": "integer",
+          "description": "Maximum number of interactions to return (default: 10, max recommended: 10)",
+          "required": false,
+          "default": 10
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "summary": {"type": "string"},
+          "confidence": {"type": "string"},
+          "top_interactions": {"type": "array"},
+          "biological_processes": {"type": "array"}
+        }
+      }
+    },
+    {
+      "name": "humanbase_analyze_tissue_protein_interactions",
+      "description": "Analyze tissue-specific protein-protein interactions using HumanBase.",
+      "parameters": {
+        "genes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of gene symbols",
+          "required": true
+        },
+        "tissue": {
+          "type": "string",
+          "description": "Tissue context",
+          "required": true
+        },
+        "max_interactions": {
+          "type": "integer",
+          "description": "Maximum number of interactions to return (default: 10, max recommended: 10)",
+          "required": false,
+          "default": 10
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "summary": {"type": "string"},
+          "confidence": {"type": "string"},
+          "top_interactions": {"type": "array"},
+          "biological_processes": {"type": "array"}
+        }
+      }
+    },
+    {
+      "name": "analyze_pathway_interaction",
+      "description": "Analyze genetic pathway interactions between two genes using WikiPathways.",
+      "parameters": {
+        "gene1": {
+          "type": "string",
+          "description": "First gene symbol for interaction analysis",
+          "required": true
+        },
+        "gene2": {
+          "type": "string",
+          "description": "Second gene symbol for interaction analysis",
+          "required": true
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "summary": {"type": "string"},
+          "confidence": {"type": "string"},
+          "mechanisms": {"type": "array"},
+          "pathways": {"type": "array"}
+        }
+      }
+    },
+    {
+      "name": "analyze_comprehensive_interaction",
+      "description": "Comprehensive interaction analysis across pathway, reactome, hallmark, function, and process databases.",
+      "parameters": {
+        "gene1": {
+          "type": "string",
+          "description": "First gene symbol for comprehensive analysis",
+          "required": true
+        },
+        "gene2": {
+          "type": "string",
+          "description": "Second gene symbol for comprehensive analysis",
+          "required": true
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "analyses": {
+            "type": "object",
+            "description": "Dictionary with keys: pathway, reactome, hallmark, function, process"
+          }
+        }
+      }
+    },
+    {
+      "name": "compass_predict",
+      "description": "COMPASS model for ICI response prediction and immune concept extraction from patient transcriptomic data.",
+      "parameters": {
+        "df_tpm": {
+          "type": "object",
+          "description": "Pandas DataFrame with patient transcriptomic data (TPM values)",
+          "required": true
+        },
+        "root_path": {
+          "type": "string",
+          "description": "Path to COMPASS checkpoint directory (optional)",
+          "required": false
+        },
+        "ckp_path": {
+          "type": "string",
+          "description": "Checkpoint filename (default: pft_leave_IMVigor210.pt)",
+          "required": false,
+          "default": "pft_leave_IMVigor210.pt"
+        },
+        "device": {
+          "type": "string",
+          "description": "Device for computation: 'cuda' or 'cpu' (default: cuda)",
+          "required": false,
+          "default": "cuda"
+        },
+        "threshold": {
+          "type": "number",
+          "description": "Response threshold (default: 0.5)",
+          "required": false,
+          "default": 0.5
+        },
+        "batch_size": {
+          "type": "integer",
+          "description": "Batch size for processing (default: 128)",
+          "required": false,
+          "default": 128
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "responder": {"type": "boolean"},
+          "cell_concepts": {"type": "array", "items": {"type": "array"}},
+          "num_concepts": {"type": "integer"}
+        }
+      }
+    },
+    {
+      "name": "compute_depmap_correlations",
+      "description": "Validate genetic interactions using DepMap cell viability data. Computes correlation between two genes' knockout effects.",
+      "parameters": {
+        "gene_a": {
+          "type": "string",
+          "description": "First gene symbol",
+          "required": true
+        },
+        "gene_b": {
+          "type": "string",
+          "description": "Second gene symbol",
+          "required": true
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "gene_a": {"type": "string"},
+          "gene_b": {"type": "string"},
+          "correlation": {"type": "object"}
+        }
+      }
+    },
+    {
+      "name": "scientific_reasoning_agent",
+      "description": "LLM-powered scientific reasoning agent for answering complex biological questions.",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "description": "Scientific question or query",
+          "required": true
+        }
+      },
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "reasoning": {"type": "string"}
+        }
+      }
+    },
+    {
+      "name": "transcriptformer_embedding",
+      "description": "Generate gene expression embeddings using Transcriptformer model.",
+      "parameters": {},
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "result": {"type": "object"}
+        }
+      }
+    },
+    {
+      "name": "hpa_biological_process",
+      "description": "Get biological process information from Human Protein Atlas.",
+      "parameters": {},
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "result": {"type": "object"}
+        }
+      }
+    },
+    {
+      "name": "hpa_comparative_expression",
+      "description": "Get comparative gene expression data from Human Protein Atlas.",
+      "parameters": {},
+      "returns": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean"},
+          "result": {"type": "object"}
+        }
+      }
+    }
+  ]
+}
+

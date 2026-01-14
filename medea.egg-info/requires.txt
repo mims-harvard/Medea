@@ -18,6 +18,7 @@ FlagEmbedding>=1.2.0
 transformers>=4.35.0
 tokenizers>=0.13.0
 torch>=2.0.0
+torchvision>=0.15.0
 accelerate>=0.20.0
 safetensors>=0.3.0
 spacy>=3.5.0

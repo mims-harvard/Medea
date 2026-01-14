@@ -243,7 +243,7 @@ def log_saver(
         "targetID":          ['candidate_genes', 'cell_type', 'disease', 'y'],
         "sl":                ['gene a', 'gene b', 'cell line', 'y'],
         "immune_response":   ['cancer_type', 'tmb', 'nmb', 'pheno', 'y'],
-        "medea":             ['cg', 'r', 'full', 'llm-bb'],
+        "medea":             ['pa', 'r', 'full', 'llm-bb'],
         "multi_round_discussion": ['full', 'llm'],
         "llm":               ['llm']
     }
@@ -287,9 +287,9 @@ def log_saver(
         medea_cols = expected_columns['medea']
         ensure_columns(df, medea_cols)
         # Unpack log_pack as a tuple of four outputs
-        cg_out, r_out, full_out, llm_bb_out = log_pack
+        pa_out, r_out, full_out, llm_bb_out = log_pack
         new_row.update({
-            'cg': cg_out,
+            'pa': pa_out,
             'r': r_out,
             'full': full_out,
             'llm-bb': llm_bb_out
@@ -324,7 +324,7 @@ def log_saver(
 def log_check(
     task,
     query, 
-    gpt_query,
+    llm_query,
     llm_judge_prompt,
     response_dict, 
     start_time, 
@@ -340,7 +340,7 @@ def log_check(
     Parameters:
         task (str): The task type (targetID, sl, immune_response).
         query (str): The user instruction only (user_instruction).
-        gpt_query (str): The full query including experiment instruction for LLM judge.
+        llm_query (str): The full query including experiment instruction for LLM judge.
         llm_judge_prompt (str): Template for LLM judge evaluation.
         response_dict (dict or str): The response containing code snippet and output or the direct output.
         start_time (float): The timestamp when the process started.
@@ -370,8 +370,8 @@ def log_check(
             if "R" in response_dict:
                 if response_dict["R"] != None:
                     reason_response = response_dict["R"]
-            if "CGRH" in response_dict:
-                hyp_response = response_dict["CGRH"]
+            if "final" in response_dict:
+                hyp_response = response_dict["final"]
             if "llm" in response_dict:
                 llm_response = response_dict["llm"]
         else:
@@ -397,18 +397,18 @@ def log_check(
             reason_output = reason_response
         
 
-        llm_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=llm_response), temperature=0, model=llm_judge)
-        cg_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=executed_output), temperature=0, model=llm_judge)
-        reason_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=reason_output), temperature=0, model=llm_judge)
-        hypo_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=hyp_response), temperature=0, model=llm_judge)
+        llm_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=llm_response), temperature=0, model=llm_judge)
+        cg_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=executed_output), temperature=0, model=llm_judge)
+        reason_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=reason_output), temperature=0, model=llm_judge)
+        hypo_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=hyp_response), temperature=0, model=llm_judge)
     elif mod == 'multi_round_discussion':
-        hyp_response, llm_hyp_response = response_dict['CGRH'], response_dict['llm']
-        hypo_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=hyp_response), temperature=0, model=llm_judge)
-        llm_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=llm_hyp_response), temperature=0, model=llm_judge)
+        hyp_response, llm_hyp_response = response_dict['final'], response_dict['llm']
+        hypo_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=hyp_response), temperature=0, model=llm_judge)
+        llm_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=llm_hyp_response), temperature=0, model=llm_judge)
         return success_count, None, None, hypo_decision.lower(), llm_decision.lower()
     else:
         llm_response = response_dict['llm']
-        llm_decision = chat_completion(llm_judge_prompt.format(user_query=gpt_query, reasoning_result=llm_response), temperature=0, model=llm_judge)
+        llm_decision = chat_completion(llm_judge_prompt.format(user_query=llm_query, reasoning_result=llm_response), temperature=0, model=llm_judge)
         return success_count, None, None, None, llm_decision.lower()
 
 
@@ -539,7 +539,7 @@ def log_acc_dict(acc_dict, task, *args):
                 f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
                 f"CG Acc: {v['cg_count']/v['total']:.4} | "
                 f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"CGRH Acc: {v['hypo_count']/v['total']:.4}", 
+                f"final Acc: {v['hypo_count']/v['total']:.4}", 
                 flush=True
             )
         for c, v in acc_dict["celltype"].items():
@@ -548,7 +548,7 @@ def log_acc_dict(acc_dict, task, *args):
                 f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
                 f"CG Acc: {v['cg_count']/v['total']:.4} | "
                 f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"CGRH Acc: {v['hypo_count']/v['total']:.4}", 
+                f"final Acc: {v['hypo_count']/v['total']:.4}", 
                 flush=True
             )
 
@@ -562,7 +562,7 @@ def log_acc_dict(acc_dict, task, *args):
                 f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
                 f"CG Acc: {v['cg_count']/v['total']:.4} | "
                 f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"CGRH Acc: {v['hypo_count']/v['total']:.4}", 
+                f"final Acc: {v['hypo_count']/v['total']:.4}", 
                 flush=True
             )
         print("======================================")
@@ -572,7 +572,7 @@ def log_acc_dict(acc_dict, task, *args):
                 f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
                 f"CG Acc: {v['cg_count']/v['total']:.4} | "
                 f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"CGRH Acc: {v['hypo_count']/v['total']:.4}", 
+                f"final Acc: {v['hypo_count']/v['total']:.4}", 
                 flush=True
             )
         for g in candidate_genes:
@@ -582,7 +582,7 @@ def log_acc_dict(acc_dict, task, *args):
                 f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
                 f"CG Acc: {v['cg_count']/v['total']:.4} | "
                 f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"CGRH Acc: {v['hypo_count']/v['total']:.4}", 
+                f"final Acc: {v['hypo_count']/v['total']:.4}", 
                 flush=True
             )
     
@@ -595,7 +595,7 @@ def log_acc_dict(acc_dict, task, *args):
                 f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
                 f"CG Acc: {v['cg_count']/v['total']:.4} | "
                 f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"CGRH Acc: {v['hypo_count']/v['total']:.4}", 
+                f"final Acc: {v['hypo_count']/v['total']:.4}", 
                 flush=True
             )
         print('\n')
@@ -616,8 +616,8 @@ def evaluate_prediction(
         acc_dict, 
         executed_output, 
         reason_output,
-        hypo_output, 
-        gpt_feedback,
+        final_output, 
+        llm_feedback,
         success_count,
         cg_count,
         reason_count,
@@ -636,13 +636,13 @@ def evaluate_prediction(
             reason_count += 1
             update_acc_dict(acc_dict, task, 'reason_count', *args)
 
-    if type(hypo_output) is str and y.lower() in hypo_output.lower():
-        if task != "immune_response" or y.lower() == hypo_output.lower():
+    if type(final_output) is str and y.lower() in final_output.lower():
+        if task != "immune_response" or y.lower() == final_output.lower():
             hypo_count += 1
             update_acc_dict(acc_dict, task, 'hypo_count', *args)
     
-    if type(gpt_feedback) is str and y.lower() in gpt_feedback.lower():
-        if task != "immune_response" or y.lower() == gpt_feedback.lower():
+    if type(llm_feedback) is str and y.lower() in llm_feedback.lower():
+        if task != "immune_response" or y.lower() == llm_feedback.lower():
             gpt_count += 1
             update_acc_dict(acc_dict, task, 'gpt_count', *args)
     
@@ -655,7 +655,7 @@ def evaluate_prediction(
     gpt_acc = gpt_count/total
 
     p_sc = success_count.get('P', 0) / total
-    cg_sc = success_count.get('CG', 0) / total
+    cg_sc = success_count.get('PA', 0) / total
     r_sc = success_count.get('R', 0) / total
     
     print(
@@ -667,14 +667,14 @@ def evaluate_prediction(
     print(
         f"\nContext: {args} |"
         f"y: {y} | "
-        f"LLM (backbone): {gpt_feedback} | "
+        f"LLM (backbone): {llm_feedback} | "
         f"Medea (CG): {executed_output} | "
         f"Medea (R): {reason_output} | "
-        f"Medea (CGRH): {hypo_output}\n"
+        f"Medea (final): {final_output}\n"
         f"LLM (backbone): {gpt_acc} | "
         f"Medea (CG): {cg_acc:.4f} | "
         f"Medea (R): {reason_acc:.4f} | "
-        f"Medea (CGRH): {hypo_acc:.4f}\n ",
+        f"Medea (final): {hypo_acc:.4f}\n ",
         flush=True
     )
     

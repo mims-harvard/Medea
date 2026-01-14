@@ -159,20 +159,20 @@ def main():
         print("-" * 80)
         print(result['P'])
     
-    if 'CG' in result:
+    if 'PA' in result:
         print("\n[In-Silico Experiment Result]")
         print("-" * 80)
-        print(result['CG'])
+        print(result['PA'])
     
     if 'R' in result:
         print("\n[Literature Reasoning]")
         print("-" * 80)
         print(result['R'])
     
-    if 'CGRH' in result:
+    if 'final' in result:
         print("\n[Panel Discussion Hypothesis]")
         print("-" * 80)
-        print(result['CGRH'])
+        print(result['final'])
     
     if 'llm' in result:
         print("\n[LLM Panel Responses]")

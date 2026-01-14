@@ -945,8 +945,7 @@ class OpenScholarReasoning:
         
         reranker = FlagReranker(
             default_reranker, 
-            use_fp16=True, 
-            devices=kwargs.get('devices', 'cuda:0')
+            use_fp16=True
         )
         
         print(f"[OpenScholarReasoning] Reranker initialized successfully", flush=True)

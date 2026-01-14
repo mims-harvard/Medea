@@ -328,8 +328,7 @@ class OpenScholarReasoning(BaseAction):
             
             reranker = FlagReranker(
                 self.default_reranker, 
-                use_fp16=use_fp16, 
-                devices=device
+                use_fp16=use_fp16
             )
             
             if self.verbose:

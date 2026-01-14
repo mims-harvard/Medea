@@ -172,9 +172,9 @@ def medea(
     Returns:
         Dictionary containing:
             - 'P': Research plan text
-            - 'CG': Analysis response
+            - 'PA': Analysis response
             - 'R': Literature reasoning response
-            - 'CGRH': Panel discussion hypothesis
+            - 'final': Panel discussion hypothesis
             - 'llm': Panel LLM responses
             
     Example:
@@ -208,7 +208,7 @@ def medea(
         ...     literature_module=literature_module
         ... )
         >>> 
-        >>> print(result['CGRH'])  # Final hypothesis from panel discussion
+        >>> print(result['final'])  # Final hypothesis from panel discussion
     """
     from .modules.discussion import multi_round_discussion
     
@@ -320,7 +320,7 @@ def medea(
         agent_output_dict['P'] = research_plan_text
 
     if analysis_response != "None":
-        agent_output_dict['CG'] = analysis_response
+        agent_output_dict['PA'] = analysis_response
 
     if literature_response != "None":
         agent_output_dict['R'] = literature_response
@@ -351,7 +351,7 @@ def medea(
     )
     
     agent_output_dict['llm'] = llm_hypothesis_response
-    agent_output_dict['CGRH'] = hypothesis_response
+    agent_output_dict['final'] = hypothesis_response
 
     return agent_output_dict
 

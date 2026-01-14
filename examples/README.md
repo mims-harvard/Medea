@@ -43,7 +43,7 @@ result = medea(
     literature_module=LiteratureReasoning(llm)
 )
 
-print(result['CGRH'])
+print(result['final'])
 ```
 
 ### 2. Research Planning Only
