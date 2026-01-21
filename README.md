@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://arxiv.org/abs/TODO"><img src="https://img.shields.io/badge/Paper_on-arXiv-4A90E2?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=2C3E50" alt="arXiv"></a>
+  <a href="https://www.biorxiv.org/content/10.64898/2026.01.16.696667v1"><img src="https://img.shields.io/badge/Paper_on-arXiv-4A90E2?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=2C3E50" alt="arXiv"></a>
   <a href="https://medea.openscientist.ai/"><img src="https://img.shields.io/badge/Project-Website-4A90E2?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2C3E50" alt="Website"></a>
   <a href="https://huggingface.co/datasets/mims-harvard/MedeaDB"><img src="https://img.shields.io/badge/Datasets-Hugging_Face-4A90E2?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=2C3E50" alt="HuggingFace"></a>
 </p> 
