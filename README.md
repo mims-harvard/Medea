@@ -524,11 +524,13 @@ Output changes based on your task and arguments.
 ## Cite
 
 ```bibtex
-@misc{medea2025,
-      title={MEDEA: An omics AI agent for therapeutic discovery},
-      author={Pengwei Sui, Michelle M. Li, Shanghua Gao, Wanxiang Shen, Valentina Giunchiglia, Andrew Shen, Yepeng Huang, Zhenglun Kong, and Marinka Zitnik},
-      year={2025},
-      archivePrefix={arXiv},
+@article {medea2026,
+	author = {Sui, Pengwei and Li, Michelle and Gao, Shanghua and Shen, Wanxiang and Giunchiglia, Valentina and Shen, Andrew and Huang, Yepeng and Kong, Zhenglun and Zitnik, Marinka},
+	title = {Medea: An omics AI agent for therapeutic discovery},
+	year = {2026},
+	doi = {10.64898/2026.01.16.696667},
+	URL = {https://www.biorxiv.org/content/early/2026/01/20/2026.01.16.696667},
+	journal = {bioRxiv}
 }
 ```
 
