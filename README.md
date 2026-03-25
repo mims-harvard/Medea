@@ -296,7 +296,7 @@ Medea's tools are compatible with [ToolUniverse](https://github.com/mims-harvard
 from tooluniverse.tool_registry import get_tool_registry
 from medea.tool_space import tooluniverse_tools
 
-# Register Medea tools (8 tools available)
+# Register Medea tools (13 tools available)
 all_tools = get_tool_registry()
 medea_tools = tooluniverse_tools.list_medea_tools()
 print(f"Available Medea tools: {medea_tools}")
@@ -433,7 +433,7 @@ python main.py \
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
 | `--cell-line` | str | `MCF7` | Cell line (for samson source, e.g., MCF7, CAL27, A549) |
-| `--sl-source` | str | `samson` | SL data source (samson, yeast) |
+| `--sl-source` | str | `samson` | SL data source (samson) |
 
 #### Immune Therapy Task
 
@@ -508,8 +508,6 @@ Output changes based on your task and arguments.
    ```bash
    # For samson (human cell line) SL:
    --checkpoint "GENE1,GENE2,CELLLINE,INTERACTION"
-   # For yeast SL:
-   --checkpoint "GENE1,GENE2,CONDITION,INTERACTION"
    # Values must match the last completed row in the CSV log
    ```
 

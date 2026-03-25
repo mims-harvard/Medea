@@ -620,5 +620,71 @@
         "name": "h5py",
         "type": "api",
         "version": "3.13.0"
+    },
+    {
+        "name": "query_sgd_interactions",
+        "type": "tool",
+        "description": "SPECIES: Yeast (Saccharomyces cerevisiae). THE PREFERRED TOOL for checking known interactions between two yeast genes. Queries the Saccharomyces Genome Database (SGD), which aggregates BioGRID-curated data. Returns BOTH genetic interactions (Synthetic Lethality, Negative Genetic, Positive Genetic, etc. — double knockout phenotype deviations) AND physical interactions (Affinity Capture, Two-hybrid, Co-purification, etc. — proteins physically bind in the cell). These are fundamentally different interaction types. Use this BEFORE indirect inference tools when the question involves yeast gene interactions.",
+        "import_path": "from medea.tool_space.yeast_interactions import query_sgd_interactions",
+        "input_params": [
+            {"name": "gene_a", "type": "str", "description": "First yeast gene standard name or systematic name (e.g. 'SGS1', 'YMR190C')"},
+            {"name": "gene_b", "type": "str", "description": "Second yeast gene standard name or systematic name (e.g. 'RPD3', 'YNL330C')"}
+        ],
+        "return_type": "dict",
+        "returns": "A dictionary with keys: success (bool), gene_a, gene_b, genetic_interactions (list), physical_interactions (list), num_genetic_interactions (int), num_physical_interactions (int), has_negative_interaction (bool), has_synthetic_lethality (bool), has_physical_interaction (bool), summary (str), error (str or None), evidence_type ('hit'/'no_hit'/'error'), sl_relevance ('aggravating'/'alleviating'/'mixed'/'none' — based on genetic interactions only, physical interactions do not determine SL direction), coverage (dict).",
+        "code_example": {
+            "description": "Check if SGS1 and RPD3 have curated genetic or physical interactions in SGD",
+            "code": "from medea.tool_space.yeast_interactions import query_sgd_interactions\n\nresult = query_sgd_interactions('SGS1', 'RPD3')\nprint(f\"Evidence type: {result['evidence_type']}, SL relevance: {result['sl_relevance']}\")\nprint(f\"Genetic: {result['num_genetic_interactions']}, Physical: {result['num_physical_interactions']}\")\nprint(f\"Summary: {result['summary']}\")"
+        }
+    },
+    {
+        "name": "query_string_yeast_interactions",
+        "type": "tool",
+        "description": "SPECIES: Yeast (Saccharomyces cerevisiae). Query STRING-DB for functional association evidence between two yeast genes. STRING integrates experimental (physical/genetic), co-expression, text mining, database imports, and computational prediction evidence channels. Returns a combined score (0-1) and per-channel scores. Useful as a complement to SGD genetic interactions: STRING captures broader functional associations that can support genetic interaction predictions.",
+        "import_path": "from medea.tool_space.yeast_interactions import query_string_yeast_interactions",
+        "input_params": [
+            {"name": "gene_a", "type": "str", "description": "First yeast gene standard name (e.g. 'SGS1')"},
+            {"name": "gene_b", "type": "str", "description": "Second yeast gene standard name (e.g. 'RPD3')"},
+            {"name": "required_score", "type": "int", "description": "Minimum combined score threshold (0-1000). Default 0 returns all."}
+        ],
+        "return_type": "dict",
+        "returns": "A dictionary with keys: success (bool), gene_a, gene_b, combined_score (float, 0-1), experimental_score, database_score, textmining_score, coexpression_score, summary (str), error (str or None), evidence_type ('hit'/'no_hit'/'error' — did the tool find data?), sl_relevance (always 'none' — STRING provides undirected functional association, not GI direction), coverage (dict describing database scope).",
+        "code_example": {
+            "description": "Check STRING-DB functional association between SGS1 and RPD3 in yeast",
+            "code": "from medea.tool_space.yeast_interactions import query_string_yeast_interactions\n\nresult = query_string_yeast_interactions('SGS1', 'RPD3')\nprint(f\"Combined score: {result['combined_score']:.3f}\")\nprint(f\"Experimental: {result['experimental_score']:.3f}\")\nprint(f\"Summary: {result['summary']}\")"
+        }
+    },
+    {
+        "name": "query_costanzo_sga_dataset",
+        "type": "tool",
+        "description": "SPECIES: Yeast (Saccharomyces cerevisiae). Query the Costanzo SGA genetic interaction datasets — gold-standard high-throughput GI data. (1) Costanzo 2021 condition-specific SGA (14 conditions: MMS, Benomyl, Rapamycin, Cycloheximide, etc. × ~30K gene pairs) — auto-downloaded on first use (~133 MB). (2) Costanzo 2016 standard-condition SGA (~23M pairs, must be manually downloaded). Returns quantitative GI scores (epsilon), p-values, and interaction classification. NOTE: Bleomycin (BLEO) is NOT in the 14 conditions; available conditions: ActinomycinD, Benomyl, Bortezomib, Caspofungin, ConcanamycinA, Cycloheximide, Fluconazole, Galactose, Geldenamycin, MMS, Monensin, Rapamycin, Sorbitol, Tunicamycin.",
+        "import_path": "from medea.tool_space.yeast_interactions import query_costanzo_sga_dataset",
+        "input_params": [
+            {"name": "gene_a", "type": "str", "description": "First yeast gene standard name or systematic ORF name"},
+            {"name": "gene_b", "type": "str", "description": "Second yeast gene standard name or systematic ORF name"},
+            {"name": "condition", "type": "str", "description": "Growth condition: 'standard' (default), 'MMS', 'Benomyl', 'Rapamycin', 'Cycloheximide', 'Bortezomib', etc. See description for all 14 conditions."},
+            {"name": "data_dir", "type": "str", "description": "Path to SGA dataset directory. If None, uses $MEDEADB_PATH/sga/."}
+        ],
+        "return_type": "dict",
+        "returns": "A dictionary with keys: success, gene_a, gene_b, condition, gi_score (float, epsilon), gi_p_value, gi_type ('negative'/'positive'/'neutral'), num_records, records (list), summary, error, dataset_available (bool), evidence_type ('hit'/'no_hit'/'uninformative'/'error' — CRITICAL: 'uninformative' means the requested condition is NOT in the dataset, so absence does NOT count as evidence), sl_relevance ('aggravating'/'alleviating'/'none' — derived from gi_type), coverage (dict with condition_requested, condition_available, available_conditions, dataset_searched).",
+        "code_example": {
+            "description": "Query SGA dataset for genetic interaction between AIM25 and RPD3 under bleomycin",
+            "code": "from medea.tool_space.yeast_interactions import query_costanzo_sga_dataset\n\n# Condition-specific query\nresult = query_costanzo_sga_dataset('AIM25', 'RPD3', condition='BLEO')\nprint(f\"GI score: {result['gi_score']}, type: {result['gi_type']}\")\nprint(result['summary'])\n\n# Standard conditions\nresult_std = query_costanzo_sga_dataset('AIM25', 'RPD3', condition='standard')\nprint(result_std['summary'])"
+        }
+    },
+    {
+        "name": "query_yeast_go_annotations",
+        "type": "tool",
+        "description": "SPECIES: Yeast (Saccharomyces cerevisiae). Query SGD for Gene Ontology (GO) annotations of a yeast gene. Returns molecular function (what the gene product does), biological process (what pathway/process it participates in), and cellular component (where it localizes). Useful for understanding gene function and comparing functional profiles between two genes. Call once per gene.",
+        "import_path": "from medea.tool_space.yeast_interactions import query_yeast_go_annotations",
+        "input_params": [
+            {"name": "gene", "type": "str", "description": "Yeast gene standard name or systematic ORF name (e.g. 'SGS1', 'YMR190C')"}
+        ],
+        "return_type": "dict",
+        "returns": "A dictionary with keys: success (bool), gene (str), molecular_function (list of dicts with term/go_id/evidence/qualifier/reference), biological_process (list), cellular_component (list), num_annotations (int), summary (str), error (str or None).",
+        "code_example": {
+            "description": "Get GO annotations for SGS1 to understand its function",
+            "code": "from medea.tool_space.yeast_interactions import query_yeast_go_annotations\n\nresult = query_yeast_go_annotations('SGS1')\nprint(result['summary'])\nfor bp in result['biological_process'][:5]:\n    print(f\"  {bp['qualifier']} {bp['term']} [{bp['evidence']}]\")"
+        }
     }
 ]

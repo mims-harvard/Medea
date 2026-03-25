@@ -63,6 +63,7 @@ class Proposal:
         self.id_mapping_feedback = [None]
         self.status = "Failed"
         self.proposal_id = str(uuid.uuid4().int)[:4]
+        self.unavailable_entities: list = []  # list of dicts: {unavailable, alternatives, hard}
     
     def __str__(self):
         return f"<Proposal:{self.proposal_id}>"
@@ -127,6 +128,15 @@ class Proposal:
     
     def get_current_mapper_feedback(self):
         return self.id_mapping_feedback[-1]
+
+    def mark_unavailable(self, meta: dict):
+        """Record checker failure metadata; deduplicates by 'unavailable' key."""
+        key = meta.get("unavailable", "")
+        if not any(e.get("unavailable") == key for e in self.unavailable_entities):
+            self.unavailable_entities.append(meta)
+
+    def get_unavailable_entities(self) -> list:
+        return self.unavailable_entities
 
 
 # Code Snippet Object to store the code snippet, execution output, and quality feedback

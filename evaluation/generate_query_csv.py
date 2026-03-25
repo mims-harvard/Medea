@@ -38,11 +38,11 @@ def process_single_row_sl(args, max_retries=3, retry_delay=5):
         g_b = row_data.get('query_gene', row_data.get('gene_b', ''))
         context = row_data.get('condition', '')
         y = row_data.get('label', row_data.get('interaction', ''))
-        
+
         gpt_prompt = user_template.format(
             gene_a=g_a,
             gene_b=g_b,
-            condition=context
+            condition=expand_yeast_condition(context)
         )
     else:
         g_a = row_data.get('gene_a', '')
@@ -56,20 +56,36 @@ def process_single_row_sl(args, max_retries=3, retry_delay=5):
             cell_line=context
         )
     
+    def _is_error_response(text: str) -> bool:
+        """Return True if the LLM returned an error string instead of a real answer."""
+        if not text:
+            return True
+        lowered = text.lower()
+        return any(kw in lowered for kw in [
+            "i cannot help", "azure error", "ratelimitreached",
+            "error code", "rate limit", "too many requests",
+        ])
+
     # Call LLM for rephrasing user query with retry logic
     user_instruction = None
     for attempt in range(max_retries):
         try:
             user_instruction = chat_completion(gpt_prompt, temperature=1, model=rephrase_model)
-            if user_instruction:
+            if user_instruction and not _is_error_response(user_instruction):
                 user_instruction = user_instruction.strip('""')
                 break
+            # Treat error-string responses the same as rate-limit exceptions
+            wait = retry_delay * 2 ** attempt
+            if attempt < max_retries - 1:
+                time.sleep(wait)
+            else:
+                raise Exception(f"Error response after {max_retries} attempts for {g_a}-{g_b}: {user_instruction}")
         except Exception as e:
             if attempt < max_retries - 1:
-                time.sleep(retry_delay * (attempt + 1))  # Exponential backoff
+                time.sleep(retry_delay * 2 ** attempt)
             else:
                 raise Exception(f"Failed after {max_retries} retries for {g_a}-{g_b}: {e}")
-    
+
     if not user_instruction:
         raise Exception(f"Empty response for {g_a}-{g_b}")
     
@@ -86,11 +102,16 @@ def process_single_row_sl(args, max_retries=3, retry_delay=5):
                     model=rephrase_model, 
                     temperature=1,
                 )
-                if experiment_instruction:
+                if experiment_instruction and not _is_error_response(experiment_instruction):
                     break
+                wait = retry_delay * 2 ** attempt
+                if attempt < max_retries - 1:
+                    time.sleep(wait)
+                else:
+                    raise Exception(f"Error response for agent instruction after {max_retries} attempts")
             except Exception as e:
                 if attempt < max_retries - 1:
-                    time.sleep(retry_delay * (attempt + 1))
+                    time.sleep(retry_delay * 2 ** attempt)
                 else:
                     raise Exception(f"Failed agent instruction after {max_retries} retries: {e}")
         
@@ -121,6 +142,16 @@ def process_single_row_sl(args, max_retries=3, retry_delay=5):
         }
     
     return row_idx, sample_entity
+
+YEAST_CONDITION_NAME_MAP = {
+    'BLEO': 'bleomycin',
+    'DMS': 'dimethyl sulfate',
+}
+
+def expand_yeast_condition(condition: str) -> str:
+    """Expand yeast condition abbreviations to their formal chemical names."""
+    return YEAST_CONDITION_NAME_MAP.get(condition.strip().upper(), condition)
+
 
 experiment_setup_dict = {
     # Target Normination

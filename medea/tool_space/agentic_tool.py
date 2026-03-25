@@ -14,8 +14,11 @@ from ..modules.utils import FlushAgentLogger as AgentLogger, ReasoningPackage
 # ============================================================================
 # FILE-BASED LITERATURE CACHE + CALL BUDGET
 # Works across subprocess boundaries (subprocess.Popen, multiprocessing.Process)
+# Each top-level process (main.py invocation) gets its own isolated directory
+# so parallel tmux experiments don't interfere with each other's budgets.
 # ============================================================================
-_CACHE_DIR = os.path.join(tempfile.gettempdir(), "medea_lit_cache")
+_SESSION_ID = str(os.getpid())
+_CACHE_DIR = os.path.join(tempfile.gettempdir(), f"medea_lit_cache_{_SESSION_ID}")
 _BUDGET_FILE = os.path.join(_CACHE_DIR, "_call_count.json")
 
 
@@ -53,7 +56,6 @@ def reset_call_budget():
     """Reset per-sample call counter and literature cache. Call between samples."""
     _ensure_cache_dir()
     _write_call_count(0)
-    # Clear cached results
     for f in os.listdir(_CACHE_DIR):
         fp = os.path.join(_CACHE_DIR, f)
         try:
@@ -138,7 +140,7 @@ def scientific_reasoning_agent(
 
     reason_actions = [
         LiteratureSearch(model_name=llm_name, verbose=verbose),
-        PaperJudge(model_name=llm_name, verbose=verbose),
+        PaperJudge(model_name=llm_name, verbose=verbose, max_workers=10),
         OpenScholarReasoning(tmp=reason_action_tmp, llm_provider=llm_name, model_name=llm_name, verbose=verbose)
     ]
     reason_agent = LiteratureReasoning(llm=reason_llm, actions=reason_actions, logger=logger)

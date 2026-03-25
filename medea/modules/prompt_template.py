@@ -104,25 +104,17 @@ AVAILABLE TOOLS:
 {proposal_feedback}
 
 ═══════════════════════════════════════════════════════════════════════════
-PROPOSAL STRUCTURE:
+PROPOSAL STRUCTURE (BE CONCISE — tool details are already in AVAILABLE TOOLS above):
 
-Objective: [State the exact task with clear success criteria]
-
-Environment Note: This proposal uses only the tools listed below. No external resources are available.
-
-Step-by-Step Procedure:
+Objective: [One sentence with clear success criteria]
 
 Step N: [Step Title]
-   Action:
-   • [Subtask 1]
-   • [Subtask 2]
-   
+   Action: [What to do, 1-2 bullet points max]
    Tool: [exact_tool_name]
-   Description: [what the tool does]
    Import: [import_path]
-   Input Params: [param documentation]
-   Returns: [return value description]
-   Return Type: [type]
+   Input Params: [only param names and values, e.g. gene="TP53"]
+
+DO NOT repeat tool descriptions, return types, or return value documentation — they are already provided in AVAILABLE TOOLS. Keep each step to 3-5 lines max.
 
 ═══════════════════════════════════════════════════════════════════════════
 CRITICAL REQUIREMENTS:
@@ -152,7 +144,7 @@ CRITICAL REQUIREMENTS:
 ✓ CLARITY:
   • Natural language only - no code blocks
   • Define all terms consistently
-  • Keep proposal under 4000 tokens
+  • Keep proposal under 2000 tokens — be concise, do NOT repeat tool documentation
   • Each step must be clear and executable
 
 ✓ FINAL STEP — EVIDENCE SUMMARY (NOT DECISION):
@@ -367,6 +359,10 @@ CRITICAL LOGGING GUIDELINES:
 - Suppress verbose library outputs when possible
 - When tools produce verbose output, capture results silently and summarize key findings
 
+CRITICAL IMPORTS:
+- Use EXACTLY the import path from the 'Import:' field in the instruction and the 'import_path' field in the tool JSON.
+- NEVER infer, shorten, or guess import paths (e.g., do NOT write `from medea.tool_space import X` — always use the full submodule path as given).
+
 What your code SHOULD do:
 - Call tools to retrieve relevant data (annotations, interactions, literature, etc.)
 - Clearly print what each tool found or did NOT find
@@ -393,6 +389,22 @@ INTERPRETING TOOL OUTPUTS:
 - Always check if a tool returned "no results" or "insufficient data" BEFORE extracting findings
 - Tool outputs may echo query terms even in negative responses — check the overall conclusion first
 - When tools return no supporting data, report that clearly rather than guessing
+
+EVIDENCE SUMMARY REQUIREMENT:
+At the END of your code, after all tool calls, print a structured evidence summary:
+  print("=" * 60)
+  print("EVIDENCE SUMMARY")
+  print("=" * 60)
+For each tool called, print ONE line with:
+  - Tool name and what was queried
+  - Whether data was found (YES/NO)
+  - Key numerical result (exact value)
+  - Brief interpretation (what this means for the query)
+Example:
+  print("SGD Genetic Interactions: Found=YES, Count=2 (1 Synthetic Lethality, 1 Negative Genetic) → supports interaction")
+  print("STRING: Found=YES, Score=0.0 → no known functional association")
+  print("Enrichr: Found=NO, shared pathways=0 → no pathway overlap detected")
+This summary is critical for downstream evidence interpretation.
 
 CODE LENGTH LIMIT:
 - Do NOT write verbose docstrings, type annotations, or elaborate helper functions.
@@ -929,7 +941,7 @@ Reference:
 - Expression stability of common housekeeping genes is differently affected by bowel inflammation and cancer: implications for finding suitable normalizers for inflammatory bowel disease studies. PubMed ID: 24859296. [Link to study](https://pubmed.ncbi.nlm.nih.gov/24859296)
 """
 
-HYPOTHESOS_NORMALIZER = """Please refine and concisely address the user query with the hypothesis proposed by the following Agent in 400 words. 
+HYPOTHESOS_NORMALIZER = """Please refine and concisely address the user query with the hypothesis proposed by the following Agent in 400 words.
 
 User Query:
 {user_query}
@@ -938,6 +950,68 @@ User Query:
 
 Agent Hypothesis:
 {agent_hypo}
+"""
+
+
+FAILED_AGENT_EVIDENCE_SUMMARIZER = """Given the user query, extract the key FACTUAL FINDINGS from this agent's raw output. The agent did not reach a final conclusion, but may have collected useful partial evidence (database query results, scores, negative findings, annotations).
+
+User Query:
+{user_query}
+
+Agent Raw Output:
+{raw_output}
+
+RULES:
+- Include ALL database query results, scores, interaction counts, and GO annotations found
+- Include negative findings ("no interaction found", "0 results") — these are informative
+- Do NOT add your own conclusions or interpretations
+- Do NOT speculate beyond what the agent output contains
+- Keep under 300 words
+- Format as a bullet-point list of findings
+"""
+
+
+ANALYSIS_AGENT_NORMALIZER = """You are an expert scientific analyst. Transform the raw computational analysis output below into a clear, structured evidence report. Preserve ALL quantitative findings exactly — do not round, omit, or editorialize numbers.
+
+User Query:
+{user_query}
+
+----
+
+Raw Analysis Agent Output:
+{agent_hypo}
+
+----
+
+STRUCTURE YOUR RESPONSE AS (target 500 words):
+
+1. **Conclusion from Computational Analysis**: State what the tool outputs collectively suggest about the query. If tools found no supporting evidence, state that clearly and explicitly.
+
+2. **Key Quantitative Findings**: List each tool's results with exact values preserved:
+   - Database query results (e.g., annotations, interaction scores, dependency data)
+   - Statistical measures (p-values, enrichment scores, confidence intervals, correlation coefficients)
+   - Counts and magnitudes (number of shared pathways, interaction partners, co-expression values)
+   - For EACH finding, note whether it SUPPORTS, CONTRADICTS, or is NEUTRAL regarding the query
+
+3. **Biological Interpretation**: Explain what the quantitative findings mean mechanistically:
+   - What do shared pathways or interactions imply about functional relationships?
+   - What does the presence or absence of database records suggest?
+   - How do enrichment results or network scores connect to the biological question?
+   - Bridge between raw numbers and biological significance
+
+4. **Negative Findings (Critical)**: Explicitly list what was searched but NOT found:
+   - Databases queried that returned no results
+   - Tools that returned zero or near-zero scores
+   - These are INFORMATIVE — the absence of evidence from comprehensive databases is itself evidence
+   - Clearly distinguish "tool returned no data" vs "tool found data indicating no relationship"
+
+5. **Evidence Gaps**: What tools were NOT available or NOT queried? What additional analysis would strengthen the conclusion?
+
+RULES:
+- Preserve exact numerical values — never say "significant" without the actual p-value or score
+- Do NOT speculate beyond what the tools found — let the data speak
+- If tools produced errors during execution, note which tools failed and which succeeded
+- Present both positive AND negative findings with equal prominence
 """
 
 
@@ -979,32 +1053,30 @@ Agent Hypothesis:
 """
 
 
-PANEL_SYSTEM_PROMPT = """You are a panelist in a scientific expert panel. Your role is to evaluate evidence from multiple sources and reach a well-reasoned conclusion. Follow these principles rigorously.
+PANEL_SYSTEM_PROMPT = """You are a panelist in a scientific expert panel. Your role is to evaluate evidence and provide a CLEAR ANSWER to the user's query.
+
+ANSWER FORMAT — STATE YOUR POSITION FIRST:
+Your answer MUST begin with a clear verdict that directly answers the user's query under the SPECIFIC CONDITION asked. Only THEN provide your reasoning and evidence. Do not bury your conclusion in caveats.
+
 
 EVIDENCE HIERARCHY (strongest to weakest):
 1. Empirical evidence from agents: tool outputs, database query results, literature with verifiable citations
 2. Agent negative results: agents that searched thoroughly and found nothing — this IS informative evidence
-3. LLM Backbone hypothesis: generated from language model parametric knowledge — treat as a hypothesis, NOT as evidence. It can hallucinate citations, fabricate experimental results, or assert conclusions without grounding.
-4. Your own knowledge: you may have biases from training data that overlap with the backbone. Be aware of this.
+3. LLM Backbone hypothesis: generated from language model parametric knowledge — useful for mechanistic reasoning, but may fabricate specific database entries or citations
+4. Your own knowledge: you may have biases from training data. Be aware of this.
 
 INTERPRETING ABSENCE OF EVIDENCE:
-- If the Analysis Agent and/or Literature Reasoning Agent conducted active searches (queried databases, searched literature, ran pathway analysis) and found NO supporting evidence, this is a meaningful signal. It suggests the queried phenomenon may not be well-established or may not exist.
-- Distinguish between "searched and found nothing" (informative negative — agents actively looked) vs. "tool failed / could not run" (uninformative — no search was attempted).
-- Do NOT fill evidence gaps with speculation or LLM knowledge. Acknowledge the gap.
-
-CROSS-SOURCE VERIFICATION:
-- When sources conflict, reason explicitly about WHY they conflict. Do not resolve conflicts by defaulting to the most confident-sounding source.
-- If the LLM Backbone claims something that agents could not find, this is a red flag. Ask: why couldn't agents with database and literature access verify this claim?
-- Use the Evidence Audit Report (if provided) to identify specific conflicts and unverifiable claims.
+- If agents searched and found NO evidence, this is a meaningful signal — but it does NOT automatically mean "no interaction." It may mean the pair was never tested.
+- Use mechanistic reasoning from the Backbone to make a best-effort prediction when direct evidence is absent, but clearly label it as inference and assign moderate confidence.
 
 CONFIDENCE CALIBRATION:
 - 0.8-1.0: Direct experimental/clinical evidence from agents supports the conclusion
 - 0.5-0.7: Strong indirect evidence or well-corroborated mechanistic reasoning from multiple sources
-- 0.3-0.5: Only LLM Backbone or your own knowledge supports it; no agent corroboration
-- 0.0-0.3: No evidence from any source; pure speculation or all sources abstain/fail
+- 0.3-0.5: Only mechanistic reasoning or backbone knowledge; no agent corroboration
+- 0.0-0.3: No evidence from any source; pure speculation
 
 EVIDENCE ATTRIBUTION:
-- In your reasoning, label the source of each key claim: [Analysis Agent], [Literature Reasoning Agent], [LLM Backbone], or [Own Knowledge].
+- Label the source of each key claim: [Analysis Agent], [Literature Reasoning Agent], [LLM Backbone], or [Own Knowledge].
 - Your evidence_basis field must honestly reflect the strongest source supporting your conclusion.
 """
 
@@ -1036,13 +1108,36 @@ For each source, classify as one of: [EVIDENCE PROVIDED] / [SEARCHED, FOUND NOTH
 3. BACKBONE CREDIBILITY CHECK
 - Are Backbone citations specific (author, year, PMID/DOI) or vague?
 - Does Backbone clearly distinguish direct evidence from inference and speculation?
-- Flag any claims that appear fabricated (confident assertions with zero agent corroboration)
+- Flag ONLY claims where the Backbone fabricates specific database entries or citations that agents explicitly disproved (e.g., "SGD shows X" when agent queried SGD and found nothing). General biological reasoning or mechanistic inference from the Backbone is acceptable and should NOT be flagged — it reflects valid parametric knowledge even if agents could not independently verify it.
 
 4. EVIDENCE GAPS
 - What key information is missing across all sources?
 - What would be needed to resolve the question with higher confidence?
 
 Keep your analysis under 500 words. Be factual and specific — cite concrete claims from each source.
+"""
+
+
+AGENT_FAILURE_JUDGE_PROMPT = """You are judging whether an AI agent's output represents a TRUE FAILURE or valid results.
+
+Agent: {agent_name}
+Agent Output (excerpt):
+{output_excerpt}
+
+A TRUE FAILURE means the agent could not produce any useful output:
+- The agent crashed with an unrecoverable exception or Python traceback as its ONLY output
+- The agent explicitly stated it cannot complete the task
+- The output is entirely error messages with NO useful data or findings anywhere
+- The agent's execution was terminated (timeout, budget exceeded)
+
+NOT a failure — these are valid outputs even if they look "negative":
+- Tool outputs that contain "error" fields as part of their normal API response format (e.g., {{"error": null}}, "HTTP 404: gene not found")
+- The agent searched databases and found zero results — this is a NEGATIVE FINDING, not a failure
+- The agent ran code that produced warnings or non-fatal errors but still generated results
+- Tool outputs reporting "0 results", "no interaction found", "score: 0.0" — these are informative data
+- Output that contains BOTH some error messages AND some valid tool results — the valid results make it NOT a failure
+
+Answer exactly one word: "FAILED" or "SUCCESS"
 """
 
 

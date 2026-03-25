@@ -18,10 +18,7 @@ try:
         'get_registered_tools',
         'list_medea_tools'
     ]
-except ImportError as e:
-    # If ToolUniverse is not installed, provide informative message
-    print(f"[Warning] ToolUniverse not available: {e}")
-    print("[Warning] Install tooluniverse to use Medea tools: pip install tooluniverse")
-    
+except ImportError:
+    # ToolUniverse is an optional integration — not required for normal operation
     __all__ = []
 

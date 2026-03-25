@@ -72,7 +72,8 @@ class ProposalToolSelector:
             llm_config=agent_config,
             llm_name=llm_provider,
             system_prompt=PROPOSAL_TOOL_SELECTION_TEMPLATE,
-            input_variables=["user_query", "tool_info"]
+            input_variables=["user_query", "tool_info"],
+            reasoning_effort="low"
         )
     
     def _extract_code_block(self, response: str) -> str:
@@ -148,7 +149,8 @@ class ResearchPlanDraft(BaseAction):
             llm_config=agent_config,
             llm_name=llm_provider,
             system_prompt=PROPOSAL_DRAFT_TEMPLATE,
-            input_variables=["user_query", "tool_list", "proposal_feedback"]
+            input_variables=["user_query", "tool_list", "proposal_feedback"],
+            reasoning_effort="medium"
         )
 
     def __call__(self, user_query: str, proposal_draft: Proposal = None) -> Proposal:
@@ -178,11 +180,38 @@ class ResearchPlanDraft(BaseAction):
         """Prepare feedback content from previous proposal iterations."""
         if not proposal_draft:
             return ""
-        
+
+        constraint_block = ""
+        unavailable = proposal_draft.get_unavailable_entities()
+        if unavailable:
+            lines = []
+            for u in unavailable:
+                entity = u.get("unavailable", "?")
+                alts   = u.get("alternatives", [])
+                hard   = u.get("hard", True)
+                if hard or not alts:
+                    lines.append(f"  - '{entity}' does NOT exist. Remove all tool calls using it.")
+                else:
+                    lines.append(
+                        f"  - '{entity}' is unavailable in this dataset. "
+                        f"DO NOT include it in any tool call. Use ONLY: {', '.join(alts)}"
+                    )
+            constraint_block = (
+                "\n\nCRITICAL HARD CONSTRAINTS — REMOVE THESE FROM ALL TOOL CALLS:\n"
+                + "\n".join(lines) + "\n"
+            )
+
         if proposal_draft.get_current_mapper_feedback() is None:
-            return f"{proposal_draft}: Please check {proposal_draft} use ContextVerification action."
-        
-        return f"-----\nProposal Draft from last generation:\n\n{proposal_draft.get_summary()}"
+            return (
+                f"{proposal_draft}: Please check {proposal_draft} use ContextVerification action."
+                + constraint_block
+            )
+
+        return (
+            f"-----\nProposal Draft from last generation:\n\n"
+            f"{proposal_draft.get_summary()}"
+            f"{constraint_block}"
+        )
     
     def _select_tools(self, user_query: str) -> List[Dict]:
         """Select relevant tools based on user query with fallback to all tools."""
@@ -199,6 +228,8 @@ class ResearchPlanDraft(BaseAction):
 class ContextVerification(BaseAction):
     """Validates context compatibility for proposed tools and parameters."""
     
+    MAX_VERIFICATION_ROUNDS = 4
+    
     def __init__(self, llm_provider: str = None, tmp: float = 0.4):
         # Get LLM provider with helpful error message if not provided
         if llm_provider is None:
@@ -210,6 +241,7 @@ class ContextVerification(BaseAction):
             "proposal_draft": "Proposal object containing the draft to validate"
         }
         super().__init__(action_name=action_name, action_desc=action_desc, params_doc=params_doc)
+        self._call_count = 0
         
         self._load_configurations()
         
@@ -219,7 +251,8 @@ class ContextVerification(BaseAction):
             llm_name=llm_provider,
             system_prompt=CONTEXT_CHECKER_TEMPLATE.format(
                 tool_id_checker=json.dumps(self.checker_configs, indent=2)
-            )
+            ),
+            reasoning_effort="medium"
         )
 
     def _load_configurations(self):
@@ -245,9 +278,9 @@ class ContextVerification(BaseAction):
             tools = config.get('tool', [])
             for checker_info in config.get('associated_id_checker', []):
                 checker_name = checker_info['checker_name']
-                self.checker_to_tools[checker_name] = tools
+                self.checker_to_tools.setdefault(checker_name, []).extend(tools)
                 for tool in tools:
-                    self.tool_to_checker[tool] = checker_name
+                    self.tool_to_checker.setdefault(tool, []).append(checker_name)
 
     def _load_checker_functions(self) -> Dict:
         """Dynamically load all checker functions from id_checkers module."""
@@ -393,44 +426,69 @@ class ContextVerification(BaseAction):
         
         return errors
 
-    def _run_checker(self, checker_name: str, params: Dict) -> Tuple[bool, str]:
+    def _run_checker(self, checker_name: str, params: Dict) -> Tuple[bool, str, dict]:
         """Run the actual checker function."""
         try:
             checker_func = self.checker_functions[checker_name]
             print(f"Running {checker_name} with params: {params}", flush=True)
-            return checker_func(**params)
+            result = checker_func(**params)
+            if len(result) == 3:
+                return result                       # (bool, str, dict)
+            return result[0], result[1], {}         # backward compat: no metadata
         except Exception as e:
             print(f"Error running {checker_name}: {e}", flush=True)
-            return False, f"Checker error: {str(e)}"
+            return False, f"Checker error: {str(e)}", {"hard": True}
     
     def __call__(self, proposal_draft: Proposal, attempts: int = 3) -> str:
         """
         Main validation workflow.
-        
+
         Args:
             proposal_draft: The proposal to validate
             attempts: Number of retry attempts for validation
-            
+
         Returns:
             Validation result message
         """
         if not isinstance(proposal_draft, Proposal):
             return f"Invalid input: Expected Proposal object, got {type(proposal_draft).__name__}"
 
+        self._call_count += 1
+        if self._call_count > self.MAX_VERIFICATION_ROUNDS:
+            print(f"[ContextVerification] Max rounds ({self.MAX_VERIFICATION_ROUNDS}) reached. Passing with current state.", flush=True)
+            proposal_draft.update_id_feedback(["Context verification round limit reached. Passing with known state."])
+            return f"{proposal_draft}: Context verification round limit reached. Proceed to IntegrityVerification with current proposal."
+
         proposal_text = f"[User Query]:\n{proposal_draft.get_query()}\n\n[Proposal Draft]:\n{proposal_draft.get_proposal()}"
-        feedbacks, all_valid = self._validate_with_retries(proposal_text, attempts)
-        
+        feedbacks, all_valid, failed_metas = self._validate_with_retries(proposal_text, attempts)
+
         proposal_draft.update_id_feedback(feedbacks)
+        for meta in failed_metas:
+            proposal_draft.mark_unavailable(meta)
 
         if all_valid:
             return f"{proposal_draft}: All context validations passed. Proceed to IntegrityVerification."
+
+        # If all failures are soft (resource unavailable with alternatives, not invalid inputs),
+        # pass with warning instead of asking for another revision cycle
+        has_hard_failure = any(m.get("hard", True) for m in failed_metas)
+        if not has_hard_failure and failed_metas:
+            unavail_items = [m.get("unavailable", "?") for m in failed_metas]
+            print(f"[ContextVerification] Soft failures only (unavailable resources: {unavail_items}). Passing with known limitations.", flush=True)
+            return (
+                f"{proposal_draft}: Context validation found unavailable resources ({', '.join(unavail_items)}). "
+                f"{'; '.join(feedbacks)}. "
+                f"These resources do not exist in the dataset — no revision will fix this. Proceed to IntegrityVerification."
+            )
+
         return f"{proposal_draft}: Context validation issues found. {'; '.join(feedbacks)}. Please refine the proposal."
-    
-    def _validate_with_retries(self, proposal_text: str, attempts: int) -> Tuple[List[str], bool]:
+
+    def _validate_with_retries(self, proposal_text: str, attempts: int) -> Tuple[List[str], bool, List[dict]]:
         """Execute validation with retry logic."""
         feedbacks = []
         all_valid = True
-        
+        failed_metas = []
+
         for attempt in range(attempts):
             try:
                 pairs_to_check = self._extract_context_pairs(proposal_text)
@@ -442,33 +500,34 @@ class ContextVerification(BaseAction):
                     feedbacks = ["No validation requirements extracted from proposal (context checker returned empty)"]
                     print(f"[ContextVerification] Warning: context checker returned no pairs after {attempts} attempts. Passing with warning.", flush=True)
                     break
-                
-                feedbacks, all_valid = self._process_validation_pairs(pairs_to_check)
+
+                feedbacks, all_valid, failed_metas = self._process_validation_pairs(pairs_to_check)
                 break
-                
+
             except Exception as e:
                 print(f"[ContextVerification] Attempt {attempt + 1} failed: {e}", flush=True)
                 if attempt == attempts - 1:
                     feedbacks = [f"Context validation failed after {attempts} attempts: {str(e)}"]
                     all_valid = False
-        
-        return feedbacks, all_valid
-    
-    def _process_validation_pairs(self, pairs_to_check: List[Dict]) -> Tuple[List[str], bool]:
+
+        return feedbacks, all_valid, failed_metas
+
+    def _process_validation_pairs(self, pairs_to_check: List[Dict]) -> Tuple[List[str], bool, List[dict]]:
         """Process each validation pair and collect results."""
         feedbacks = []
         all_valid = True
-        
+        failed_metas = []
+
         for pair in pairs_to_check:
             tool_name = pair.get('tool')
             checker_name = pair.get('checker_name')
             input_params = pair.get('input_params', {})
-            
+
             if not self._is_valid_checker_association(checker_name, tool_name):
                 continue
-            
+
             prepared_params = self._prepare_parameters(checker_name, input_params, tool_name)
-            
+
             validation_errors = self._validate_parameters(checker_name, prepared_params)
             if validation_errors:
                 error_msg = f"Parameter validation failed for {checker_name}: {'; '.join(validation_errors)}"
@@ -476,13 +535,15 @@ class ContextVerification(BaseAction):
                 feedbacks.append(error_msg)
                 all_valid = False
                 continue
-            
-            is_available, feedback = self._run_checker(checker_name, prepared_params)
+
+            is_available, feedback, meta = self._run_checker(checker_name, prepared_params)
             feedbacks.append(feedback)
             if not is_available:
                 all_valid = False
-        
-        return feedbacks, all_valid
+                if meta:
+                    failed_metas.append(meta)
+
+        return feedbacks, all_valid, failed_metas
     
     def _is_valid_checker_association(self, checker_name: str, tool_name: str) -> bool:
         """Validate that the checker exists and is associated with the tool."""
@@ -523,7 +584,8 @@ class IntegrityVerification(BaseAction):
         self.llm_evaluater = AgentLLM(
             llm_config=agent_config,
             llm_name=llm_provider,
-            system_prompt=PROPOSAL_QUALITY_TEMPLATE.format(tool_list=tool_list_escaped)
+            system_prompt=PROPOSAL_QUALITY_TEMPLATE.format(tool_list=tool_list_escaped),
+            reasoning_effort="medium"
         )
         self.iterations = 0
         self.max_iter = max_iter
