@@ -312,8 +312,26 @@ def get_efo_id(disease_name):
         'ontology': 'efo',
         'exact': 'true'
     }
-    response = requests.get(api_url, params=params)
     
+    try:
+        resp = requests.post(ot_url, json={"query": query, "variables": {"q": disease_name}}, timeout=15)
+        if resp.status_code == 200:
+            hits = resp.json().get("data", {}).get("search", {}).get("hits", [])
+            for hit in hits:
+                hit_id = hit.get("id", "")
+                if "EFO" in hit_id or "MONDO" in hit_id:
+                    return hit_id
+            print(f"OpenTargets search returned no EFO/MONDO hit for '{disease_name}'.")
+        else:
+            print(f"OpenTargets search failed. Status: {resp.status_code}")
+    except Exception as e:
+        print(f"OpenTargets search error: {e}")
+
+    # Fallback: OLS exact match
+    api_url = "https://www.ebi.ac.uk/ols/api/search"
+    params = {'q': disease_name, 'ontology': 'efo', 'exact': 'true'}
+    response = requests.get(api_url, params=params)
+
     if response.status_code == 200:
         results = response.json()
         docs = results['response'].get('docs', [])
@@ -327,11 +345,11 @@ def get_efo_id(disease_name):
         print(f"Failed to connect to OLS API. Status code: {response.status_code}")
         return None
 
-    # If exact match not found, try fuzzy search with normalized labels.
+    # Fallback: OLS fuzzy search
     print(f"Exact match not found for '{disease_name}'. Trying fuzzy search.")
     params['exact'] = 'false'
     response = requests.get(api_url, params=params)
-    
+
     if response.status_code == 200:
         results = response.json()
         normalized_target = normalize_string(disease_name)
