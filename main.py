@@ -169,6 +169,12 @@ Examples:
     parser.add_argument('--code-quality-max-iter', type=int, default=2,
                         help='Max iterations for code quality checks (default: 2)')
     
+    # Literature reasoning
+    parser.add_argument('--reasoning-mode', type=str, default='strict',
+                        choices=['strict', 'decomposition'],
+                        help='Literature search mode (default: strict). '
+                             'decomposition: decomposes query into component sub-queries for broader coverage')
+
     # Panel discussion
     parser.add_argument('--debate-rounds', type=int, default=2,
                         help='Number of panel discussion rounds (default: 2)')
@@ -194,10 +200,12 @@ setting_naming_dict = {
     'deepseek-r1:70b': 'deepseek70b',
     'deepseek-r1:671b': 'deepseek671b',
     'o1-mini-2024-09-12': 'o1_mini',
-    'gpt-5': 'gpt5',
-    'gpt-4o': 'gpt4o',
-    'gpt-4.1': 'gpt41',
     'o3-mini-0131': 'o3_mini',
+    'gpt-4.1': 'gpt41',
+    'gpt-5': 'gpt5',
+    'gpt-5.2': 'gpt52',
+    'gpt-5.4': 'gpt54',
+    'gpt-4o': 'gpt4o',
     'claude': 'claude',
     'medea': 'medeaGPT'
 }
@@ -240,7 +248,17 @@ experiment_setup_dict = {
         'judge_prompt': SL_REASON_CHECK 
     },
     # Synthetic Lethality Prediction (Yeast)
-    'sl_yeast_analysis_gpt5': {
+    'sl_yeast_analysis_gpt5New': {
+        'user': sl_query_yeast_openend,
+        'agent': None,
+        'judge_prompt': SL_REASON_CHECK
+    },
+    'sl_yeast_analysis_gpt52': {
+        'user': sl_query_yeast_openend,
+        'agent': None,
+        'judge_prompt': SL_REASON_CHECK
+    },
+    'sl_yeast_analysis_gpt54': {
         'user': sl_query_yeast_openend,
         'agent': None,
         'judge_prompt': SL_REASON_CHECK
@@ -330,10 +348,16 @@ else:
 
 # Select prompt configuration based on task
 if TASK == "targetID":
-    PROMPT_SETTING = "targetid_analysis_gpt4o"
+    PROMPT_SETTING = "targetid_analysis_claude"
 elif TASK == "sl":
     if SL_SOURCE == 'yeast':
-        PROMPT_SETTING = "sl_yeast_analysis_gpt5"
+        backbone = get_backbone_llm("gpt-5")
+        if 'gpt-5.2' in backbone:
+            PROMPT_SETTING = "sl_yeast_analysis_gpt52"
+        elif 'gpt-5.4' in backbone:
+            PROMPT_SETTING = "sl_yeast_analysis_gpt54"
+        else:
+            PROMPT_SETTING = "sl_yeast_analysis_gpt5New"
     else:
         PROMPT_SETTING = "sl_analysis_gpt4o"
 else:
@@ -403,7 +427,7 @@ CODE_QUALITY_MAX_ITER = args.code_quality_max_iter
 
 # Panel discussion settings
 DEBATE_ROUND = args.debate_rounds
-PANELIST_LLM = args.panelists or ['gemini-2.5-flash', 'o3-mini-0131', get_backbone_llm("gpt-4o")]
+PANELIST_LLM = args.panelists or ['gpt-5-mini', 'o3-mini-0131', get_backbone_llm("gpt-4o")]
 INCLUDE_BACKBONE_LLM = True  # Include backbone LLM in panel
 VOTE_MERGE = True  # Merge similar votes from different panelists
 
@@ -439,7 +463,8 @@ def medea_unittest(df, user_template=None, agent_template=None):
     research_plan_llm = AgentLLM(
         llm_config=research_plan_llm_config,
         llm_name=backbone_llm,
-        verbose=True
+        verbose=True,
+        reasoning_effort="low"
     )
     
     print("=== Init Analysis Agent Backbone ===", flush=True)
@@ -447,7 +472,8 @@ def medea_unittest(df, user_template=None, agent_template=None):
     analysis_llm = AgentLLM(
         llm_config=analysis_llm_config,
         llm_name=backbone_llm,
-        verbose=True
+        verbose=True,
+        reasoning_effort="low"
     )
     
     print("=== Init Literature Reasoning Agent Backbone ===", flush=True)
@@ -455,7 +481,8 @@ def medea_unittest(df, user_template=None, agent_template=None):
     literature_reason_llm = AgentLLM(
         llm_config=literature_reason_llm_config,
         llm_name=backbone_llm,
-        verbose=True
+        verbose=True,
+        reasoning_effort="low"
     )
     
     print("=== Init Research Planning Actions ===", flush=True)
@@ -475,7 +502,7 @@ def medea_unittest(df, user_template=None, agent_template=None):
     
     print("=== Init Literature Reasoning Actions ===", flush=True)
     literature_reason_actions = [
-        LiteratureSearch(model_name=paper_judge_llm, verbose=False),
+        LiteratureSearch(model_name=paper_judge_llm, verbose=False, reasoning_mode=args.reasoning_mode),
         PaperJudge(model_name=paper_judge_llm, verbose=True),
         OpenScholarReasoning(tmp=DEFAULT_TEMPERATURE, llm_provider=backbone_llm, verbose=True)
     ]
@@ -620,7 +647,8 @@ def llm_unitest(df, mod='llm', agent_output_df=None, model=None, user_template=N
             response = None
             while i < attempts:
                 try:
-                    response = chat_completion(user_instruction, model=model)
+                    _re = "high" if 'gpt-5' in model and model not in ('gpt-5', 'gpt-5-mini') else None
+                    response = chat_completion(user_instruction, model=model, reasoning_effort=_re)
                     break  # exit loop if successful
                 except Exception as e:
                     print(f"Attempt {i}/{attempts} failed: {e}")
@@ -649,7 +677,7 @@ def llm_unitest(df, mod='llm', agent_output_df=None, model=None, user_template=N
                 'user_query': reasoning_output
             }
             
-            hypothesis_response, llm_hypothesis_response = multi_round_discussion(
+            hypothesis_response, llm_hypothesis_response, _evidence_grounding = multi_round_discussion(
                 query=user_instruction, 
                 include_llm=INCLUDE_BACKBONE_LLM,
                 mod='diff_context', 
@@ -852,6 +880,7 @@ if __name__ == "__main__":
     print(f"LLM Paraphraser:   {paraphraser_llm_display}", flush=True)
     print(f"LLM Judge:         {LLM_JUDGE_MODEL}", flush=True)
     print(f"Quality Max Iter:  {QUALITY_MAX_ITER}", flush=True)
+    print(f"Reasoning Mode:    {args.reasoning_mode}", flush=True)
     print(f"Debate Rounds:     {DEBATE_ROUND}", flush=True)
     print(f"Panelists:         {PANELIST_LLM}", flush=True)
     print("=" * 80, flush=True)

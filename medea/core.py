@@ -198,7 +198,7 @@ def medea(
     research_planning_module = None,
     analysis_module = None,
     literature_module = None,
-    debate_rounds: int = 2,
+    debate_rounds: int = 1,
     panelist_llms: list = None,
     include_backbone_llm: bool = True,
     vote_merge: bool = True,
@@ -284,8 +284,9 @@ def medea(
     research_plan_text, analysis_response, literature_response = "None", "None", "None"
     
     # Shared data structures for results
-    analysis_result = mp.Manager().dict()
-    literature_result = mp.Manager().dict()
+    mgr = mp.Manager()
+    analysis_result = mgr.dict()
+    literature_result = mgr.dict()
     
     # Start both processes with module-level wrapper functions
     print(f"[MEDEA] Launching in-silico experiment process...", flush=True)
@@ -402,7 +403,7 @@ def medea(
         panelist_llms = ['gemini-2.5-flash', 'o3-mini-0131', os.getenv("BACKBONE_LLM", "gpt-4o")]
         
     # Each agent output is assigned an LLM to join panel discussion
-    hypothesis_response, llm_hypothesis_response = multi_round_discussion(
+    hypothesis_response, llm_hypothesis_response, evidence_grounding = multi_round_discussion(
         query=panel_query,
         include_llm=include_backbone_llm,
         mod='diff_context', 
@@ -416,6 +417,7 @@ def medea(
     
     agent_output_dict['llm'] = llm_hypothesis_response
     agent_output_dict['final'] = hypothesis_response
+    agent_output_dict['evidence_grounding'] = evidence_grounding
 
     return agent_output_dict
 

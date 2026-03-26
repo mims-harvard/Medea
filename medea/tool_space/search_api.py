@@ -50,7 +50,7 @@ class KeywordExtractor:
         self, 
         question: str, 
         model_name: str = 'gpt-4o',
-        query_num: int = 4,
+        query_num: int = 6,
         platform: str = 'semantic_scholar',
         max_retries: int = 3
     ) -> List[str]:
@@ -76,7 +76,8 @@ class KeywordExtractor:
             try:
                 keywords = chat_completion(
                     instructions.keyword_extraction_prompt.format_map({"question": enhanced_question}), 
-                    model=model_name
+                    model=model_name,
+                    reasoning_effort="low"
                 )
                 
                 queries = self._parse_keyword_response(keywords, query_num)
@@ -111,7 +112,7 @@ class KeywordExtractor:
             return f"For Semantic Scholar academic search: {question}"
         return question
     
-    def _parse_keyword_response(self, response: str, target_num: int = 4) -> List[str]:
+    def _parse_keyword_response(self, response: str, target_num: int = 6) -> List[str]:
         """Parse the LLM response to extract search keywords with multiple strategies."""
         if not response:
             return []
@@ -179,7 +180,7 @@ Question: {question}
 Return {num_queries} search queries, one per line, without numbering or bullets:
 """
             
-            response = chat_completion(fallback_prompt, model=model_name)
+            response = chat_completion(fallback_prompt, model=model_name, reasoning_effort="low")
             
             lines = [line.strip() for line in response.strip().split('\n') if line.strip()]
             queries = []
@@ -230,7 +231,7 @@ Instructions:
 Return exactly {num_queries} search queries, one per line, without numbering or formatting:
 """
             
-            response = chat_completion(analysis_prompt, model=model_name)
+            response = chat_completion(analysis_prompt, model=model_name, reasoning_effort="low")
             
             # Parse and clean the response
             lines = [line.strip() for line in response.strip().split('\n') if line.strip()]
@@ -414,7 +415,7 @@ class LLMPaperJudge:
             try:
                 # print(f"[JUDGE_PAPER] Attempt {attempt}/{max_retries}")
                 
-                response = chat_completion(enhanced_prompt, model=model_name).strip()
+                response = chat_completion(enhanced_prompt, model=model_name, reasoning_effort="low").strip()
                 decision, explanation = self._parse_judge_response(response)
                 
                 if decision is not None:
@@ -573,7 +574,7 @@ class PaperQueryAligner:
         query: str,
         paper_list: Iterable[Dict[str, Any]],
         model_name: str = "o1-mini-2025-01",
-        max_workers: int = 4,
+        max_workers: int = 8,
     ) -> List[Dict[str, Any]]:
         """
             Filter papers in parallel using LLM relevance assessment.
@@ -652,36 +653,40 @@ class SemanticScholarSearch:
         paper_list = {}
         successful_queries = 0
         
-        for i, keyword in enumerate(new_keywords):
-            if self.verbose:
-                print(f"[SEMANTIC_SCHOLAR] Processing keyword {i+1}/{len(new_keywords)}: '{keyword}'")
-            
-            try:
-                top_papers = search_paper_via_query(
+        # Parallelize keyword searches (rate-limit aware concurrency)
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = {
+                executor.submit(
+                    search_paper_via_query,
                     query=keyword,
                     max_paper_num=max_paper_num,
                     attempt=attempt,
                     minCitationCount=min_citation_count,
-                )
-                
-                if top_papers is None:
+                ): keyword
+                for keyword in new_keywords
+            }
+            for fut in as_completed(futures):
+                keyword = futures[fut]
+                try:
+                    top_papers = fut.result()
+                    if top_papers is None:
+                        if self.verbose:
+                            print(f"[SEMANTIC_SCHOLAR] WARNING: No papers found for keyword: '{keyword}'")
+                        continue
+
+                    successful_queries += 1
                     if self.verbose:
-                        print(f"[SEMANTIC_SCHOLAR] WARNING: No papers found for keyword: '{keyword}'")
-                    continue
-                
-                successful_queries += 1
-                if self.verbose:
-                    print(f"[SEMANTIC_SCHOLAR] Found {len(top_papers)} papers for keyword: '{keyword}'")
-                
-                for paper in top_papers:
-                    if paper["paperId"] not in paper_list:
-                        paper["text"] = paper["abstract"]
-                        paper["citation_counts"] = paper["citationCount"]
-                        paper_list[paper["paperId"]] = paper
-            
-            except Exception as e:
-                if self.verbose:
-                    print(f"[SEMANTIC_SCHOLAR] ERROR: Search failed for '{keyword}': {e}")
+                        print(f"[SEMANTIC_SCHOLAR] Found {len(top_papers)} papers for keyword: '{keyword}'")
+
+                    for paper in top_papers:
+                        if paper["paperId"] not in paper_list:
+                            paper["text"] = paper["abstract"]
+                            paper["citation_counts"] = paper["citationCount"]
+                            paper_list[paper["paperId"]] = paper
+
+                except Exception as e:
+                    if self.verbose:
+                        print(f"[SEMANTIC_SCHOLAR] ERROR: Search failed for '{keyword}': {e}")
         
         if successful_queries == 0:
             if self.verbose:
@@ -905,6 +910,64 @@ class OpenScholarReasoning:
             model_name=model_name,
         )
 
+        # Tier 2: If few papers passed initial filter, broaden search scope
+        if len(relevant_papers) < 3 and ss_retrieved_passages:
+            print(f"[BROADER_SEARCH] Only {len(relevant_papers)} papers passed filter. "
+                  f"Generating broader queries...", flush=True)
+            try:
+                broadening_prompt = (
+                    f"The following research question returned too few relevant papers. "
+                    f"Generate 3 broader search queries that might find papers providing useful "
+                    f"background, mechanistic context, or indirect evidence. "
+                    f"Remove overly specific constraints. Focus on underlying processes and "
+                    f"individual components.\n\nQuestion: {query}"
+                )
+                broader_keywords = self.extractor.extract_keywords(
+                    broadening_prompt,
+                    model_name=model_name,
+                    query_num=3,
+                )
+
+                broader_papers = []
+                with ThreadPoolExecutor(max_workers=3) as executor:
+                    broader_futures = [
+                        executor.submit(
+                            self.searcher.search,
+                            question=bq,
+                            model_name=model_name,
+                            max_paper_num=3,
+                            min_citation_count=kwargs.get('min_citation', 0),
+                        )
+                        for bq in broader_keywords
+                    ]
+                    for fut in as_completed(broader_futures):
+                        try:
+                            papers = fut.result()
+                            if papers:
+                                broader_papers.extend(papers)
+                        except Exception as e:
+                            print(f"[BROADER_SEARCH] Error in parallel broader search: {e}", flush=True)
+
+                if broader_papers:
+                    seen_titles = {p.get('title', '').lower() for p in ss_retrieved_passages}
+                    new_papers = [p for p in broader_papers
+                                  if p.get('title', '').lower() not in seen_titles]
+
+                    if new_papers:
+                        broader_relevant = self.aligner.filter_papers(
+                            query=query,
+                            paper_list=new_papers,
+                            model_name=model_name,
+                        )
+                        seen_relevant = {p.get('title', '').lower() for p in relevant_papers}
+                        for p in broader_relevant:
+                            if p.get('title', '').lower() not in seen_relevant:
+                                relevant_papers.append(p)
+
+                        print(f"[BROADER_SEARCH] After broadening: {len(relevant_papers)} total papers", flush=True)
+            except Exception as e:
+                print(f"[BROADER_SEARCH] Error during broader search: {e}", flush=True)
+
         # Adaptive fallback: if no papers found, try more relaxed approach for complex queries
         if not relevant_papers and ss_retrieved_passages:
             print(f"[ADAPTIVE_FILTER] No papers passed initial filter. Trying exploratory approach for {len(ss_retrieved_passages)} papers...")
@@ -983,7 +1046,7 @@ _searcher = SemanticScholarSearch(_extractor)
 _reasoning = OpenScholarReasoning()
 
 # Legacy function wrappers
-def retrieve_keywords(question, model_name='gpt-4o', query_num=4, platform='semantic_scholar', max_retries=3, verbose=True):
+def retrieve_keywords(question, model_name='gpt-4o', query_num=6, platform='semantic_scholar', max_retries=3, verbose=True):
     """Legacy wrapper for keyword extraction."""
     # Create a temporary extractor with the specified verbose setting
     extractor = KeywordExtractor(verbose=verbose)

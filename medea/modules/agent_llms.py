@@ -66,7 +66,8 @@ class AgentLLM(BaseLLM):
         provider_name: Optional[str] = None, 
         system_prompt: Optional[str] = None,
         input_variables: Optional[List[str]] = None,
-        verbose: bool = False
+        verbose: bool = False,
+        reasoning_effort: Optional[str] = "low"
     ):
         """
         Initialize the LLM interface.
@@ -78,6 +79,8 @@ class AgentLLM(BaseLLM):
             system_prompt: Optional system prompt template with {variable} placeholders
             input_variables: List of variable names expected in the system prompt
             verbose: If True, print initialization messages
+            reasoning_effort: Reasoning effort for GPT-5.2+ ("none"/"low"/"medium"/"high"/"xhigh").
+                              None = use env var default.
         """
         super().__init__(llm_config)
         
@@ -85,6 +88,7 @@ class AgentLLM(BaseLLM):
         self.system_prompt = system_prompt
         self.input_variables = input_variables or ["prompt"]
         self.provider = get_llm_provider()
+        self.reasoning_effort = reasoning_effort
         
         if verbose:
             print(f"Initialized LLM: {self.model} (via {self.provider})")
@@ -119,8 +123,9 @@ class AgentLLM(BaseLLM):
                 messages=messages,
                 temperature=self.temperature,
                 model=self.model,
-                mod='chat',  # Already in message format
+                mod='chat',
                 attempts=max_attempts,
+                reasoning_effort=self.reasoning_effort,
             )
             return response
         except Exception as e:

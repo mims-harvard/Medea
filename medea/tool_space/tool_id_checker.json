@@ -258,5 +258,54 @@
                 "returns": "True if the context is valid, False otherwise. If False, a message with a suggested valid context is returned."
             }
         ]
+    },
+    {
+        "tool": [
+            "query_sgd_interactions",
+            "query_string_yeast_interactions",
+            "query_costanzo_sga_dataset",
+            "query_yeast_go_annotations"
+        ],
+        "associated_id_checker": [
+            {
+                "checker_name": "yeast_gene_name_checker",
+                "species_scope": "yeast",
+                "description": "Validates whether yeast gene names are recognized by SGD. These tools accept S. cerevisiae standard gene names or systematic ORF names directly — no need to map to human orthologs.",
+                "input_params": [
+                    {
+                        "param_name": "gene_list",
+                        "param_type": "list[str]",
+                        "required": false,
+                        "allow_empty": true,
+                        "allow_null": true,
+                        "min_length": 0,
+                        "description": "A list of yeast gene names to validate (standard names like 'RPD3' or systematic names like 'YNL330C')."
+                    },
+                    {
+                        "param_name": "organism",
+                        "param_type": "str",
+                        "required": false,
+                        "default": "yeast",
+                        "description": "Set to 'yeast' for S. cerevisiae gene validation."
+                    }
+                ],
+                "returns": "True if all gene names are valid yeast genes; otherwise, False."
+            },
+            {
+                "checker_name": "condition_availability_checker",
+                "species_scope": "yeast",
+                "description": "Checks if the requested growth condition is available in the Costanzo 2021 SGA dataset. If not, uses an LLM to suggest the most pharmacologically relevant proxy conditions. Automatically skips when no condition is specified (e.g. for SGD/STRING queries). Always returns True, but the message provides actionable guidance when the condition is unavailable.",
+                "input_params": [
+                    {
+                        "param_name": "condition",
+                        "param_type": "str",
+                        "required": false,
+                        "default": null,
+                        "description": "The growth condition to check (e.g. 'BLEO', 'MMS'). If null/empty/standard, the checker skips validation."
+                    }
+                ],
+                "returns": "True always. When condition is unavailable, message includes available conditions and LLM-suggested proxy alternatives."
+            }
+        ]
     }
 ]

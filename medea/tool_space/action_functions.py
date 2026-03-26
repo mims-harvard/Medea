@@ -252,12 +252,43 @@ def standardize_disease_name(disease_name):
     return disease_name
 
 
+def _get_efo_id_from_opentargets(disease_name):
+    """
+    Retrieve the disease ID directly from OpenTargets search API.
+    This is more reliable than OLS since OpenTargets may use IDs
+    that OLS has marked as obsolete (e.g., EFO:0000685 for RA).
+    """
+    api_url = "https://api.platform.opentargets.org/api/v4/graphql"
+    query = """
+    query searchDisease($queryString: String!) {
+        search(queryString: $queryString, entityNames: ["disease"]) {
+            hits { id name entity }
+        }
+    }
+    """
+    try:
+        resp = requests.post(api_url, json={"query": query, "variables": {"queryString": disease_name}}, timeout=15)
+        if resp.status_code == 200:
+            hits = resp.json().get("data", {}).get("search", {}).get("hits", [])
+            normalized = normalize_string(disease_name)
+            for hit in hits:
+                if normalize_string(hit.get("name", "")) == normalized:
+                    ot_id = hit["id"]
+                    return ot_id.replace("_", ":")
+            if hits:
+                ot_id = hits[0]["id"]
+                return ot_id.replace("_", ":")
+    except Exception as e:
+        print(f"[get_efo_id] OpenTargets search failed: {e}", flush=True)
+    return None
+
+
 def get_efo_id(disease_name):
     """
     Retrieve the EFO identifier for a given disease name.
-
-    Uses the OpenTargets search API as the primary source (returns native EFO IDs
-    that OpenTargets' load_disease_targets can resolve), with OLS as a fallback.
+    
+    Tries OpenTargets search API first (authoritative for downstream queries),
+    then falls back to EMBL-EBI OLS API.
 
     Args:
         disease_name (str): The name of the disease.
@@ -267,15 +298,21 @@ def get_efo_id(disease_name):
     """
     disease_name = standardize_disease_name(disease_name)
 
-    # Primary: OpenTargets GraphQL search — returns EFO IDs directly
-    ot_url = "https://api.platform.opentargets.org/api/v4/graphql"
-    query = """
-    query DiseaseSearch($q: String!) {
-      search(queryString: $q, entityNames: ["disease"]) {
-        hits { id name }
-      }
+    # Primary: OpenTargets search (returns IDs that OpenTargets actually accepts)
+    ot_id = _get_efo_id_from_opentargets(disease_name)
+    if ot_id:
+        return ot_id
+
+    # Fallback: EMBL-EBI OLS API
+    api_url = "https://www.ebi.ac.uk/ols/api/search"
+
+    # First attempt: exact match search
+    params = {
+        'q': disease_name,
+        'ontology': 'efo',
+        'exact': 'true'
     }
-    """
+    
     try:
         resp = requests.post(ot_url, json={"query": query, "variables": {"q": disease_name}}, timeout=15)
         if resp.status_code == 200:
@@ -297,10 +334,13 @@ def get_efo_id(disease_name):
 
     if response.status_code == 200:
         results = response.json()
-        for doc in results['response']['docs']:
-            obo_id = doc.get('obo_id', '')
-            if 'EFO' in obo_id or 'MONDO' in obo_id:
-                return obo_id
+        docs = results['response'].get('docs', [])
+        if docs:
+            for doc in docs:
+                obo_id = doc.get('obo_id', '')
+                if obo_id and ('EFO' in obo_id or 'MONDO' in obo_id):
+                    return obo_id
+            return docs[0]['obo_id']
     else:
         print(f"Failed to connect to OLS API. Status code: {response.status_code}")
         return None
@@ -313,6 +353,11 @@ def get_efo_id(disease_name):
     if response.status_code == 200:
         results = response.json()
         normalized_target = normalize_string(disease_name)
+        for doc in results['response']['docs']:
+            label = doc.get('label', '')
+            obo_id = doc.get('obo_id', '')
+            if normalize_string(label) == normalized_target and ('EFO' in obo_id or 'MONDO' in obo_id):
+                return obo_id
         for doc in results['response']['docs']:
             label = doc.get('label', '')
             if normalize_string(label) == normalized_target:

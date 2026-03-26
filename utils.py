@@ -4,6 +4,16 @@ import ast, os, random
 import numpy as np
 import pandas as pd
 
+ABSTAIN_VALS = {"abstain"}
+
+def _classify_decision(d):
+    d = str(d).strip().lower()
+    if d in ABSTAIN_VALS:
+        return "abstain"
+    if d == "failed":
+        return "failed"
+    return d
+
 # Loads input data for the specified task from a DataFrame.
 def input_loader(
     df: pd.DataFrame, 
@@ -475,7 +485,11 @@ def log_check(
 
 def update_acc_dict(acc_dict, task, counter, *args):
     # print("update_acc_dict called with args:", args)  # Debug print
-    init_dict = {'cg_count': 0, 'reason_count': 0, 'hypo_count': 0, 'gpt_count': 0, 'total': 0,}
+    init_dict = {
+        'cg_count': 0, 'reason_count': 0, 'hypo_count': 0, 'gpt_count': 0, 'total': 0,
+        'cg_abstain': 0, 'reason_abstain': 0, 'hypo_abstain': 0, 'gpt_abstain': 0,
+        'cg_failed': 0, 'reason_failed': 0, 'hypo_failed': 0, 'gpt_failed': 0,
+    }
     
     if task == "targetID":
         if "disease" not in acc_dict:
@@ -557,77 +571,53 @@ def update_acc_dict(acc_dict, task, counter, *args):
                 acc_dict["excluded-R"][counter] += 1
 
 
+def _print_perf_table(label, v):
+    """Print a formatted performance table for a given acc_dict entry."""
+    t = v['total']
+    if t == 0:
+        return
+    modules = [
+        ("LLM (bb)", 'gpt_count', 'gpt_abstain', 'gpt_failed'),
+        ("Medea CG", 'cg_count', 'cg_abstain', 'cg_failed'),
+        ("Medea R",  'reason_count', 'reason_abstain', 'reason_failed'),
+        ("Medea full", 'hypo_count', 'hypo_abstain', 'hypo_failed'),
+    ]
+    print(f"\n======== {label} (n={t}) ========", flush=True)
+    print(f"{'Module':<14} {'Acc (non-abs)':>16} {'Answered':>10} {'Abstain%':>10} {'Failed%':>10}", flush=True)
+    print("-" * 64, flush=True)
+    for name, cnt_k, abs_k, fail_k in modules:
+        correct = v.get(cnt_k, 0)
+        abstain = v.get(abs_k, 0)
+        failed = v.get(fail_k, 0)
+        answered = t - abstain
+        acc_str = f"{correct/answered:.4f} ({correct}/{answered})" if answered > 0 else "N/A"
+        abs_pct = abstain / t * 100
+        fail_pct = failed / t * 100
+        print(f"{name:<14} {acc_str:>16} {answered:>4}/{t:<4} {abs_pct:>8.1f}% {fail_pct:>8.1f}%", flush=True)
+
+
 def log_acc_dict(acc_dict, task, *args):
     if task == "targetID":
         celltype, disease = args
-        print(f"\nDiseases: {disease} | Celltype: {celltype}", flush=True)
-        
         for d, v in acc_dict["disease"].items():
-            print(
-                f"Disease: {d} | "
-                f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
-                f"CG Acc: {v['cg_count']/v['total']:.4} | "
-                f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"final Acc: {v['hypo_count']/v['total']:.4}", 
-                flush=True
-            )
+            _print_perf_table(f"Disease: {d}", v)
         for c, v in acc_dict["celltype"].items():
-            print(
-                f"Cell type: {c} | "
-                f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
-                f"CG Acc: {v['cg_count']/v['total']:.4} | "
-                f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"final Acc: {v['hypo_count']/v['total']:.4}", 
-                flush=True
-            )
+            _print_perf_table(f"Celltype: {c}", v)
 
     if task == "sl":
         candidate_genes, interaction, cell_line = args
-        print(f"\nGene Pair: {candidate_genes} | Cell line: {cell_line} | Interaction: {interaction}", flush=True)
-        print("======================================")
         for c, v in acc_dict["interaction"].items():
-            print(
-                f"Interaction: {c} | "
-                f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
-                f"CG Acc: {v['cg_count']/v['total']:.4} | "
-                f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"final Acc: {v['hypo_count']/v['total']:.4}", 
-                flush=True
-            )
-        print("======================================")
+            _print_perf_table(f"Interaction: {c}", v)
         for c, v in acc_dict["cell_line"].items():
-            print(
-                f"Cell line: {c} | "
-                f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
-                f"CG Acc: {v['cg_count']/v['total']:.4} | "
-                f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"final Acc: {v['hypo_count']/v['total']:.4}", 
-                flush=True
-            )
+            _print_perf_table(f"Cell line: {c}", v)
         for g in candidate_genes:
             v = acc_dict["gene"][g]
-            print(
-                f"Gene: {g} | "
-                f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
-                f"CG Acc: {v['cg_count']/v['total']:.4} | "
-                f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"final Acc: {v['hypo_count']/v['total']:.4}", 
-                flush=True
-            )
+            _print_perf_table(f"Gene: {g}", v)
     
     if task == "immune_response":
-        # print(acc_dict)
         for k, v in acc_dict.items():
-            print("======================================")
-            print(
-                f"Cases: {k} ({v['total']}) | "
-                f"LLM (backbone) Acc: {v['gpt_count']/v['total']:.4} | "
-                f"CG Acc: {v['cg_count']/v['total']:.4} | "
-                f"R Acc: {v['reason_count']/v['total']:.4} | "
-                f"final Acc: {v['hypo_count']/v['total']:.4}", 
-                flush=True
-            )
-        print('\n')
+            if isinstance(v, dict) and 'total' in v:
+                _print_perf_table(k, v)
 
     if task == "sl-summary":
         acc_set = set()
@@ -654,56 +644,43 @@ def evaluate_prediction(
         gpt_count,
         *args
     ):  
-        
-    if type(executed_output) is str and y.lower() in executed_output.lower():
-        if task != "immune_response" or y.lower() == executed_output.lower():
-            cg_count += 1
-            update_acc_dict(acc_dict, task, 'cg_count', *args)
 
-    if type(reason_output) is str and y.lower() in reason_output.lower():
-        if task != "immune_response" or y.lower() == reason_output.lower():
-            reason_count += 1
-            update_acc_dict(acc_dict, task, 'reason_count', *args)
+    def _check_and_count(output, y, task, count, count_key, abstain_key, failed_key):
+        """Classify output and update counters. Returns updated count."""
+        cls = _classify_decision(output) if isinstance(output, str) else "abstain"
+        if cls == "abstain":
+            update_acc_dict(acc_dict, task, abstain_key, *args)
+            return count, cls
+        if cls == "failed":
+            update_acc_dict(acc_dict, task, failed_key, *args)
+            return count, cls
+        if isinstance(output, str) and y.lower() in output.lower():
+            if task != "immune_response" or y.lower() == output.lower():
+                count += 1
+                update_acc_dict(acc_dict, task, count_key, *args)
+        return count, cls
 
-    if type(final_output) is str and y.lower() in final_output.lower():
-        if task != "immune_response" or y.lower() == final_output.lower():
-            hypo_count += 1
-            update_acc_dict(acc_dict, task, 'hypo_count', *args)
-    
-    if type(llm_feedback) is str and y.lower() in llm_feedback.lower():
-        if task != "immune_response" or y.lower() == llm_feedback.lower():
-            gpt_count += 1
-            update_acc_dict(acc_dict, task, 'gpt_count', *args)
-    
+    cg_count, cg_cls = _check_and_count(executed_output, y, task, cg_count, 'cg_count', 'cg_abstain', 'cg_failed')
+    reason_count, r_cls = _check_and_count(reason_output, y, task, reason_count, 'reason_count', 'reason_abstain', 'reason_failed')
+    hypo_count, h_cls = _check_and_count(final_output, y, task, hypo_count, 'hypo_count', 'hypo_abstain', 'hypo_failed')
+    gpt_count, g_cls = _check_and_count(llm_feedback, y, task, gpt_count, 'gpt_count', 'gpt_abstain', 'gpt_failed')
+
     total = success_count.get('total', 0)
     update_acc_dict(acc_dict, task, 'total', *args)
 
-    cg_acc = cg_count/total
-    reason_acc = reason_count/total
-    hypo_acc = hypo_count/total
-    gpt_acc = gpt_count/total
+    def _sym(cls, output, y):
+        if cls == "abstain": return "~"
+        if cls == "failed": return "!"
+        if isinstance(output, str) and y.lower() in output.lower(): return "\u2713"
+        return "\u2717"
 
-    p_sc = success_count.get('P', 0) / total
-    cg_sc = success_count.get('PA', 0) / total
-    r_sc = success_count.get('R', 0) / total
-    
+    case_num = total
     print(
-        f"\n[P] Succ Rate: {p_sc:.4f} | "
-        f"[CG] Succ Rate: {cg_sc:.4f} | "
-        f"[R] Succ Rate: {r_sc:.4f}"
-    )
-    
-    print(
-        f"\nContext: {args} |"
-        f"y: {y} | "
-        f"LLM (backbone): {llm_feedback} | "
-        f"Medea (CG): {executed_output} | "
-        f"Medea (R): {reason_output} | "
-        f"Medea (final): {final_output}\n"
-        f"LLM (backbone): {gpt_acc} | "
-        f"Medea (CG): {cg_acc:.4f} | "
-        f"Medea (R): {reason_acc:.4f} | "
-        f"Medea (final): {hypo_acc:.4f}\n ",
+        f"[Case {case_num}] y={y} | "
+        f"bb={g_cls} {_sym(g_cls, llm_feedback, y)} | "
+        f"CG={cg_cls} {_sym(cg_cls, executed_output, y)} | "
+        f"R={r_cls} {_sym(r_cls, reason_output, y)} | "
+        f"full={h_cls} {_sym(h_cls, final_output, y)}",
         flush=True
     )
     

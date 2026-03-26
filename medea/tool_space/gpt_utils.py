@@ -5,7 +5,8 @@ import time
 from typing import Dict, List, Optional, Union
 
 import anthropic
-import google.generativeai as genai
+from google import genai
+from google.genai import types as genai_types
 import pandas as pd
 import torch
 from ollama import ChatResponse
@@ -23,7 +24,8 @@ def chat_completion(
     attempts: int = 3,
     seed: Optional[int] = None,
     use_openrouter: bool = True,  # Deprecated: use LLM_PROVIDER_NAME env var instead
-    response_format: Optional[Dict[str, str]] = None
+    response_format: Optional[Dict[str, str]] = None,
+    reasoning_effort: Optional[str] = None
 ) -> str:
     """
     Unified chat completion function that routes to the provider specified by LLM_PROVIDER_NAME.
@@ -74,29 +76,15 @@ def chat_completion(
     if 'claude' in model.lower():
         return _claude_completion(messages, temperature, model, attempts)
     
-    # OpenAI-native models should use OpenAI/Azure/OpenRouter, never Gemini/Claude providers
-    _openai_model_prefixes = ('gpt-', 'o1', 'o3', 'o4')
-    _is_openai_model = any(model.lower().startswith(p) for p in _openai_model_prefixes)
-    
     # --- Route based on LLM_PROVIDER_NAME (for OpenAI-compatible models) ---
     provider = get_llm_provider()
-    
-    if _is_openai_model and provider in ("Gemini", "Claude"):
-        if os.getenv("OPENROUTER_API_KEY"):
-            return _openrouter_completion(messages, temperature, model, attempts, seed, response_format)
-        elif os.getenv("AZURE_OPENAI_API_KEY"):
-            return _azure_completion(messages, temperature, model, seed, response_format)
-        elif os.getenv("OPENAI_API_KEY"):
-            return _openai_completion(messages, temperature, model, attempts, seed, response_format)
-        else:
-            print(f"[chat_completion] OpenAI model '{model}' requested but no OpenAI/Azure/OpenRouter key found, using {provider}", flush=True)
     
     if provider == "OpenRouter":
         return _openrouter_completion(messages, temperature, model, attempts, seed, response_format)
     elif provider == "Azure":
-        return _azure_completion(messages, temperature, model, seed, response_format)
+        return _azure_completion(messages, temperature, model, seed, response_format, reasoning_effort, attempts)
     elif provider == "OpenAI":
-        return _openai_completion(messages, temperature, model, attempts, seed, response_format)
+        return _openai_completion(messages, temperature, model, attempts, seed, response_format, reasoning_effort)
     elif provider == "Claude":
         return _claude_completion(messages, temperature, model, attempts)
     elif provider == "Gemini":
@@ -318,75 +306,66 @@ def _ollama_completion(messages: List[Dict[str, str]], model: str, seed: int) ->
 
 
 def _gemini_completion(messages: List[Dict[str, str]], temperature: float, model: str) -> str:
-    """Handle Google Gemini completion."""
+    """Handle Google Gemini completion using the new google-genai SDK."""
     wants_json = False
     gemini_model = model if 'gemini' in model.lower() else os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-    
+
     try:
         api_key = get_env_with_error(
             "GEMINI_API_KEY",
             required=True,
             description="using Google Gemini API"
         )
-        genai.configure(api_key=api_key)
-        
-        # Convert to Gemini format — extract system instructions separately
-        gemini_messages = []
+        client = genai.Client(api_key=api_key)
+
+        # Separate system instructions from conversation history
         system_parts = []
+        contents = []
         for msg in messages:
             role = msg["role"]
             content = msg["content"]
-            
             if role == "system":
                 system_parts.append(content)
             elif role == "user":
-                gemini_messages.append({"role": "user", "parts": [{"text": content}]})
+                contents.append(genai_types.Content(role="user", parts=[genai_types.Part(text=content)]))
             elif role == "assistant":
-                gemini_messages.append({"role": "model", "parts": [{"text": content}]})
-        
+                contents.append(genai_types.Content(role="model", parts=[genai_types.Part(text=content)]))
+
         system_instruction = "\n\n".join(system_parts) if system_parts else None
-        
-        # Detect if JSON output is expected from the prompt content
+
         last_content = messages[-1]["content"] if messages else ""
         wants_json = any(kw in last_content.lower() for kw in [
             "json format", "output in json", "'reasoning'", '"reasoning"',
             "confidence_level", "{'reasoning'"
         ])
-        
-        gen_config_params = {
-            "candidate_count": 1,
-            "temperature": temperature,
-        }
-        
-        # Force JSON output when detected
+
+        config_kwargs = {"temperature": temperature, "candidate_count": 1}
         if wants_json:
-            gen_config_params["response_mime_type"] = "application/json"
-        
-        generation_config = genai.types.GenerationConfig(**gen_config_params)
-        
-        model_kwargs = {"generation_config": generation_config}
+            config_kwargs["response_mime_type"] = "application/json"
         if system_instruction:
-            model_kwargs["system_instruction"] = system_instruction
-        model_instance = genai.GenerativeModel(gemini_model, **model_kwargs)
-        chat = model_instance.start_chat(history=gemini_messages[:-1] if len(gemini_messages) > 1 else [])
-        
-        time.sleep(1)  # Rate limiting
-        response = chat.send_message(messages[-1]["content"])
+            config_kwargs["system_instruction"] = system_instruction
+
+        config = genai_types.GenerateContentConfig(**config_kwargs)
+
+        time.sleep(1)
+        response = client.models.generate_content(
+            model=gemini_model,
+            contents=contents,
+            config=config,
+        )
         return response.text
-        
+
     except Exception as e:
-        # If response_mime_type failed, retry without it
         if wants_json and "response_mime_type" in str(e):
             try:
-                gen_config_params.pop("response_mime_type", None)
-                generation_config = genai.types.GenerationConfig(**gen_config_params)
-                retry_kwargs = {"generation_config": generation_config}
-                if system_instruction:
-                    retry_kwargs["system_instruction"] = system_instruction
-                model_instance = genai.GenerativeModel(gemini_model, **retry_kwargs)
-                chat = model_instance.start_chat(history=gemini_messages[:-1] if len(gemini_messages) > 1 else [])
+                config_kwargs.pop("response_mime_type", None)
+                config = genai_types.GenerateContentConfig(**config_kwargs)
                 time.sleep(1)
-                response = chat.send_message(messages[-1]["content"])
+                response = client.models.generate_content(
+                    model=gemini_model,
+                    contents=contents,
+                    config=config,
+                )
                 return response.text
             except Exception as retry_e:
                 print(f"[chat_completion] Gemini retry without JSON mode also failed (model={gemini_model}): {retry_e}", flush=True)
@@ -409,7 +388,8 @@ def _claude_completion(
             description="using Anthropic Claude API"
         )
         
-        client = anthropic.Anthropic(api_key=api_key)
+        _request_timeout = float(os.getenv("LLM_REQUEST_TIMEOUT", "300"))
+        client = anthropic.Anthropic(api_key=api_key, timeout=_request_timeout)
         
         # Separate system message from conversation messages
         system_msg = None
@@ -461,7 +441,8 @@ def _openai_completion(
     model: str,
     attempts: int,
     seed: int,
-    response_format: Optional[Dict[str, str]] = None
+    response_format: Optional[Dict[str, str]] = None,
+    reasoning_effort: Optional[str] = None
 ) -> str:
     """Handle direct OpenAI API completion (not Azure, not OpenRouter)."""
     try:
@@ -471,7 +452,8 @@ def _openai_completion(
             description="using OpenAI API"
         )
         
-        client = OpenAI(api_key=api_key)
+        _request_timeout = float(os.getenv("LLM_REQUEST_TIMEOUT", "300"))
+        client = OpenAI(api_key=api_key, timeout=_request_timeout)
         
         # Build request params
         request_params = {
@@ -485,8 +467,11 @@ def _openai_completion(
                            or 'gpt-5' in model)
         
         if _no_temp_models:
-            # Reasoning models need more tokens (reasoning consumes most of the budget)
             default_max = 16384 if 'gpt-5' in model else 4096
+            if 'gpt-5' in model and model not in ('gpt-5', 'gpt-5-mini') and reasoning_effort is not None:
+                request_params["reasoning_effort"] = reasoning_effort
+                _effort_token_map = {"none": 4096, "low": 4096, "medium": 8192, "high": 16384, "xhigh": 16384}
+                default_max = _effort_token_map.get(reasoning_effort, default_max)
             request_params["max_completion_tokens"] = int(os.getenv("MAX_COMPLETION_TOKENS", str(default_max)))
         else:
             request_params["temperature"] = temperature
@@ -521,7 +506,9 @@ def _azure_completion(
     temperature: float, 
     model: str, 
     seed: int,
-    response_format: Optional[Dict[str, str]] = None
+    response_format: Optional[Dict[str, str]] = None,
+    reasoning_effort: Optional[str] = None,
+    attempts: int = 3,
 ) -> str:
     """Handle Azure OpenAI completion."""
     try:
@@ -550,10 +537,13 @@ def _azure_completion(
         if endpoint.startswith("http://"):
             endpoint = endpoint.replace("http://", "https://")
         
+        _request_timeout = float(os.getenv("LLM_REQUEST_TIMEOUT", "300"))
         client = AzureOpenAI(
             api_key=api_key,
             api_version=api_version,
-            azure_endpoint=endpoint
+            azure_endpoint=endpoint,
+            timeout=_request_timeout,
+            max_retries=0,
         )
         
         # Build request params
@@ -568,8 +558,12 @@ def _azure_completion(
                            or 'gpt-5' in model)
         
         if _no_temp_models:
-            # Reasoning models need more tokens (reasoning consumes most of the budget)
             default_max = 16384 if 'gpt-5' in model else 4096
+            # Scale token budget by reasoning effort for GPT-5.2+
+            if 'gpt-5' in model and model not in ('gpt-5', 'gpt-5-mini') and reasoning_effort is not None:
+                request_params["reasoning_effort"] = reasoning_effort
+                _effort_token_map = {"none": 4096, "low": 4096, "medium": 8192, "high": 16384, "xhigh": 16384}
+                default_max = _effort_token_map.get(reasoning_effort, default_max)
             request_params["max_completion_tokens"] = int(os.getenv("MAX_COMPLETION_TOKENS", str(default_max)))
         else:
             request_params["temperature"] = temperature
@@ -579,9 +573,21 @@ def _azure_completion(
         if response_format and not _no_temp_models:
             request_params["response_format"] = response_format
         
-        response = client.chat.completions.create(**request_params)
-        return response.choices[0].message.content
-        
+        for attempt in range(attempts):
+            try:
+                response = client.chat.completions.create(**request_params)
+                return response.choices[0].message.content
+            except Exception as e:
+                error_str = str(e)
+                wait_time = min((2 ** attempt) + 1, 30)
+                print(f"[chat_completion] Azure error (model={model}) attempt {attempt+1}/{attempts}: {error_str[:150]}", flush=True)
+                if attempt < attempts - 1:
+                    print(f"[chat_completion] Retrying in {wait_time}s...", flush=True)
+                    time.sleep(wait_time)
+                else:
+                    return f"I cannot help with it - Azure error (model={model}): {error_str[:100]}"
+        return f"I cannot help with it - Azure error (model={model}): all {attempts} attempts failed"
+
     except Exception as e:
         print(f"[chat_completion] Azure error (model={model}): {e}", flush=True)
         return f"I cannot help with it - Azure error (model={model}): {str(e)[:100]}"

@@ -82,16 +82,16 @@ Guidelines:
     1. Avoid mentioning any specific type of synthetic genetic interaction in the query, or hinting at the expected type of interaction.
     2. Ask clearly for what would be the synthetic genetic interaction with a tone that a biologist would use in daily practice.
     3. Ensure the query specifies the organism (Saccharomyces cerevisiae) and the specific experimental condition.
+    4. Always use the full formal chemical or biological name of the condition, never abbreviations or shorthand. For example: use "bleomycin" not "BLEO", use "dimethyl sulfate" not "DMS".
+    5. IMPORTANT: Vary your phrasing and sentence structure. Do NOT repeat the same template. Use diverse styles—e.g., different openings ("What is...", "Could you describe...", "In S. cerevisiae with..."), different ways to refer to mutations ("double knockout", "concurrent mutation", "combined deletion"), different sentence orders. Each query should feel like it was written by a different person.
 
-Example Input:
-    - Mutated Gene A: ELP4
-    - Mutated Gene B: RPD3
-    - Condition: BLEO
+Example phrasings (vary among these styles and invent your own):
+    - "We have double knockouts of X and Y in S. cerevisiae under bleomycin. What synthetic genetic interaction would you expect?"
+    - "In Saccharomyces cerevisiae, when both X and Y are mutated and cells are treated with bleomycin, what interaction is observed?"
+    - "Could you describe the genetic interaction between X and Y in Saccharomyces cerevisiae given bleomycin treatment?"
+    - "What happens to viability when X and Y are both deleted in S. cerevisiae under dimethyl sulfate exposure?"
 
-Example Output:
-    "What would be the synthetic genetic interaction resulting from the concurrent mutation of ELP4 and RPD3 in the budding yeast Saccharomyces cerevisiae given the bleomycin treatment, if any?"
-
-Now, generate a realistic query based on the following input (return only the query, no other text):
+Now, generate a realistic query based on the following input (return only the query, no other text). Use a DIFFERENT style from the examples above—do not copy their structure verbatim:
     - Mutated Gene A: {gene_a}
     - Mutated Gene B: {gene_b}
     - Condition: {condition}
@@ -158,9 +158,14 @@ Categories:
 """
 
 
-SL_REASON_CHECK = """Given a reasoning paragraph, determine which category best fits based on whether it supports a synthetic genetic interaction (synthetic lethality or synthetic sickness) between two genes. Return only the exact category name, with no additional commentary.
+SL_REASON_CHECK = """Classify whether the reasoning paragraph supports synthetic lethality/sickness between two genes UNDER THE SPECIFIC CELL LINE / CONDITION in the user query. Return only the category name.
 
-IMPORTANT: Distinguish between conclusions backed by empirical evidence vs. purely speculative reasoning.
+User Query (defines the condition of interest):
+{user_query}
+
+CRITICAL: Only classify based on the conclusion about the QUERIED CELL LINE / CONDITION above. If the paragraph mentions synthetic lethality under a DIFFERENT cell line / condition (e.g., "standard conditions") but concludes the queried cell line / condition shows alleviating, non-interacting, or undetermined interaction, classify based on the queried cell line / condition — NOT the other cell line / condition.
+
+NOTE ON EVIDENCE INTERPRETATION: "No data found," "no records returned," or "no hit" results from database or tool queries indicate that information is UNAVAILABLE for that source — they are not positive evidence that the interaction is absent or non-SL. Treat repeated database absences as supporting an Abstain verdict (insufficient evidence to classify), not as evidence for Non-SL. The overall verdict of the paragraph (its primary determination) takes precedence over any enumeration of absent database results.
 
 ----
 Reasoning Paragraph:
@@ -168,9 +173,9 @@ Reasoning Paragraph:
 
 ----
 Categories:
-- Synthetic lethality: The paragraph concludes and supports that the combined perturbation (loss/inhibition/KO) of the two genes reduces viability, and concludes that synthetic lethality (SL). Signals include: “synthetic lethal/sickness,” “double knockout is lethal,” “co-inhibition is lethal/toxic”.
-- Non-SL: The paragraph states or supports that the two genes do not exhibit synthetic lethality/sickness, or argues that synthetic lethality is unlikely.
-- Abstain: The paragraph is ambiguous, inconclusive, or acknowledges insufficient information to make a determination (e.g., "no evidence found", "can't determine", "further research needed").
+- Synthetic lethality: Concludes the combined perturbation reduces viability UNDER THE QUERIED CONDITION (synthetic lethality/sickness/aggravating interaction). Signals include: “synthetic lethal/sickness,” “double knockout is lethal,” “co-inhibition is lethal/toxic”.
+- Non-SL: The paragraph's primary conclusion asserts the interaction is NOT synthetic lethal or sick under the queried condition. This applies when the conclusion: (a) explicitly states the interaction is non-aggravating, neutral, additive, or independent; (b) reaches a directional non-SL judgment through functional, mechanistic, or cross-condition reasoning—even if tentative (e.g., "most plausibly additive/independent") or based on limited data; (c) rules out SL on pathway or genetic grounds. NOTE: A reasoned non-SL inference counts as Non-SL even when direct condition-specific data are absent, provided the conclusion commits to a non-SL direction rather than refusing to conclude.
+- Abstain: The paragraph's conclusion explicitly declines to classify the interaction for the queried condition. Signals include: (a) key terms such as "uncharacterized," "undetermined," "unknown," "cannot be determined/assigned," or "remains to be established" applied to the queried condition; (b) reporting only that no data exist for the queried condition without providing any directional inference ("no data available/found for this condition" as the sole conclusion); (c) evidence confined to a different condition while the queried condition is explicitly left open; (d) epistemic hedges that withhold commitment, e.g., "requires direct experimental validation," "plausible but untested," "speculative without condition-specific data." KEY RULE: When the conclusion contains BOTH a tentative direction AND explicit non-commitment language (e.g., "the interaction direction remains uncharacterized"), the non-commitment language takes precedence → Abstain.
 - Failed: The paragraph refuses, reports inability, or returns an error (e.g., "I can't help", "failed", "none" with no reasoning).
 
 Provide only the name of the applicable category.

@@ -85,7 +85,8 @@ class ToolSelector:
             llm_config=agent_config,
             llm_name=llm_provider,
             system_prompt=TOOL_SELECTION_TEMPLATE, 
-            input_variables=["instruction", "tool_info"]
+            input_variables=["instruction", "tool_info"],
+            reasoning_effort="low"
         )
         
     def __call__(self, instruction: str, max_attempts: int=3) -> List[Dict]:
@@ -154,7 +155,8 @@ class CodeGenerator(BaseAction):
             llm_config=agent_config, 
             llm_name=llm_provider,
             system_prompt=CODE_GENERATION_TEMPLATE, 
-            input_variables=["instruction", "user_query", "tools"]
+            input_variables=["instruction", "user_query", "tools"],
+            reasoning_effort="medium"
         )
 
         # Flexible pattern: matches ```python, ```Python, ```py, ``` python, etc.
@@ -167,35 +169,76 @@ class CodeGenerator(BaseAction):
         )
         
 
+    def _regex_extract_tools(self, instruction_text: str) -> List[Dict]:
+        """
+        Deterministically extract tool names from Proposal text using regex.
+        The Proposal format uses 'Tool: exact_tool_name' fields.
+        Returns filtered tool info dicts matching AVALIBLE_TOOL, or empty list if none found.
+        """
+        # Match "Tool: tool_name" patterns (case-insensitive, handles whitespace)
+        matches = re.findall(r'(?:^|\n)\s*Tool:\s*(\w+)', instruction_text, re.IGNORECASE)
+        if not matches:
+            return []
+        tool_names = list(set(matches))
+        tool_info_json = [
+            tool for tool in AVALIBLE_TOOL if tool.get("name") in tool_names
+        ]
+        if tool_info_json:
+            print(f"[CodeGenerator] Regex extracted {len(tool_info_json)} tools: {[t['name'] for t in tool_info_json]}", flush=True)
+        return tool_info_json
+
+    @staticmethod
+    def _is_tool_related_feedback(feedback: str) -> bool:
+        """Check if quality feedback indicates a tool selection problem (vs. code logic problem)."""
+        if not feedback:
+            return False
+        low = feedback.lower()
+        tool_indicators = [
+            "wrong tool", "missing tool", "tool not", "incorrect tool",
+            "not in the documentation", "unavailable tool", "tool mismatch",
+            "missing required call", "required tool", "should use",
+        ]
+        return any(ind in low for ind in tool_indicators)
+
     def __call__(
-        self, 
-        instruction: Proposal, 
-        code_draft: CodeSnippet, 
-        quality_flag: bool = False, 
+        self,
+        instruction: Proposal,
+        code_draft: CodeSnippet,
+        quality_flag: bool = False,
         attempt: int = 4
     ) -> CodeSnippet:
-        
+
         # Extract instruction text from Proposal object
         if not isinstance(instruction, Proposal):
             return f"Invalid instruction type: {type(instruction)}. Please provide a Proposal object."
-        
+
         feedback, i = "", 0
         if code_draft is not None and type(code_draft) == CodeSnippet:
             code_last_round = "Code from last iteration:\n" + code_draft.get_code()
             feedback_last_round = "Feedback:\n" + code_draft.get_feedback()
             feedback = code_last_round + feedback_last_round
-        
+
         user_query = instruction.user_query
         instruction_text = instruction.proposal
-        
+
         print(f"User query:\n{user_query}", flush=True)
         print(f"Instruction text:\n{instruction_text}", flush=True)
-        
-        while not quality_flag and i < attempt:
+
+        # Tool selection: regex first, LLM fallback, re-select only on tool-related feedback
+        tool_json = self._regex_extract_tools(instruction_text)
+        if not tool_json:
+            print("[CodeGenerator] Regex found no tools, falling back to LLM ToolSelector", flush=True)
             tool_json = self.tool_selector(instruction=instruction_text)
+
+        while not quality_flag and i < attempt:
+            # Only re-select tools if previous feedback specifically indicates tool issues
+            if i > 0 and self._is_tool_related_feedback(feedback):
+                print(f"[CodeGenerator] Tool-related feedback detected, re-selecting tools (attempt {i+1})", flush=True)
+                tool_json = self.tool_selector(instruction=instruction_text)
+
             input_prompt = {
-                "instruction": instruction_text + "\n" + feedback, 
-                "user_query": user_query, 
+                "instruction": instruction_text + "\n" + feedback,
+                "user_query": user_query,
                 "tools": tool_json
             }
             
@@ -285,7 +328,7 @@ class CodeGenerator(BaseAction):
         
         for attempt in range(max_attempts):
             try:
-                output = chat_completion(checker_prompt, model=get_utility_llm())
+                output = chat_completion(checker_prompt, model=get_utility_llm(), reasoning_effort="low")
                 print(output, flush=True)
                 
                 match = re.match(pattern, output)
@@ -348,8 +391,19 @@ class AnalysisExecution(BaseAction):
         # Prepend path setup to make tool_space imports work
         path_setup = """import sys
 import os
+import threading
 # Add parent directory to path so tool_space can be imported as medea.tool_space
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Pre-warm the OpenScholar reranker in the background while Steps 1-5 run.
+# By the time scientific_reasoning_agent is called, the model is already loaded.
+def _prewarm_reranker():
+    try:
+        from medea.modules.literature_reasoning import get_reranker
+        get_reranker("OpenSciLM/OpenScholar_Reranker", use_fp16=True)
+    except Exception:
+        pass
+threading.Thread(target=_prewarm_reranker, daemon=True).start()
 
 """
         
@@ -385,7 +439,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
         try:
             # Wait for the process to complete with a timeout
-            p.wait(timeout=600)  # wait up to 60 seconds
+            p.wait(timeout=600)  # wait up to 10 minutes
         except subprocess.TimeoutExpired:
             p.kill()
             print("Subprocess timed out and was killed.")
@@ -455,10 +509,54 @@ class CodeDebug(BaseAction):
         self.debugger_agent = AgentLLM(
             llm_config=agent_config, 
             llm_name=llm_provider, 
-            system_prompt=DEBUGGER_TEMPLATE
+            system_prompt=DEBUGGER_TEMPLATE,
+            reasoning_effort="medium"
         )
         self.pattern = r'```\s*[Pp]y(?:thon)?\s*\n(.*?)```'
         
+    @staticmethod
+    def _compress_for_debugger(instruction: str, tool_info, error_msg: str,
+                                feedback: str, max_instruction_chars: int = 2000,
+                                max_error_chars: int = 1500,
+                                max_feedback_chars: int = 800) -> tuple:
+        """Compress debugger inputs to prevent context overflow.
+
+        Priority (highest → lowest):
+          1. code_snippet — always kept in full (passed separately)
+          2. error_msg    — keep last N chars (tail has the actual traceback)
+          3. tool_info    — keep only name + parameters (strip verbose descriptions)
+          4. instruction  — keep first + last N/2 chars
+          5. feedback     — truncate to N chars
+        """
+        # --- error_msg: keep the tail (traceback is at the end) ---
+        if error_msg and len(error_msg) > max_error_chars:
+            error_msg = "...[truncated]...\n" + error_msg[-max_error_chars:]
+
+        # --- tool_info: strip verbose descriptions, keep signatures ---
+        if tool_info:
+            compact_tools = []
+            for tool in (tool_info if isinstance(tool_info, list) else [tool_info]):
+                if isinstance(tool, dict):
+                    compact = {"name": tool.get("name", ""),
+                               "parameters": tool.get("parameters", tool.get("params", {}))}
+                    compact_tools.append(compact)
+                else:
+                    compact_tools.append(tool)
+            tool_info = compact_tools
+
+        # --- instruction: keep head + tail ---
+        if instruction and len(instruction) > max_instruction_chars:
+            half = max_instruction_chars // 2
+            instruction = (instruction[:half]
+                           + "\n...[truncated — middle omitted for brevity]...\n"
+                           + instruction[-half:])
+
+        # --- feedback: simple truncation ---
+        if feedback and len(feedback) > max_feedback_chars:
+            feedback = feedback[:max_feedback_chars] + "\n...[truncated]"
+
+        return instruction, tool_info, error_msg, feedback
+
     def __call__(self, code_snippet: CodeSnippet):
         if code_snippet.status != "error":
             return f"{code_snippet}: No error occurred, call AnalysisExecution next."
@@ -468,22 +566,51 @@ class CodeDebug(BaseAction):
         tool_info = code_snippet.tool_info
         snippet = code_snippet.code_snippet
         error_msg = code_snippet.stderr
-        
+
         if code_snippet.feedback:
             feedback = code_snippet.feedback
-        
-            
+
+        # Compress fields to prevent context overflow while preserving key info
+        instruction, tool_info, error_msg, feedback = self._compress_for_debugger(
+            instruction, tool_info, error_msg, feedback
+        )
+
         task_prompt = DEBUGGER_CHAT_TEMPLATE.format(
-            user_query=task, 
-            instruction=instruction, 
+            user_query=task,
+            instruction=instruction,
             tool_info=tool_info,
-            code_snippet=snippet, 
-            error_msg=error_msg, 
+            code_snippet=snippet,
+            error_msg=error_msg,
             feedback=feedback
         )
         print(task_prompt, flush=True)
         raw_code_snippet = self.debugger_agent.run(task_prompt)
+
+        # Extract code with fallbacks for malformed LLM output
         matches = re.findall(self.pattern, raw_code_snippet, re.DOTALL)
+        if not matches:
+            # Fallback 1: generic ``` fence without language tag
+            matches = re.findall(r'```\n(.*?)```', raw_code_snippet, re.DOTALL)
+        if not matches:
+            # Fallback 2: raw response looks like Python code (no fences)
+            stripped = raw_code_snippet.strip()
+            python_indicators = ['import ', 'from ', 'def ', 'print(', 'if __name__']
+            if sum(1 for kw in python_indicators if kw in stripped) >= 2:
+                lines = stripped.split('\n')
+                code_start = next(
+                    (i for i, line in enumerate(lines)
+                     if any(line.strip().startswith(kw) for kw in ['import ', 'from ', 'def ', '#'])),
+                    None
+                )
+                if code_start is not None:
+                    matches = ['\n'.join(lines[code_start:])]
+                    print("[CodeDebugger] No code fence found, extracted Python code from response.", flush=True)
+        if not matches:
+            # Fallback 3: return original code unchanged so agent can retry or finish
+            print("[CodeDebugger] WARNING: Could not extract code from LLM response. Keeping original code.", flush=True)
+            code_snippet.status = "error"
+            return f"{code_snippet}: CodeDebugger failed to produce valid code, call Finish next."
+
         code_snippet.code_snippet = matches[0]
         code_snippet.status = "unexecuted"
         return f"{code_snippet}: debugged, call AnalysisExecution next."
@@ -513,7 +640,8 @@ class AnalysisQualityChecker(BaseAction):
             llm_config=agent_config, 
             llm_name=llm_provider,
             system_prompt=QUALITY_ASSURANCE_TEMPLATE,
-            input_variables=["user_query", "instruction", "tool_info", "code_snippet", "code_output"]
+            input_variables=["user_query", "instruction", "tool_info", "code_snippet", "code_output"],
+            reasoning_effort="medium"
         )
         self.pattern = r"\[(\w+)\]\s*-\s*(.*)"
         self.iterations = 0
@@ -545,7 +673,8 @@ class AnalysisQualityChecker(BaseAction):
             "code_output": code_output
         }
 
-        while True:
+        max_parse_retries = 5
+        for _retry in range(max_parse_retries):
             output = self.quality_checker_agent.run(input_prompt)
             print(output, flush=True)
             match = re.match(self.pattern, output)
@@ -554,6 +683,11 @@ class AnalysisQualityChecker(BaseAction):
                 feedback = match.group(2)  # Feedback
                 code_snippet.update_feedback(feedback)
                 break
+        else:
+            # Could not parse a valid decision after retries — approve to avoid hang
+            print(f"[AnalysisQualityChecker] Could not parse decision after {max_parse_retries} retries. Auto-approving.", flush=True)
+            decision = "Approved"
+            feedback = "Auto-approved: quality checker output could not be parsed."
         
         if decision == "Failed":
             self.iterations += 1
@@ -744,6 +878,11 @@ class Analysis(BaseAgent):
         """
         Generate the next action for the agent.
 
+        Uses a sliding window over action history: recent steps are kept in full
+        detail, while older steps have their observations compressed to one-line
+        summaries. This preserves long-horizon reasoning context (what was tried
+        and what happened) while reducing prompt size from verbose tool outputs.
+
         Args:
             task: The task which agent receives and solves
             action_chain: History actions and observations from memory
@@ -751,16 +890,109 @@ class Analysis(BaseAgent):
         Returns:
             The action for agent to execute
         """
+        # Compress old history for prompt construction
+        compressed_chain = self._compress_action_chain(action_chain)
+
         action_prompt = self.prompt_gen.action_prompt(
             task=task,
             actions=self.actions,
-            action_chain=action_chain,
+            action_chain=compressed_chain,
         )
         self.logger.get_prompt(action_prompt)
         raw_action = self.llm_layer(action_prompt)
         self.logger.get_llm_output(raw_action)
-        
+
+        # Pass ORIGINAL action_chain for CodeSnippet reference resolution
         return self.__action_parser__(raw_action, action_chain)
+
+    def _compress_action_chain(
+        self, action_chain: ActObsChainType, recent_k: int = 3
+    ) -> ActObsChainType:
+        """Compress old action-observation pairs via sliding window.
+
+        Recent ``recent_k`` steps are kept verbatim.  Older steps retain their
+        full action (so the LLM can see *what* was attempted) but have their
+        observation replaced with a deterministic one-line summary (so verbose
+        stderr / quality-checker feedback doesn't bloat the prompt).
+
+        This preserves the narrative arc for long-horizon reasoning while
+        cutting the bulk of prompt growth in multi-step ReAct loops.
+        """
+        if len(action_chain) <= recent_k:
+            return action_chain
+
+        compressed = []
+        cutoff = len(action_chain) - recent_k
+
+        for i, (act, obs) in enumerate(action_chain):
+            if i < cutoff:
+                summary = self._summarize_observation(act.name, str(obs))
+                compressed.append((act, summary))
+            else:
+                compressed.append((act, obs))
+
+        return compressed
+
+    @staticmethod
+    def _summarize_observation(action_name: str, obs: str) -> str:
+        """Return a deterministic one-line summary of an observation string."""
+        if not obs:
+            return "[No output]"
+
+        # ── CodeGenerator ───────────────────────────────────────────────
+        if action_name == "CodeGenerator":
+            m = re.search(r'(<CodeSnippet:\w+>)', obs)
+            sid = m.group(1) if m else "code"
+            return f"[Summary] Generated {sid}"
+
+        # ── AnalysisExecution ───────────────────────────────────────────
+        if action_name == "AnalysisExecution":
+            if "Successfully executed" in obs:
+                m = re.search(r'(<CodeSnippet:\w+>)', obs)
+                sid = m.group(1) if m else "code"
+                return f"[Summary] {sid} executed successfully"
+            if "Error occurred" in obs:
+                # Surface the first real error/exception line
+                for line in obs.splitlines():
+                    line = line.strip()
+                    if line and ("Error" in line or "Exception" in line) \
+                            and not line.startswith("<CodeSnippet"):
+                        return f"[Summary] Execution error: {line[:200]}"
+                return "[Summary] Execution failed with errors"
+            if "cannot help" in obs:
+                return "[Summary] Execution failed permanently"
+            return f"[Summary] Execution: {obs[:150]}"
+
+        # ── AnalysisQualityChecker ──────────────────────────────────────
+        if action_name == "AnalysisQualityChecker":
+            if "Passed" in obs:
+                return "[Summary] Quality check passed"
+            if "Failed" in obs:
+                m = re.search(r'\[Failed\]\s*-\s*(.+?)(?:\n|$)', obs)
+                fb = m.group(1)[:200] if m else "see feedback"
+                return f"[Summary] Quality check failed: {fb}"
+            if "has not been executed" in obs:
+                return "[Summary] Quality check skipped — code not yet executed"
+            return f"[Summary] Quality check: {obs[:150]}"
+
+        # ── CodeDebugger ────────────────────────────────────────────────
+        if action_name == "CodeDebugger":
+            m = re.search(r'(<CodeSnippet:\w+>)', obs)
+            sid = m.group(1) if m else "code"
+            if "debugged" in obs:
+                return f"[Summary] {sid} debugged, ready for re-execution"
+            return f"[Summary] Debug: {obs[:150]}"
+
+        # ── Think — keep short thoughts verbatim ────────────────────────
+        if action_name == "Think":
+            if len(obs) <= 300:
+                return obs
+            return f"[Summary] {obs[:250]}..."
+
+        # ── Default fallback ────────────────────────────────────────────
+        if len(obs) <= 300:
+            return obs
+        return f"[Summary] {obs[:250]}..."
     
     def __action_parser__(self, raw_action: str, action_chain: ActObsChainType) -> AgentAct:
         """

@@ -25,6 +25,7 @@ import json
 import random
 import time
 import logging
+import tempfile
 import requests
 import urllib.parse
 from io import StringIO
@@ -34,6 +35,32 @@ from typing import List, Dict, Tuple, Optional, Any, Set
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+# Base cache directory for all yeast-human tool data
+MEDEA_CACHE_BASE = Path.home() / ".medea" / "cache"
+
+# SGD API
+SGD_API_BASE = "https://www.yeastgenome.org/backend"
+SGD_FEATURES_URL = "https://downloads.yeastgenome.org/curation/chromosomal_feature/SGD_features.tab"
+SGD_REQUEST_DELAY = 0.15      # seconds between API requests (politeness)
+SGD_REQUEST_TIMEOUT = 15      # seconds per request
+SGD_MAX_RETRIES = 5
+SGD_API_CHECK_TIMEOUT = 5     # seconds for quick API availability check
+
+# PomBase bulk ortholog TSV URLs
+POMBASE_CEREVISIAE_URL = "https://pombase.org/data/orthologs/pombe-cerevisiae-orthologs.tsv"
+POMBASE_HUMAN_URL = "https://pombase.org/data/orthologs/pombe-human-orthologs.tsv"
+
+# MyGene.info (human gene validation / HGNC resolution)
+MYGENE_API_TIMEOUT = 10
+
+# Cache TTL (days)
+CACHE_TTL_DAYS = 30           # how long to keep cached data before re-downloading
+DOWNLOAD_TIMEOUT = 60         # seconds for bulk file downloads
 
 
 # =============================================================================
@@ -95,6 +122,120 @@ class YeastGeneInfo:
 
 
 # =============================================================================
+# SGD Gene Features Cache (Bulk TSV Download — replaces per-gene API calls)
+# =============================================================================
+
+class SGDFeatureCache:
+    """
+    Downloads and caches the SGD_features.tab bulk file for fast local gene lookups.
+    Eliminates the need for per-gene SGD API calls, avoiding rate limiting / IP bans.
+    File is ~3 MB, refreshed every 30 days.
+    """
+    def __init__(self, cache_dir: Optional[str] = None):
+        if cache_dir:
+            self.cache_dir = Path(cache_dir)
+        else:
+            self.cache_dir = MEDEA_CACHE_BASE / "sgd"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self._genes: Dict[str, Dict] = {}
+        self._loaded = False
+        self._logger = logging.getLogger("SGD_FEATURE_CACHE")
+
+    def _log(self, msg, level="INFO"):
+        print(f"[SGD_FEATURE_CACHE] {level}: {msg}", flush=True)
+
+    def _download(self, max_retries: int = 3) -> str:
+        local_path = self.cache_dir / "SGD_features.tab"
+        if local_path.exists():
+            age_days = (time.time() - local_path.stat().st_mtime) / 86400
+            if age_days < CACHE_TTL_DAYS:
+                self._log(f"Using cached SGD_features.tab ({age_days:.0f} days old)")
+                return str(local_path)
+
+        self._log("Downloading SGD_features.tab (~3 MB)...")
+        for attempt in range(max_retries):
+            try:
+                resp = requests.get(SGD_FEATURES_URL, timeout=DOWNLOAD_TIMEOUT)
+                resp.raise_for_status()
+                # Atomic write: temp file + rename (safe for concurrent processes)
+                fd, tmp = tempfile.mkstemp(dir=str(local_path.parent), suffix=".tmp")
+                try:
+                    with os.fdopen(fd, "wb") as f:
+                        f.write(resp.content)
+                    os.replace(tmp, str(local_path))
+                except BaseException:
+                    try:
+                        os.unlink(tmp)
+                    except OSError:
+                        pass
+                    raise
+                self._log(f"Downloaded SGD_features.tab ({len(resp.content)} bytes)")
+                return str(local_path)
+            except requests.RequestException as e:
+                if attempt < max_retries - 1:
+                    wait = 2 ** attempt
+                    self._log(f"Download failed, retrying in {wait}s: {e}", "WARNING")
+                    time.sleep(wait)
+                else:
+                    raise RuntimeError(f"Failed to download SGD_features.tab after {max_retries} attempts: {e}")
+
+    def _load(self):
+        if self._loaded:
+            return
+        path = self._download()
+        with open(path, 'r') as f:
+            for line in f:
+                parts = line.rstrip('\n').split('\t')
+                if len(parts) < 16:
+                    continue
+                sgd_id = parts[0]
+                feature_type = parts[1]
+                qualifier = parts[2] if len(parts) > 2 else ""
+                systematic_name = parts[3] if len(parts) > 3 else ""
+                gene_name = parts[4] if len(parts) > 4 else ""
+                aliases = parts[5] if len(parts) > 5 else ""
+                description = parts[15] if len(parts) > 15 else ""
+
+                if feature_type not in ("ORF", "tRNA", "rRNA", "snoRNA", "snRNA", "ncRNA"):
+                    continue
+
+                key_name = (gene_name or systematic_name).upper()
+                key_sys = systematic_name.upper()
+
+                entry = {
+                    "sgd_id": sgd_id,
+                    "gene_name": gene_name or systematic_name,
+                    "systematic_name": systematic_name,
+                    "description": description,
+                    "gene_type": feature_type,
+                    "qualifier": qualifier,
+                    "aliases": [a.strip() for a in aliases.split("|")] if aliases else [],
+                    "go_annotations": [],
+                    "url": f"https://www.yeastgenome.org/locus/{sgd_id}",
+                }
+                if key_name:
+                    self._genes[key_name] = entry
+                if key_sys and key_sys != key_name:
+                    self._genes[key_sys] = entry
+
+        self._log(f"Loaded {len(self._genes)} gene entries from SGD_features.tab")
+        self._loaded = True
+
+    def get_gene_info(self, gene_name: str) -> Optional[Dict]:
+        self._load()
+        return self._genes.get(gene_name.strip().upper())
+
+
+_sgd_feature_cache: Optional[SGDFeatureCache] = None
+
+def _get_sgd_feature_cache() -> SGDFeatureCache:
+    global _sgd_feature_cache
+    if _sgd_feature_cache is None:
+        _sgd_feature_cache = SGDFeatureCache()
+    return _sgd_feature_cache
+
+
+# =============================================================================
 # PomBase Ortholog Cache (Bulk TSV Download + In-Memory Lookup)
 # =============================================================================
 
@@ -109,15 +250,11 @@ class PomBaseOrthologCache:
     Combined, these enable triangulated cerevisiae→pombe→human mapping.
     """
     
-    POMBE_CEREVISIAE_URL = "https://pombase.org/data/orthologs/pombe-cerevisiae-orthologs.tsv"
-    POMBE_HUMAN_URL = "https://pombase.org/data/orthologs/pombe-human-orthologs.tsv"
-    
     def __init__(self, cache_dir: Optional[str] = None):
         if cache_dir:
             self.cache_dir = Path(cache_dir)
         else:
-            # Default: use ~/.medea/cache/pombase/
-            self.cache_dir = Path.home() / ".medea" / "cache" / "pombase"
+            self.cache_dir = MEDEA_CACHE_BASE / "pombase"
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         
         # In-memory lookup tables
@@ -138,7 +275,7 @@ class PomBaseOrthologCache:
         # Check if cached file exists and is less than 30 days old
         if local_path.exists():
             age_days = (time.time() - local_path.stat().st_mtime) / 86400
-            if age_days < 30:
+            if age_days < CACHE_TTL_DAYS:
                 self._log(f"Using cached {filename} ({age_days:.0f} days old)")
                 return str(local_path)
         
@@ -146,9 +283,20 @@ class PomBaseOrthologCache:
         
         for attempt in range(max_retries):
             try:
-                response = requests.get(url, timeout=60)
+                response = requests.get(url, timeout=DOWNLOAD_TIMEOUT)
                 response.raise_for_status()
-                local_path.write_text(response.text, encoding='utf-8')
+                # Atomic write: temp file + rename (safe for concurrent processes)
+                fd, tmp = tempfile.mkstemp(dir=str(local_path.parent), suffix=".tmp")
+                try:
+                    with os.fdopen(fd, "wb") as f:
+                        f.write(response.text.encode("utf-8"))
+                    os.replace(tmp, str(local_path))
+                except BaseException:
+                    try:
+                        os.unlink(tmp)
+                    except OSError:
+                        pass
+                    raise
                 self._log(f"Downloaded {filename} ({len(response.text)} bytes)")
                 return str(local_path)
             except requests.RequestException as e:
@@ -179,8 +327,8 @@ class PomBaseOrthologCache:
         
         try:
             # Download files
-            cer_path = self._download_file(self.POMBE_CEREVISIAE_URL, "pombe-cerevisiae-orthologs.tsv")
-            human_path = self._download_file(self.POMBE_HUMAN_URL, "pombe-human-orthologs.tsv")
+            cer_path = self._download_file(POMBASE_CEREVISIAE_URL, "pombe-cerevisiae-orthologs.tsv")
+            human_path = self._download_file(POMBASE_HUMAN_URL, "pombe-human-orthologs.tsv")
             
             # Parse pombe-cerevisiae
             # Format: 2-column TSV: pombe_systematic_id \t cerevisiae_systematic_name
@@ -380,9 +528,6 @@ class SGDClient:
     - /backend/locus/{id}/complement_details → Functional complementation data
     """
     
-    BASE_URL = "https://www.yeastgenome.org/backend"
-    SEARCH_URL = "https://www.yeastgenome.org/backend/search"
-    
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -390,15 +535,15 @@ class SGDClient:
             "User-Agent": "Medea/1.0 (yeast-human-ortholog-tools)"
         })
         self._sgd_id_cache: Dict[str, str] = {}  # gene_name -> SGD ID
-        self._request_delay = 0.5  # seconds between requests (increased for parallel safety)
-        self._max_retries = 5
+        self._request_delay = SGD_REQUEST_DELAY
+        self._max_retries = SGD_MAX_RETRIES
     
     def _request(self, url: str, params: Optional[Dict] = None) -> Optional[Any]:
         """Make a rate-limited request with retries."""
         for attempt in range(self._max_retries):
             try:
                 time.sleep(self._request_delay + random.uniform(0, 0.5))
-                response = self.session.get(url, params=params, timeout=15)
+                response = self.session.get(url, params=params, timeout=SGD_REQUEST_TIMEOUT)
                 
                 if response.status_code == 404:
                     self._log(f"Resource not found: {url}", "WARNING")
@@ -434,7 +579,7 @@ class SGDClient:
             return self._sgd_id_cache[gene_name]
         
         # Try direct locus lookup first (works with standard names like RAD51)
-        url = f"{self.BASE_URL}/locus/{urllib.parse.quote(gene_name)}"
+        url = f"{SGD_API_BASE}/locus/{urllib.parse.quote(gene_name)}"
         data = self._request(url)
         
         if data and isinstance(data, dict):
@@ -449,7 +594,7 @@ class SGDClient:
     
     def get_gene_info(self, gene_name: str) -> Optional[YeastGeneInfo]:
         """Get comprehensive gene information from SGD."""
-        url = f"{self.BASE_URL}/locus/{urllib.parse.quote(gene_name)}"
+        url = f"{SGD_API_BASE}/locus/{urllib.parse.quote(gene_name)}"
         data = self._request(url)
         
         if not data or not isinstance(data, dict):
@@ -471,7 +616,7 @@ class SGDClient:
         Get human orthologs for a yeast gene from SGD (Alliance/DIOPT data).
         """
         # First resolve to get SGD ID and gene info
-        url = f"{self.BASE_URL}/locus/{urllib.parse.quote(gene_name)}"
+        url = f"{SGD_API_BASE}/locus/{urllib.parse.quote(gene_name)}"
         locus_data = self._request(url)
         
         if not locus_data or not isinstance(locus_data, dict):
@@ -483,7 +628,7 @@ class SGDClient:
         systematic_name = locus_data.get("format_name", "")
         
         # Fetch homolog details
-        homolog_url = f"{self.BASE_URL}/locus/{sgd_id}/homolog_details"
+        homolog_url = f"{SGD_API_BASE}/locus/{sgd_id}/homolog_details"
         homolog_data = self._request(homolog_url)
         
         if not homolog_data or not isinstance(homolog_data, list):
@@ -542,7 +687,7 @@ class SGDClient:
         Get experimentally validated functional complementation data.
         These are cases where a yeast gene can replace a human gene (or vice versa).
         """
-        url = f"{self.BASE_URL}/locus/{urllib.parse.quote(gene_name)}"
+        url = f"{SGD_API_BASE}/locus/{urllib.parse.quote(gene_name)}"
         locus_data = self._request(url)
         
         if not locus_data or not isinstance(locus_data, dict):
@@ -552,7 +697,7 @@ class SGDClient:
         display_name = locus_data.get("display_name", gene_name)
         systematic_name = locus_data.get("format_name", "")
         
-        complement_url = f"{self.BASE_URL}/locus/{sgd_id}/complement_details"
+        complement_url = f"{SGD_API_BASE}/locus/{sgd_id}/complement_details"
         complement_data = self._request(complement_url)
         
         if not complement_data or not isinstance(complement_data, list):
@@ -645,16 +790,211 @@ class SGDClient:
 
 
 # =============================================================================
-# Integrated Ortholog Mapper (Combines SGD + PomBase)
+# Alliance Ortholog Cache (Local Bulk TSV — Primary Data Source)
+# =============================================================================
+
+class AllianceOrthologCache:
+    """
+    Loads the Alliance ORTHOLOGY-ALLIANCE_COMBINED.tsv(.gz) bulk file for
+    fast local yeast↔human ortholog lookups.  This file contains multi-algorithm
+    ortholog predictions curated by the Alliance of Genome Resources and is the
+    most comprehensive single source for cross-species mapping.
+
+    Expected location: ~/.medea/cache/alliance/ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz
+    (auto-downloaded by the existing SGD ortholog pipeline).
+    """
+
+    _YEAST_TAXON = "NCBITaxon:559292"
+    _HUMAN_TAXON = "NCBITaxon:9606"
+
+    def __init__(self, cache_dir: Optional[str] = None):
+        if cache_dir:
+            self.cache_dir = Path(cache_dir)
+        else:
+            self.cache_dir = MEDEA_CACHE_BASE / "alliance"
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+
+        self._yeast_to_human: Dict[str, List[Dict]] = {}   # YEAST_SYMBOL_UPPER -> [records]
+        self._human_to_yeast: Dict[str, List[Dict]] = {}   # HUMAN_SYMBOL_UPPER -> [records]
+        self._loaded = False
+
+    def load(self) -> bool:
+        """Parse the Alliance TSV into in-memory lookup tables. Returns True on success."""
+        if self._loaded:
+            return True
+
+        import gzip as _gzip
+
+        candidates = [
+            self.cache_dir / "ORTHOLOGY-ALLIANCE_COMBINED.tsv.gz",
+            self.cache_dir / "ORTHOLOGY-ALLIANCE_COMBINED.tsv",
+        ]
+        filepath = None
+        for c in candidates:
+            if c.exists():
+                filepath = c
+                break
+
+        if filepath is None:
+            self._log("Alliance orthology file not found — skipping Alliance source", "WARNING")
+            return False
+
+        open_fn = _gzip.open if str(filepath).endswith(".gz") else open
+        try:
+            with open_fn(filepath, "rt", encoding="utf-8") as fh:
+                header_seen = False
+                for line in fh:
+                    if line.startswith("#"):
+                        continue
+                    if not header_seen:
+                        header_seen = True
+                        continue  # skip column header row
+
+                    parts = line.rstrip("\n").split("\t")
+                    if len(parts) < 12:
+                        continue
+
+                    g1_sym, g1_tax = parts[1], parts[2]
+                    g2_sym, g2_tax = parts[5], parts[6]
+                    algorithms = parts[8] if len(parts) > 8 else ""
+                    n_match = int(parts[9]) if len(parts) > 9 and parts[9].isdigit() else 0
+                    n_total = int(parts[10]) if len(parts) > 10 and parts[10].isdigit() else 0
+                    is_best = parts[11].strip().lower() == "yes" if len(parts) > 11 else False
+
+                    yeast_sym = human_sym = None
+                    if self._YEAST_TAXON in g1_tax and self._HUMAN_TAXON in g2_tax:
+                        yeast_sym, human_sym = g1_sym, g2_sym
+                    elif self._YEAST_TAXON in g2_tax and self._HUMAN_TAXON in g1_tax:
+                        yeast_sym, human_sym = g2_sym, g1_sym
+
+                    if yeast_sym and human_sym:
+                        record = {
+                            "yeast_gene": yeast_sym,
+                            "human_gene": human_sym,
+                            "algorithms": algorithms,
+                            "num_methods": n_match,
+                            "num_total": n_total,
+                            "is_best_score": is_best,
+                        }
+                        self._yeast_to_human.setdefault(yeast_sym.upper(), []).append(record)
+                        self._human_to_yeast.setdefault(human_sym.upper(), []).append(record)
+
+            self._loaded = True
+            self._log(
+                f"Loaded Alliance orthologs: "
+                f"{len(self._yeast_to_human)} yeast genes, "
+                f"{len(self._human_to_yeast)} human genes"
+            )
+            return True
+        except Exception as e:
+            self._log(f"Failed to load Alliance file: {e}", "ERROR")
+            return False
+
+    def find_human_orthologs(self, yeast_gene: str) -> List[OrthologMapping]:
+        """Return human orthologs for *yeast_gene* from Alliance data."""
+        if not self.load():
+            return []
+
+        sgd_cache = _get_sgd_feature_cache()
+        gene_info = sgd_cache.get_gene_info(yeast_gene)
+        systematic = gene_info["systematic_name"] if gene_info else ""
+
+        records = self._yeast_to_human.get(yeast_gene.upper(), [])
+        if not records and systematic:
+            records = self._yeast_to_human.get(systematic.upper(), [])
+
+        results = []
+        seen = set()
+        for rec in records:
+            hg = rec["human_gene"].upper()
+            if hg in seen:
+                continue
+            seen.add(hg)
+
+            n_methods = rec["num_methods"]
+            is_best = rec["is_best_score"]
+            if n_methods >= 8 or (n_methods >= 5 and is_best):
+                conf = "high"
+            elif n_methods >= 3:
+                conf = "medium"
+            else:
+                conf = "low"
+
+            results.append(OrthologMapping(
+                source_gene=yeast_gene,
+                source_systematic=systematic,
+                source_organism="Saccharomyces cerevisiae",
+                target_gene=rec["human_gene"],
+                target_id="",
+                target_organism="Homo sapiens",
+                data_source="Alliance",
+                prediction_methods=rec["algorithms"].split("|") if rec["algorithms"] else [],
+                num_methods=n_methods,
+                is_best_score=is_best,
+                confidence=conf,
+                pmid_references=[],
+            ))
+
+        if results:
+            self._log(f"Found {len(results)} human ortholog(s) for {yeast_gene} via Alliance")
+        return results
+
+    def find_yeast_orthologs(self, human_gene: str) -> List[OrthologMapping]:
+        """Return yeast orthologs for *human_gene* from Alliance data."""
+        if not self.load():
+            return []
+
+        records = self._human_to_yeast.get(human_gene.upper(), [])
+        results = []
+        seen = set()
+        for rec in records:
+            yg = rec["yeast_gene"].upper()
+            if yg in seen:
+                continue
+            seen.add(yg)
+
+            n_methods = rec["num_methods"]
+            is_best = rec["is_best_score"]
+            if n_methods >= 8 or (n_methods >= 5 and is_best):
+                conf = "high"
+            elif n_methods >= 3:
+                conf = "medium"
+            else:
+                conf = "low"
+
+            results.append(OrthologMapping(
+                source_gene=human_gene,
+                source_systematic="",
+                source_organism="Homo sapiens",
+                target_gene=rec["yeast_gene"],
+                target_id="",
+                target_organism="Saccharomyces cerevisiae",
+                data_source="Alliance",
+                prediction_methods=rec["algorithms"].split("|") if rec["algorithms"] else [],
+                num_methods=n_methods,
+                is_best_score=is_best,
+                confidence=conf,
+                pmid_references=[],
+            ))
+        return results
+
+    @staticmethod
+    def _log(message: str, level: str = "INFO"):
+        print(f"[ALLIANCE_ORTHOLOGS] {level}: {message}", flush=True)
+
+
+# =============================================================================
+# Integrated Ortholog Mapper (Combines Alliance + SGD + PomBase)
 # =============================================================================
 
 class IntegratedOrthologMapper:
     """
-    Combines SGD direct orthologs with PomBase triangulated orthologs
-    to provide comprehensive yeast↔human gene mapping with confidence scoring.
+    Combines Alliance local orthologs (primary), SGD API orthologs,
+    and PomBase triangulated orthologs for comprehensive yeast↔human mapping.
     """
     
     def __init__(self, pombase_cache_dir: Optional[str] = None):
+        self.alliance = AllianceOrthologCache()
         self.sgd = SGDClient()
         self.pombase = PomBaseOrthologCache(cache_dir=pombase_cache_dir)
         self._hgnc_cache: Dict[str, str] = {}  # gene_symbol -> HGNC ID
@@ -670,7 +1010,7 @@ class IntegratedOrthologMapper:
         try:
             encoded = urllib.parse.quote(gene_symbol)
             url = f"https://mygene.info/v3/query?q={encoded}&fields=HGNC&species=human"
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=MYGENE_API_TIMEOUT)
             response.raise_for_status()
             data = response.json()
             hits = data.get("hits", [])
@@ -686,10 +1026,29 @@ class IntegratedOrthologMapper:
         
         return None
     
+    def _sgd_api_available(self) -> bool:
+        """Quick check if SGD API is reachable (cached for 10 minutes)."""
+        now = time.time()
+        if hasattr(self, '_sgd_api_ok') and now - self._sgd_api_check_time < 600:
+            return self._sgd_api_ok
+        try:
+            resp = self.sgd.session.get(
+                f"{SGD_API_BASE}/locus/S000003097",
+                timeout=SGD_API_CHECK_TIMEOUT
+            )
+            ok = resp.status_code == 200
+        except Exception:
+            ok = False
+        self._sgd_api_ok = ok
+        self._sgd_api_check_time = now
+        if not ok:
+            self._log("SGD API unavailable (403/timeout). Using PomBase-only mode.", "WARNING")
+        return ok
+
     def yeast_to_human(self, yeast_gene: str, include_pombase: bool = True) -> Dict[str, Any]:
         """
         Find all human orthologs for a yeast gene.
-        Merges SGD direct evidence with PomBase triangulated evidence.
+        Priority: Alliance local cache (fast, comprehensive) → SGD API → PomBase triangulation.
         
         Args:
             yeast_gene: Yeast gene name (standard or systematic, e.g. "RAD51" or "YER095W")
@@ -700,13 +1059,33 @@ class IntegratedOrthologMapper:
         """
         self._log(f"Looking up human orthologs for yeast gene: {yeast_gene}")
         
-        # 1. Get SGD gene info
-        gene_info = self.sgd.get_gene_info(yeast_gene)
+        use_sgd_api = self._sgd_api_available()
+
+        # 1. Get gene info — prefer bulk cache, fallback to API
+        gene_info = None
+        try:
+            bulk_cache = _get_sgd_feature_cache()
+            bulk_info = bulk_cache.get_gene_info(yeast_gene)
+            if bulk_info:
+                gene_info = type('GeneInfo', (), {
+                    'to_dict': lambda self=bulk_info: bulk_info,
+                    'url': bulk_info.get('url', ''),
+                    **{k: bulk_info[k] for k in bulk_info}
+                })()
+        except Exception:
+            pass
+        if gene_info is None and use_sgd_api:
+            gene_info = self.sgd.get_gene_info(yeast_gene)
         
-        # 2. Get SGD direct orthologs
-        sgd_orthologs = self.sgd.get_human_orthologs(yeast_gene)
+        # 2. Alliance local cache (primary — fast, no network, most comprehensive)
+        alliance_orthologs = self.alliance.find_human_orthologs(yeast_gene)
         
-        # 3. Get PomBase triangulated orthologs
+        # 3. SGD API orthologs (supplement — skip if API unavailable)
+        sgd_orthologs = []
+        if use_sgd_api:
+            sgd_orthologs = self.sgd.get_human_orthologs(yeast_gene)
+        
+        # 4. PomBase triangulated orthologs (fallback)
         pombase_orthologs = []
         if include_pombase:
             try:
@@ -714,14 +1093,20 @@ class IntegratedOrthologMapper:
             except Exception as e:
                 self._log(f"PomBase lookup failed (non-fatal): {e}", "WARNING")
         
-        # 4. Get functional complementation
-        complementation = self.sgd.get_functional_complementation(yeast_gene)
+        # 5. Functional complementation (skip if API unavailable)
+        complementation = []
+        if use_sgd_api:
+            complementation = self.sgd.get_functional_complementation(yeast_gene)
         
-        # 5. Merge and deduplicate
-        merged = self._merge_orthologs(sgd_orthologs, pombase_orthologs, complementation)
+        # 6. Merge: Alliance first, then SGD + PomBase to supplement
+        merged = self._merge_orthologs(
+            alliance_orthologs + sgd_orthologs, pombase_orthologs, complementation
+        )
         
-        # 6. Generate summary
+        # 7. Generate summary
         summary = self._generate_summary(yeast_gene, merged, complementation)
+        if not use_sgd_api and not alliance_orthologs:
+            summary += " (SGD API unavailable — results from PomBase only)"
         
         return {
             "success": True,
@@ -738,9 +1123,7 @@ class IntegratedOrthologMapper:
     def human_to_yeast(self, human_gene: str, include_pombase: bool = True) -> Dict[str, Any]:
         """
         Find all yeast orthologs for a human gene.
-        
-        Note: SGD API is yeast-centric, so we search by iterating known mappings
-        or using PomBase reverse lookup. For best results, use PomBase.
+        Priority: Alliance local cache → PomBase triangulation → SGD API validation.
         
         Args:
             human_gene: Human gene symbol (e.g. "TP53", "BRCA1")
@@ -750,62 +1133,28 @@ class IntegratedOrthologMapper:
             Dict with keys: human_gene, orthologs, summary
         """
         self._log(f"Looking up yeast orthologs for human gene: {human_gene}")
-        
-        # Strategy: Try to resolve the human gene symbol to HGNC ID first
-        # by checking MyGene.info, then use PomBase HGNC-based lookup
-        hgnc_id = self._resolve_human_gene_to_hgnc(human_gene)
-        
-        # PomBase reverse lookup: human → pombe → cerevisiae (using HGNC ID)
+
+        # 1. Alliance local cache (primary — fast, no network)
+        alliance_orthologs = self.alliance.find_yeast_orthologs(human_gene)
+
+        # 2. PomBase reverse lookup as supplement
         pombase_orthologs = []
         if include_pombase:
             try:
+                hgnc_id = self._resolve_human_gene_to_hgnc(human_gene)
                 if hgnc_id:
                     pombase_orthologs = self.pombase.find_yeast_orthologs_via_pombe(hgnc_id)
                 if not pombase_orthologs:
-                    # Also try the gene symbol directly (in case format matches)
                     pombase_orthologs = self.pombase.find_yeast_orthologs_via_pombe(human_gene)
             except Exception as e:
                 self._log(f"PomBase reverse lookup failed (non-fatal): {e}", "WARNING")
-        
-        # For each found yeast gene, try to validate via SGD
-        validated_orthologs = []
-        sgd_validated = set()
-        
-        for orth in pombase_orthologs:
-            yeast_gene_name = orth.target_gene or orth.target_id
-            if yeast_gene_name:
-                # Try SGD forward lookup to validate
-                sgd_hits = self.sgd.get_human_orthologs(yeast_gene_name)
-                for sgd_hit in sgd_hits:
-                    if (sgd_hit.target_gene.upper() == human_gene.upper() or
-                            sgd_hit.target_id.upper() == (hgnc_id or "").upper()):
-                        # Confirmed by SGD! Create a reverse mapping
-                        validated_orthologs.append(OrthologMapping(
-                            source_gene=human_gene,
-                            source_systematic="",
-                            source_organism="Homo sapiens",
-                            target_gene=sgd_hit.source_gene,        # Yeast gene name
-                            target_id=sgd_hit.source_systematic,    # Yeast systematic name
-                            target_organism="Saccharomyces cerevisiae",
-                            data_source="SGD",
-                            prediction_methods=sgd_hit.prediction_methods,
-                            num_methods=sgd_hit.num_methods,
-                            is_best_score=sgd_hit.is_best_score,
-                            confidence=self._upgrade_confidence(sgd_hit.confidence),
-                            pmid_references=sgd_hit.pmid_references
-                        ))
-                        sgd_validated.add(yeast_gene_name.upper())
-                        break
-            
-            # Include PomBase result even if not SGD-validated
-            if yeast_gene_name.upper() not in sgd_validated:
-                validated_orthologs.append(orth)
-        
-        # Deduplicate
+
+        # 3. Merge and deduplicate (Alliance first)
+        all_orthologs = alliance_orthologs + pombase_orthologs
         seen = set()
         deduped = []
-        for o in validated_orthologs:
-            key = (o.target_gene.upper() if o.target_gene else o.target_id)
+        for o in all_orthologs:
+            key = (o.target_gene.upper() if o.target_gene else o.target_id.upper())
             if key not in seen:
                 seen.add(key)
                 deduped.append(o)
@@ -1007,12 +1356,15 @@ def _get_mapper() -> IntegratedOrthologMapper:
     return _mapper
 
 
+_ORTHOLOG_CACHE_DIR = MEDEA_CACHE_BASE / "sgd_orthologs"
+
 def find_human_orthologs_for_yeast_gene(
     yeast_gene: str,
     include_pombase: bool = True
 ) -> Dict[str, Any]:
     """
     Find human orthologs for a yeast gene using SGD + PomBase data.
+    Results are cached to disk (30 days) to avoid repeated API calls.
     
     Args:
         yeast_gene: Yeast gene name (standard or systematic, e.g. "RAD51" or "YER095W")
@@ -1020,17 +1372,40 @@ def find_human_orthologs_for_yeast_gene(
     
     Returns:
         Dict with keys: success, yeast_gene, yeast_info, orthologs, complementation, summary
-    
-    Example:
-        >>> result = find_human_orthologs_for_yeast_gene("RAD51")
-        >>> print(result["summary"])
-        "Found 1 human ortholog(s) for yeast gene RAD51. High confidence: RAD51."
     """
+    _ORTHOLOG_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_key = f"{yeast_gene.strip().upper()}_pb{int(include_pombase)}"
+    cache_file = _ORTHOLOG_CACHE_DIR / f"{cache_key}.json"
+
+    if cache_file.exists():
+        age_days = (time.time() - cache_file.stat().st_mtime) / 86400
+        if age_days < CACHE_TTL_DAYS:
+            try:
+                with open(cache_file) as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, OSError):
+                pass
+
     mapper = _get_mapper()
     try:
-        return mapper.yeast_to_human(yeast_gene, include_pombase=include_pombase)
+        result = mapper.yeast_to_human(yeast_gene, include_pombase=include_pombase)
     except Exception as e:
         return {"success": False, "error": str(e), "yeast_gene": yeast_gene}
+
+    if result.get("success"):
+        try:
+            fd, tmp = tempfile.mkstemp(
+                dir=str(Path(cache_file).parent), suffix=".tmp")
+            with os.fdopen(fd, "w") as f:
+                json.dump(result, f, default=str)
+            os.replace(tmp, cache_file)
+        except OSError:
+            try:
+                os.unlink(tmp)
+            except (OSError, UnboundLocalError):
+                pass
+
+    return result
 
 
 def find_yeast_orthologs_for_human_gene(
@@ -1059,22 +1434,39 @@ def find_yeast_orthologs_for_human_gene(
         return {"success": False, "error": str(e), "human_gene": human_gene}
 
 
+_COMPLEMENT_CACHE_DIR = MEDEA_CACHE_BASE / "sgd_complement"
+
+
 def find_yeast_human_complementation(yeast_gene: str) -> Dict[str, Any]:
     """
     Find experimentally validated functional complementation pairs for a yeast gene.
     These represent cases where a yeast gene and human gene can functionally replace
     each other, providing the strongest evidence for functional conservation.
-    
+    Results are cached to disk (30 days) to avoid repeated API calls.
+
     Args:
         yeast_gene: Yeast gene name
-    
+
     Returns:
         Dict with keys: success, yeast_gene, complementation_pairs, summary
     """
+    _COMPLEMENT_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_key = yeast_gene.strip().upper()
+    cache_file = _COMPLEMENT_CACHE_DIR / f"{cache_key}.json"
+
+    if cache_file.exists():
+        age_days = (time.time() - cache_file.stat().st_mtime) / 86400
+        if age_days < CACHE_TTL_DAYS:
+            try:
+                with open(cache_file) as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, OSError):
+                pass
+
     mapper = _get_mapper()
     try:
         results = mapper.sgd.get_functional_complementation(yeast_gene)
-        
+
         if results:
             summary = (
                 f"Found {len(results)} functional complementation record(s) for {yeast_gene}. "
@@ -1085,24 +1477,37 @@ def find_yeast_human_complementation(yeast_gene: str) -> Dict[str, Any]:
             )
         else:
             summary = f"No functional complementation data found for {yeast_gene} in SGD."
-        
-        return {
+
+        result = {
             "success": True,
             "yeast_gene": yeast_gene,
             "complementation_pairs": [r.to_dict() for r in results],
             "num_pairs": len(results),
             "summary": summary
         }
+
+        try:
+            fd, tmp = tempfile.mkstemp(
+                dir=str(Path(cache_file).parent), suffix=".tmp")
+            with os.fdopen(fd, "w") as f:
+                json.dump(result, f, default=str)
+            os.replace(tmp, cache_file)
+        except OSError:
+            try:
+                os.unlink(tmp)
+            except (OSError, UnboundLocalError):
+                pass
+
+        return result
     except Exception as e:
         return {"success": False, "error": str(e), "yeast_gene": yeast_gene}
 
 
-_GENE_INFO_CACHE_DIR = Path.home() / ".medea" / "cache" / "sgd_gene_info"
-
 def get_yeast_gene_info(yeast_gene: str) -> Dict[str, Any]:
     """
     Get comprehensive information about a yeast gene from SGD.
-    Uses a persistent disk cache to avoid redundant API calls across experiments.
+    Tries the bulk SGD_features.tab cache first (fast, no rate limiting),
+    then falls back to the SGD API if the gene isn't found locally.
     
     Args:
         yeast_gene: Yeast gene name (standard or systematic)
@@ -1110,45 +1515,37 @@ def get_yeast_gene_info(yeast_gene: str) -> Dict[str, Any]:
     Returns:
         Dict with keys: success, gene_info, url
     """
-    _GENE_INFO_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    cache_key = yeast_gene.strip().upper()
-    cache_file = _GENE_INFO_CACHE_DIR / f"{cache_key}.json"
+    # Try bulk cache first (no API call needed)
+    try:
+        cache = _get_sgd_feature_cache()
+        info = cache.get_gene_info(yeast_gene)
+        if info:
+            return {
+                "success": True,
+                "gene_info": info,
+                "url": info["url"]
+            }
+    except Exception:
+        pass
 
-    if cache_file.exists():
-        age_days = (time.time() - cache_file.stat().st_mtime) / 86400
-        if age_days < 30:
-            try:
-                with open(cache_file) as f:
-                    return json.load(f)
-            except (json.JSONDecodeError, OSError):
-                pass
-
+    # Fallback to SGD API for genes not in bulk file
     mapper = _get_mapper()
     try:
-        info = mapper.sgd.get_gene_info(yeast_gene)
-        if info:
-            result = {
+        api_info = mapper.sgd.get_gene_info(yeast_gene)
+        if api_info:
+            return {
                 "success": True,
-                "gene_info": info.to_dict(),
-                "url": info.url
-            }
-        else:
-            result = {
-                "success": False,
-                "error": f"Gene '{yeast_gene}' not found in SGD",
-                "yeast_gene": yeast_gene
+                "gene_info": api_info.to_dict(),
+                "url": api_info.url
             }
     except Exception as e:
-        result = {"success": False, "error": str(e), "yeast_gene": yeast_gene}
+        return {"success": False, "error": str(e), "yeast_gene": yeast_gene}
 
-    if result.get("success"):
-        try:
-            with open(cache_file, "w") as f:
-                json.dump(result, f)
-        except OSError:
-            pass
-
-    return result
+    return {
+        "success": False,
+        "error": f"Gene '{yeast_gene}' not found in SGD (bulk cache + API)",
+        "yeast_gene": yeast_gene
+    }
 
 
 def batch_yeast_to_human_mapping(

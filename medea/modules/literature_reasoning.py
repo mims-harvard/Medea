@@ -16,7 +16,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Use relative imports within package
 from ..tool_space.search_api import KeywordExtractor, SemanticScholarSearch, LLMPaperJudge, PaperQueryAligner
 from ..tool_space.open_alex import search_openalex_papers
-from ..tool_space.open_scholar import OpenScholar
+from ..tool_space.open_scholar import OpenScholar, search_paper_via_query
+from ..tool_space.gpt_utils import chat_completion
+from ..tool_space import instructions as search_instructions
 
 # FlagEmbedding: lazy import to avoid loading in every subprocess
 FlagReranker = None  # Placeholder — loaded on first use via get_reranker()
@@ -47,6 +49,8 @@ def get_reranker(model_name="OpenSciLM/OpenScholar_Reranker", use_fp16=False):
     config = (model_name, use_fp16)
     if _cached_reranker is None or _cached_reranker_config != config:
         print(f"[Reranker] Initializing model: {model_name} (fp16={use_fp16})", flush=True)
+        import transformers
+        transformers.logging.set_verbosity_error()
         _cached_reranker = FlagReranker(model_name, use_fp16=use_fp16)
         _cached_reranker_config = config
         print(f"[Reranker] Ready (cached for future calls)", flush=True)
@@ -54,9 +58,18 @@ def get_reranker(model_name="OpenSciLM/OpenScholar_Reranker", use_fp16=False):
 
 
 class LiteratureSearch(BaseAction):
-    """Comprehensive literature search using multiple academic databases."""
-    
-    def __init__(self, model_name=os.getenv("BACKBONE_LLM"), verbose=True) -> None:
+    """Comprehensive literature search using multiple academic databases.
+
+    Supports two modes:
+      - 'strict': Standard search using the full query (default).
+      - 'decomposition': Supplements standard search by decomposing the query
+        into component sub-queries (individual genes, pathways, conditions) and
+        searching each independently. This captures background literature that
+        enables multi-hop reasoning even when no paper addresses the full query.
+    """
+
+    def __init__(self, model_name=os.getenv("BACKBONE_LLM"), verbose=True,
+                 reasoning_mode: str = "strict") -> None:
         action_name = "LiteratureSearch"
         action_desc = "Search for academic literature using Semantic Scholar and OpenAlex databases with intelligent keyword extraction. Returns a LiteratureCollection object."
         params_doc = {
@@ -66,27 +79,96 @@ class LiteratureSearch(BaseAction):
             "min_citation_count": "Minimum citation count filter for papers (default: 0)"
         }
         super().__init__(
-            action_name=action_name, 
-            action_desc=action_desc, 
+            action_name=action_name,
+            action_desc=action_desc,
             params_doc=params_doc
         )
         self.model_name = model_name
         self.verbose = verbose
+        self.reasoning_mode = reasoning_mode
         self.keyword_extractor = KeywordExtractor(verbose=verbose)
         self.semantic_scholar = SemanticScholarSearch(extractor=self.keyword_extractor, verbose=verbose)
 
+    # ------------------------------------------------------------------
+    # Decomposition helpers
+    # ------------------------------------------------------------------
+    def _decompose_query(self, query: str) -> List[str]:
+        """Use LLM to decompose a complex query into component sub-queries."""
+        prompt = search_instructions.query_decomposition_prompt.format(question=query)
+        response = chat_completion(prompt, model=self.model_name, reasoning_effort="low")
+
+        # Parse [Response_Start] ... [Response_End] block
+        if "[Response_Start]" in response and "[Response_End]" in response:
+            content = response.split("[Response_Start]")[1].split("[Response_End]")[0]
+            sub_queries = [sq.strip() for sq in content.strip().split("\n") if sq.strip()]
+        else:
+            # Fallback: split by newlines, keep reasonable-length lines
+            sub_queries = [sq.strip() for sq in response.strip().split("\n")
+                           if sq.strip() and len(sq.strip()) > 5]
+
+        sub_queries = sub_queries[:5]  # Cap at 5
+        if self.verbose and sub_queries:
+            print(f"[LiteratureSearch] Decomposed into {len(sub_queries)} sub-queries: {sub_queries}")
+        return sub_queries
+
+    def _decomposed_search(self, user_query: str, max_papers_per_sq: int = 5,
+                            min_citation_count: int = 0) -> List[Dict[str, Any]]:
+        """Search each decomposed sub-query in parallel via Semantic Scholar."""
+        sub_queries = self._decompose_query(user_query)
+        if not sub_queries:
+            return []
+
+        all_papers: Dict[str, Dict] = {}  # paperId → paper dict
+
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = {
+                executor.submit(
+                    search_paper_via_query,
+                    query=sq,
+                    max_paper_num=max_papers_per_sq,
+                    minCitationCount=min_citation_count,
+                ): sq
+                for sq in sub_queries
+            }
+            for fut in as_completed(futures):
+                sq = futures[fut]
+                try:
+                    papers = fut.result()
+                    if not papers:
+                        if self.verbose:
+                            print(f"[LiteratureSearch] Decomposed search — no papers for: '{sq}'")
+                        continue
+                    if self.verbose:
+                        print(f"[LiteratureSearch] Decomposed search — {len(papers)} papers for: '{sq}'")
+                    for paper in papers:
+                        pid = paper.get("paperId")
+                        if pid and pid not in all_papers:
+                            paper["text"] = paper.get("abstract") or ""
+                            paper["citation_counts"] = paper.get("citationCount", 0)
+                            all_papers[pid] = paper
+                except Exception as e:
+                    if self.verbose:
+                        print(f"[LiteratureSearch] Decomposed search error for '{sq}': {e}")
+
+        if self.verbose:
+            print(f"[LiteratureSearch] Decomposed search total: {len(all_papers)} unique papers")
+        return list(all_papers.values())
+
+    # ------------------------------------------------------------------
+    # Main entry point
+    # ------------------------------------------------------------------
     def __call__(self, user_query: str, max_papers: int = 16, include_openalex: bool = True, min_citation_count: int = 0):
         """Search for literature using multiple academic databases."""
         if self.verbose:
-            print(f"[LiteratureSearch] Searching for: {user_query}")
-        
+            print(f"[LiteratureSearch] Searching for: {user_query}  (mode={self.reasoning_mode})")
+
         # Ensure parameters are correct types (in case they come as strings)
         max_papers = int(max_papers) if isinstance(max_papers, str) else (max_papers or 16)
         min_citation_count = int(min_citation_count) if isinstance(min_citation_count, str) else (min_citation_count or 0)
-        
+
         # Create literature collection
         collection = LiteratureCollection(search_query=user_query)
-        
+
         try:
             # Search OpenAlex if requested
             if include_openalex:
@@ -102,8 +184,8 @@ class LiteratureSearch(BaseAction):
                     collection.add_papers(openalex_papers, "OpenAlex")
                     if self.verbose:
                         print(f"[LiteratureSearch] Found {len(openalex_papers)} papers from OpenAlex")
-            
-            # Search Semantic Scholar     
+
+            # Search Semantic Scholar
             if self.verbose:
                 print("[LiteratureSearch] Searching Semantic Scholar...")
             ss_papers = self.semantic_scholar.search(
@@ -116,20 +198,34 @@ class LiteratureSearch(BaseAction):
                 collection.add_papers(ss_papers, "Semantic Scholar")
                 if self.verbose:
                     print(f"[LiteratureSearch] Found {len(ss_papers)} papers from Semantic Scholar")
-            
-            
+
+            # ----- Decomposition mode: supplement with component sub-queries -----
+            if self.reasoning_mode == "decomposition" and collection.get_paper_count() < 5:
+                if self.verbose:
+                    print(f"[LiteratureSearch] Only {collection.get_paper_count()} papers from standard search. "
+                          f"Running decomposed sub-query search...")
+                decomposed_papers = self._decomposed_search(
+                    user_query,
+                    max_papers_per_sq=4,
+                    min_citation_count=min_citation_count,
+                )
+                if decomposed_papers:
+                    collection.add_papers(decomposed_papers, "Decomposed")
+                    if self.verbose:
+                        print(f"[LiteratureSearch] Added {len(decomposed_papers)} papers from decomposed search")
+
             # Deduplicate papers by title and DOI
             unique_papers = self._deduplicate_papers(collection.get_papers())
-            
+
             # Limit results and update collection
             final_papers = unique_papers[:max_papers]
             collection.set_papers(final_papers)
-            
+
             if self.verbose:
                 print(f"[LiteratureSearch] Final results: {len(final_papers)} unique papers from {', '.join(collection.sources_used)}")
                 print(f"[LiteratureSearch] Created {collection.get_id()}")
             return collection
-            
+
         except Exception as e:
             if self.verbose:
                 print(f"[LiteratureSearch] Error during search: {e}")
@@ -395,7 +491,7 @@ class OpenScholarReasoning(BaseAction):
             result_item = open_scholar.run(
                 item,
                 ranking_ce=kwargs.get('ranking_ce', True),
-                use_feedback=kwargs.get('feedback', True),
+                use_feedback=kwargs.get('feedback', False),
                 skip_generation=kwargs.get('skip_generation', False),
                 posthoc_at=kwargs.get('posthoc_at', True),
                 llama3_chat=False,

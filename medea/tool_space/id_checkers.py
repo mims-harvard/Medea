@@ -21,12 +21,12 @@ MAX_RETRY_ATTEMPTS = 3
 def disease_name_checker(disease_name: str) -> Tuple[bool, str]:
     """
     Check if a disease name is valid for loading targets.
-    
+
     Args:
         disease_name: Disease name to validate
-        
+
     Returns:
-        Tuple of (is_valid, message)
+        Tuple of (is_valid, message) or (is_valid, message, meta_dict)
     """
     try:
         load_disease_targets(disease_name)
@@ -36,7 +36,8 @@ def disease_name_checker(disease_name: str) -> Tuple[bool, str]:
     except Exception as e:
         msg = f'[disease_name_checker] Error: {str(e)}'
         print(msg, flush=True)
-        return False, msg
+        meta = {"unavailable": disease_name, "alternatives": [], "hard": True}
+        return False, msg, meta
 
 
 def _normalize_celltype(cell_type: str) -> str:
@@ -137,7 +138,8 @@ def celltype_avaliability_checker(disease_name:str, cell_type:str, model_name:st
         full_embedding_dict = torch.load(embed_path, weights_only=False)
         function_name = "load_pinnacle_ppi"
     else:
-        return False, f"[celltype_avaliability_checker] Invalid model_name: {model_name}. Please use 'pinnacle'."
+        meta = {"unavailable": cell_type, "alternatives": [], "hard": True}
+        return False, f"[celltype_avaliability_checker] Invalid model_name: {model_name}. Please use 'pinnacle'.", meta
     
     # Check if cell type exists (with normalization)
     formalized_cell_type = _normalize_celltype(cell_type)
@@ -184,9 +186,10 @@ def celltype_avaliability_checker(disease_name:str, cell_type:str, model_name:st
         msg += f"  → Other options: {other_matches_formatted}\n"
     
     msg += f"  → RECOMMENDATION: Use '{best_match_formatted}' in your proposal and explicitly state you are using this alternative cell type."
-    
+
     print(msg, flush=True)
-    return False, msg
+    meta = {"unavailable": cell_type, "alternatives": [best_match_formatted] + other_matches_formatted, "hard": False}
+    return False, msg, meta
 
 
 def context_avalibility_checker(disease_name:str, cell_type:str, gene_list:list=None, model_name="pinnacle"):
@@ -198,9 +201,10 @@ def context_avalibility_checker(disease_name:str, cell_type:str, gene_list:list=
     
     # Only call celltype_avaliability_checker for pinnacle model
     if model_name == "pinnacle":
-        checker, msg = celltype_avaliability_checker(disease_name=disease_name, cell_type=cell_type, model_name=model_name)
+        result = celltype_avaliability_checker(disease_name=disease_name, cell_type=cell_type, model_name=model_name)
+        checker, msg = result[0], result[1]
         if not checker:
-            return False, msg
+            return False, msg, result[2] if len(result) == 3 else {}
     else:
         msg = f"[context_avalibility_checker] Invalid model_name: {model_name}."
         print(msg, flush=True)
@@ -850,35 +854,57 @@ def _fuzzy_match_concepts(concept: str, available_concepts: List[str], max_items
 def yeast_gene_name_checker(gene_list: List[str] = None, organism: str = "yeast") -> Tuple[bool, str]:
     """
     Validate whether yeast or human gene names are recognized by SGD / MyGene.info.
-    
+
+    For yeast genes: uses the bulk SGD_features.tab cache (~3 MB, downloaded once and
+    cached for 30 days) for instant local lookups — NO per-gene API calls.
+    Falls back to the SGD API only for genes not found in the bulk file.
+
+    For human genes: uses MyGene.info API (lightweight, no rate-limit concern).
+
     Args:
         gene_list: List of gene names to validate. If empty/None, skips validation.
         organism: 'yeast' for S. cerevisiae genes (default), 'human' for reverse lookups.
-        
+
     Returns:
         Tuple of (is_valid, message)
     """
     prefix = "[yeast_gene_name_checker]"
-    
+
     if not gene_list:
         msg = f"{prefix} No gene list provided — skipping validation."
         print(msg, flush=True)
         return True, msg
-    
-    import requests
-    import urllib.parse
-    
+
     invalid_genes = []
     valid_genes = []
-    
+
+    # For yeast: use bulk SGD_features.tab cache (fast, no API rate limits)
+    sgd_cache = None
+    if organism.lower() == "yeast":
+        try:
+            from .yeast_human_orthologs import _get_sgd_feature_cache
+            sgd_cache = _get_sgd_feature_cache()
+        except Exception as e:
+            print(f"{prefix} WARNING: Could not load SGD bulk cache ({e}), falling back to API", flush=True)
+
+    import requests
+    import urllib.parse
+
     for gene in gene_list:
         gene = str(gene).strip()
         if not gene:
             continue
-        
+
         try:
             if organism.lower() == "yeast":
-                # Validate against SGD
+                # Fast path: lookup in bulk SGD_features.tab cache (no API call)
+                if sgd_cache is not None:
+                    info = sgd_cache.get_gene_info(gene)
+                    if info:
+                        valid_genes.append(f"{gene} ({info.get('gene_name', gene)})")
+                        continue
+
+                # Slow fallback: only if bulk cache unavailable or gene not found
                 url = f"https://www.yeastgenome.org/backend/locus/{urllib.parse.quote(gene)}"
                 resp = requests.get(url, timeout=10)
                 if resp.status_code == 200:
@@ -906,15 +932,223 @@ def yeast_gene_name_checker(gene_list: List[str] = None, organism: str = "yeast"
                     invalid_genes.append(gene)
         except Exception:
             invalid_genes.append(gene)
-    
+
     if invalid_genes:
         msg = (
             f"{prefix} {len(invalid_genes)} gene(s) not recognized: {', '.join(invalid_genes)}. "
             f"Valid genes: {', '.join(valid_genes) if valid_genes else 'none'}."
         )
         print(msg, flush=True)
-        return False, msg
-    
+        meta = {"unavailable": ', '.join(invalid_genes), "alternatives": [], "hard": True}
+        return False, msg, meta
+
     msg = f"{prefix} All {len(valid_genes)} gene(s) validated: {', '.join(valid_genes)}."
     print(msg, flush=True)
     return True, msg
+
+
+# ---------------------------------------------------------------------------
+# Condition availability checker for Costanzo SGA dataset
+# ---------------------------------------------------------------------------
+
+_CONDITION_SUGGESTION_CACHE_DIR = os.path.join(
+    os.path.expanduser("~"), ".medea", "cache", "condition_suggestions")
+
+_CONDITION_SUGGEST_PROMPT = """You are a pharmacology and yeast genetics expert. A researcher wants to query a yeast genetic interaction (SGA) dataset for condition "{condition}", but this condition is NOT available in the dataset.
+
+Available conditions in the Costanzo 2021 SGA dataset:
+{available_conditions}
+
+Which of the available conditions are most mechanistically relevant as proxies for "{condition}"? Consider:
+- Mechanism of action (DNA damage, translation inhibition, cell wall disruption, etc.)
+- Overlapping target pathways in S. cerevisiae
+- Known phenotypic similarity in yeast genetic interaction profiles
+
+Return ONLY a Python list of dicts, ranked by relevance (most relevant first), up to 3 entries:
+[{{"condition": "CONDITION_NAME", "reason": "brief reason for relevance"}}]"""
+
+
+def condition_availability_checker(
+    condition: str = None,
+    gene_list: List[str] = None,
+) -> Tuple[bool, str]:
+    """
+    Check if a growth condition is available in the Costanzo 2021 SGA dataset.
+    If not, uses an LLM to suggest the most pharmacologically relevant
+    alternatives from the 14 available conditions.
+
+    Suggestions are disk-cached so the same condition never triggers
+    a second LLM call.
+
+    Args:
+        condition: Growth condition name (e.g. 'BLEO', 'MMS', 'bleomycin').
+        gene_list: Ignored (gene validation is handled by yeast_gene_name_checker).
+
+    Returns:
+        Tuple of (is_valid, message).
+        Always returns True (the condition input is syntactically valid), but
+        the message contains actionable guidance when the condition is unavailable.
+    """
+    prefix = "[condition_availability_checker]"
+
+    # Skip when no condition specified (e.g. SGD/STRING tools don't use conditions)
+    if not condition or condition.strip().upper() in ("", "STANDARD"):
+        msg = f"{prefix} No specific condition — skipping."
+        print(msg, flush=True)
+        return True, msg
+
+    condition_upper = condition.strip().upper()
+
+    # Get available conditions from Costanzo 2021 indexed parquet
+    try:
+        from .yeast_interactions import get_condition_sga_available
+        available = get_condition_sga_available()
+    except Exception as e:
+        msg = (
+            f"{prefix} Could not load Costanzo 2021 condition list ({e}). "
+            f"Proceeding without condition validation."
+        )
+        print(msg, flush=True)
+        return True, msg
+
+    if not available:
+        msg = f"{prefix} Costanzo 2021 dataset not available — skipping condition check."
+        print(msg, flush=True)
+        return True, msg
+
+    # Direct match or common alias match
+    cond_aliases = {
+        "BLEO": ["BLEO", "BLEOMYCIN", "BLE"],
+        "BLEOMYCIN": ["BLEO", "BLEOMYCIN", "BLE"],
+        "HU": ["HU", "HYDROXYUREA"],
+        "HYDROXYUREA": ["HU", "HYDROXYUREA"],
+        "CHX": ["CHX", "CYCLOHEXIMIDE"],
+        "RAP": ["RAP", "RAPAMYCIN"],
+        "GAL": ["GAL", "GALACTOSE"],
+    }
+    variants = cond_aliases.get(condition_upper, [condition_upper])
+    if any(v in available for v in variants):
+        msg = (
+            f"{prefix} Condition '{condition}' is available in Costanzo 2021 SGA dataset."
+        )
+        print(msg, flush=True)
+        return True, msg
+
+    # --- Condition NOT available — get LLM suggestion (cached) ---
+    sorted_available = sorted(available)
+    suggestions = _get_condition_suggestions(condition_upper, sorted_available)
+
+    alternatives = [s["condition"] for s in suggestions]
+    hard = len(alternatives) == 0
+    meta = {"unavailable": condition_upper, "alternatives": alternatives, "hard": hard}
+
+    if suggestions:
+        parts = []
+        for s in suggestions:
+            parts.append(f"  - {s['condition']}: {s['reason']}")
+        suggestion_str = (
+            f"Suggested proxy conditions (ranked by mechanistic relevance):\n"
+            + "\n".join(parts)
+            + f"\nConsider querying the suggested conditions as proxies. Results from proxy "
+            f"conditions provide indirect evidence, not direct evidence for '{condition}'."
+        )
+    else:
+        suggestion_str = (
+            f"No suitable proxy conditions could be identified for '{condition}'. "
+            f"Do NOT use query_costanzo_sga_dataset in your plan — remove it entirely."
+        )
+
+    msg = (
+        f"{prefix} WARNING: '{condition}' is NOT available in the Costanzo 2021 SGA "
+        f"dataset. Available conditions: {', '.join(sorted_available)}.\n"
+        f"{suggestion_str}"
+    )
+    print(msg, flush=True)
+    return False, msg, meta
+
+
+def _get_condition_suggestions(
+    condition: str, available: List[str], max_retries: int = 2,
+) -> List[dict]:
+    """Get LLM-suggested alternative conditions, with disk caching."""
+    # Check disk cache first
+    os.makedirs(_CONDITION_SUGGESTION_CACHE_DIR, exist_ok=True)
+    cache_file = os.path.join(
+        _CONDITION_SUGGESTION_CACHE_DIR, f"{condition.lower()}.json")
+
+    if os.path.exists(cache_file):
+        try:
+            with open(cache_file) as f:
+                cached = json.load(f)
+            if cached.get("available") == available:
+                return cached.get("suggestions", [])
+        except (json.JSONDecodeError, OSError):
+            pass
+
+    # Call LLM
+    from .env_utils import get_utility_llm
+    model = get_utility_llm()
+
+    prompt = _CONDITION_SUGGEST_PROMPT.format(
+        condition=condition,
+        available_conditions=", ".join(available),
+    )
+
+    for attempt in range(max_retries):
+        try:
+            raw = chat_completion(prompt, temperature=0.2, model=model)
+            suggestions = _parse_condition_suggestions(raw, available)
+            if suggestions:
+                # Cache to disk
+                try:
+                    import tempfile
+                    cache_data = {
+                        "condition": condition,
+                        "available": available,
+                        "suggestions": suggestions,
+                    }
+                    fd, tmp = tempfile.mkstemp(
+                        dir=_CONDITION_SUGGESTION_CACHE_DIR, suffix=".tmp")
+                    with os.fdopen(fd, "w") as f:
+                        json.dump(cache_data, f)
+                    os.replace(tmp, cache_file)
+                except OSError:
+                    pass
+                return suggestions
+        except Exception as e:
+            print(f"[condition_suggestion] Attempt {attempt+1} failed: {e}", flush=True)
+
+    return []
+
+
+def _parse_condition_suggestions(raw: str, available: List[str]) -> List[dict]:
+    """Parse LLM response into a validated list of condition suggestions."""
+    # Strip markdown code blocks if present
+    text = raw.strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        text = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
+
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        try:
+            parsed = ast.literal_eval(text)
+        except (ValueError, SyntaxError):
+            return []
+
+    if not isinstance(parsed, list):
+        return []
+
+    # Validate: only keep entries whose condition is in the available list
+    available_upper = {c.upper() for c in available}
+    validated = []
+    for entry in parsed[:3]:
+        if isinstance(entry, dict) and "condition" in entry:
+            cond = entry["condition"].strip().upper()
+            if cond in available_upper:
+                validated.append({
+                    "condition": cond,
+                    "reason": str(entry.get("reason", "")),
+                })
+    return validated

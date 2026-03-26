@@ -1,7 +1,9 @@
 from tqdm import tqdm
 from nltk import sent_tokenize
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from . import instructions
 from .gpt_utils import chat_completion
+import os
 import requests
 import time
 import re
@@ -81,7 +83,7 @@ def rerank_paragraphs_bge(query, paragraphs, reranker, norm_cite=False, start_in
 
 
 
-def search_paper_via_query(query, max_paper_num=2, attempt=3, minCitationCount=5):
+def search_paper_via_query(query, max_paper_num=2, attempt=3, minCitationCount=0):
     if "Search queries: " in query:
         query = query.split("Search queries: ")[1]
     
@@ -93,12 +95,16 @@ def search_paper_via_query(query, max_paper_num=2, attempt=3, minCitationCount=5
         "sort": "citationCount:desc", 
         "fields": paper_field_collection
     }
-    # api_key = "19dnRruThD7a8AusEjLna3dgPtPx2vlH8bCsfite"
-    # Send the API request
+    # Add API key to headers if available
+    headers = {}
+    api_key = os.getenv("S2_API_KEY")
+    if api_key:
+        headers["x-api-key"] = api_key
+    sleep_time = 0.5 if api_key else 1.0
 
     while attempt > 0:
-        response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search', params=query_params)
-        time.sleep(2)
+        response = requests.get('https://api.semanticscholar.org/graph/v1/paper/search', params=query_params, headers=headers)
+        time.sleep(sleep_time)
 
         if response.status_code == 200:
             response_data = response.json()
@@ -196,8 +202,7 @@ class OpenScholar(object):
     def retrieve_keywords(self, question):
         prompt = [instructions.keyword_extraction_prompt.format_map({"question": question})]
         
-        # Use default client
-        raw_output = chat_completion(prompt[0], model=self.client_llm)
+        raw_output = chat_completion(prompt[0], model=self.client_llm, reasoning_effort="low")
         outputs = raw_output
         raw_output = [t.split("[Response_End]")[0]  for t  in outputs.split("[Response_Start]") if "[Response_End]" in t][0] if "[Response_End]" in outputs else outputs
  
@@ -264,7 +269,7 @@ class OpenScholar(object):
         if llama3_chat is True:
             input_query = create_prompt_with_llama3_format(input_query)
             
-        outputs = chat_completion(input_query, model=self.client_llm)
+        outputs = chat_completion(input_query, model=self.client_llm, reasoning_effort="medium")
         raw_output = [t.split("[Response_End]")[0] for t in outputs.split("[Response_Start]") if "[Response_End]" in t][0] if "[Response_End]" in outputs else outputs
 
         if "References:" in raw_output:
@@ -290,7 +295,7 @@ class OpenScholar(object):
         if llama3_chat is True:
             input_query = create_prompt_with_llama3_format(input_query)
         
-        outputs = chat_completion(input_query, model=self.client_llm)
+        outputs = chat_completion(input_query, model=self.client_llm, reasoning_effort="medium")
         raw_output = [t.split("[Response_End]")[0]  for t  in outputs.split("[Response_Start]") if "[Response_End]" in t][0] if "[Response_End]" in outputs else outputs
         feedbacks = self.process_feedback(raw_output)
         return feedbacks
@@ -302,7 +307,7 @@ class OpenScholar(object):
         if llama3_chat is True:
             input_query = create_prompt_with_llama3_format(input_query)
 
-        outputs = chat_completion(input_query, model=self.client_llm)
+        outputs = chat_completion(input_query, model=self.client_llm, reasoning_effort="medium")
         raw_output = [t.split("[Response_End]")[0]  for t  in outputs.split("[Response_Start]") if "[Response_End]" in t][0] if "[Response_End]" in outputs else outputs
         return raw_output
 
@@ -318,7 +323,7 @@ class OpenScholar(object):
         if llama3_chat is True:
             input_query = create_prompt_with_llama3_format(input_query)
                 
-        outputs = chat_completion(input_query, model=self.client_llm)
+        outputs = chat_completion(input_query, model=self.client_llm, reasoning_effort="medium")
         raw_output = [t.split("[Response_End]")[0]  for t in outputs.split("[Response_Start]") if "[Response_End]" in t][0] if "[Response_End]" in outputs else outputs
         return raw_output
 
@@ -364,10 +369,10 @@ class OpenScholar(object):
                 
                 prompts.append(input_query)
              
-            outputs = []
-            for input_query in prompts:
-                raw_output = chat_completion(input_query, model=self.client_llm)
-                outputs.append(raw_output)
+            def _attr_call(q):
+                return chat_completion(q, model=self.client_llm, reasoning_effort="low")
+            with ThreadPoolExecutor(max_workers=min(len(prompts), 8)) as executor:
+                outputs = list(executor.map(_attr_call, prompts))
             
             # Postprocess Output
             for output, sentence_key in zip(outputs, list(post_hoc_sentence.keys())):
@@ -423,10 +428,10 @@ class OpenScholar(object):
                 
                 prompts.append(input_query)
             
-            outputs = []
-            for input_query in prompts:
-                raw_output = chat_completion(input_query, model=self.client_llm)
-                outputs.append(raw_output)
+            def _attr_call(q):
+                return chat_completion(q, model=self.client_llm, reasoning_effort="low")
+            with ThreadPoolExecutor(max_workers=min(len(prompts), 8)) as executor:
+                outputs = list(executor.map(_attr_call, prompts))
             
             # process_output
             for output, sentence_key in zip(outputs, list(post_hoc_sentence.keys())):
@@ -481,10 +486,10 @@ class OpenScholar(object):
             
             prompts.append(input_query)
         
-        outputs = []
-        for input_query in prompts:
-            raw_output = chat_completion(input_query, model=self.client_llm)
-            outputs.append(raw_output)
+        def _attr_call(q):
+            return chat_completion(q, model=self.client_llm, reasoning_effort="low")
+        with ThreadPoolExecutor(max_workers=min(len(prompts), 8)) as executor:
+            outputs = list(executor.map(_attr_call, prompts))
         
         # process_output
         for output, sentence_key in zip(outputs, list(post_hoc_sentence.keys())):
@@ -540,7 +545,7 @@ class OpenScholar(object):
             feedbacks = self.get_feedback(item, llama3_chat=llama3_chat)[:3]
 
             item["feedbacks"] = feedbacks
-            with tqdm(total=len(feedbacks[:3]), desc="Processing feedbacks") as pbar:
+            with tqdm(total=len(feedbacks[:3]), desc="Processing feedbacks", disable=True) as pbar:
                 for feedback_idx, feedback in enumerate(feedbacks[:3]):
                     pbar.update(1)
                     # currently only supports non retrieval feedback
@@ -643,7 +648,7 @@ def process_input_data(data, use_contexts=True):
 
             # remove duplicated contexts
             processed_paras = []
-            with tqdm(total=len(item["ctxs"])) as pbar:
+            with tqdm(total=len(item["ctxs"]), disable=True) as pbar:
                 for ctx in item["ctxs"]:
                     pbar.update(1)
                     if "retrieval text" in ctx:

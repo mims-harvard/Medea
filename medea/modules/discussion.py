@@ -1,4 +1,5 @@
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import dotenv
 import json
 import os, re, ast, sys
@@ -161,10 +162,11 @@ def reconcile_votes_with_llm(certainty_vote: dict, query: str, max_attempts: int
                     messages, 
                     model=model_name, 
                     mod='dialog',
-                    response_format={"type": "json_object"}
+                    response_format={"type": "json_object"},
+                    reasoning_effort="low"
                 )
             else:
-                output = chat_completion(messages, model=model_name, mod='dialog')
+                output = chat_completion(messages, model=model_name, mod='dialog', reasoning_effort="low")
             
             # Parse the output
             parsed_vote = parse_llm_dict_output(output)
@@ -231,6 +233,9 @@ def find_element_by_indices(input_list, index_list):
 
 def trans_confidence(x):
     x = float(x)
+    if x > 10: x = x / 100.0  # Handle LLM returning e.g. 85 instead of 0.85
+    x = min(x, 1.0)  # Clamp values like 1.5 to 1.0
+    x = max(0.0, min(1.0, x))  # Clamp to [0, 1]
     if x <= 0.6: return 0.1
     if 0.8 > x > 0.6: return 0.3
     if 0.9 > x >= 0.8: return 0.5
@@ -317,12 +322,16 @@ def parse_output(tmp, query, rounds, vote_merge=True, attempt=4):
                     certainty_vote[tmp[o+r]['answer']] += trans_confidence(tmp[o+r]['confidence_level'])
             else:
                 print(f"Warning: {o+r} is not structured as expected: {tmp[o+r]}")
+                tmp[o+"_pred_"+str(rounds)] = 'unknown'
+                tmp[o+"_eb_"+str(rounds)] = 'unknown'
+                tmp[o+"_exp_"+str(rounds)] = (
+                    f"Answer: unknown | Evidence basis: unknown | Confidence: 0.0 | "
+                    f"Reasoning: malformed LLM output after all retries"
+                )
 
-    pred_keys = [f'{p}_pred_{rounds}' for p in [c, g, b]]
-    exp_keys = [f'{p}_exp_{rounds}' for p in [c, g, b]]
-    if all(k in tmp for k in pred_keys) and all(k in tmp for k in exp_keys):
-        tmp['vote_'+str(rounds)] = [tmp[k] for k in pred_keys]
-        tmp['exps_'+str(rounds)] = [tmp[k] for k in exp_keys]
+    if c+r in tmp and g+r in tmp and b+r in tmp:
+        tmp['vote_'+str(rounds)] = [tmp['llm_0_pred_'+str(rounds)], tmp['llm_1_pred_'+str(rounds)], tmp['llm_2_pred_'+str(rounds)]]
+        tmp['exps_'+str(rounds)] = [tmp['llm_0_exp_'+str(rounds)], tmp['llm_1_exp_'+str(rounds)], tmp['llm_2_exp_'+str(rounds)]]
         
         # ========== VOTE RECONCILIATION ==========
         if vote_merge:
@@ -331,7 +340,7 @@ def parse_output(tmp, query, rounds, vote_merge=True, attempt=4):
         for v in certainty_vote:
             print(v, flush=True)
         tmp['weighted_vote_'+str(rounds)] = certainty_vote
-        tmp['weighted_max_'+str(rounds)] = max(certainty_vote, key=certainty_vote.get)
+        tmp['weighted_max_'+str(rounds)] = max(certainty_vote, key=certainty_vote.get) if certainty_vote else "unknown"
         print(f"\nMax weighted Vote: {tmp['weighted_max_'+str(rounds)]}", flush=True)
 
         tmp['debate_prompt_'+str(rounds)] = ''
@@ -442,6 +451,8 @@ def _extract_answer_from_plaintext(text):
     }
 
 
+_REQUIRED_PANELIST_KEYS = {'answer', 'confidence_level', 'reasoning'}
+
 def gpt_gen_ans(query, model='gpt-4o', attempts=3, convincing_samples=None, additional_instruc=None, intervene=False):
     i = 0
     last_output = None
@@ -454,7 +465,7 @@ def gpt_gen_ans(query, model='gpt-4o', attempts=3, convincing_samples=None, addi
                 contexts[-1]['content'] += " " + " ".join(safe_additional_instruc)
                 # Apply final sanitization to the complete content
                 contexts[-1]['content'] = sanitize_prompt_content(contexts[-1]['content'])
-            output = chat_completion(contexts, model=model, mod='dialog')
+            output = chat_completion(contexts, model=model, mod='dialog', reasoning_effort="medium")
             if output:
                 last_output = output
                 if "{" not in output or "}" not in output:
@@ -462,6 +473,11 @@ def gpt_gen_ans(query, model='gpt-4o', attempts=3, convincing_samples=None, addi
                 result = parse_json(output)
                 if result == "ERR_SYNTAX":
                     raise ValueError("[gpt_gen_ans] Incomplete JSON format. Retrying (attempts: " + str(i) + ")...")
+                if not isinstance(result, dict) or not _REQUIRED_PANELIST_KEYS.issubset(result.keys()):
+                    raise ValueError(
+                        f"[gpt_gen_ans] Response missing required keys {_REQUIRED_PANELIST_KEYS - set(result.keys() if isinstance(result, dict) else [])}. "
+                        f"Got keys: {list(result.keys()) if isinstance(result, dict) else type(result)}. Retrying (attempt: {i})..."
+                    )
             return result
         except Exception as e:
             print(f"[Retrying - {model}]: {e}")
@@ -527,19 +543,19 @@ def llm_debate(query, tmp, rounds, model_name='gpt-4o', llm_name='llm_0', convin
 def multi_round_discussion(
     query, 
     mod='diff_context', 
-    panelist_llms=[
-        'gemini', 
-        'gpt-4o', 
-        'gpt-4o-mini'
-    ],
+    panelist_llms=None,
     include_llm=True, 
     proposal_response=None, 
     coding_response=None, 
     reasoning_response=None, 
-    vote_merge=True, 
+    vote_merge=True,
     round=1
     ):
-    
+    import builtins
+    _round = builtins.round  # Preserve built-in round() since parameter 'round' shadows it
+    if panelist_llms is None:
+        panelist_llms = ['gemini', 'gpt-4o', 'gpt-4o-mini']
+
     tmp = {}
     debate_query = query
     code_snippet = executed_output = reasoning_output = "None"
@@ -572,26 +588,56 @@ def multi_round_discussion(
         # --- Evidence grading: detect agent success/failure before normalization ---
         def _is_agent_failed(output_str):
             """
-            Check if an agent output indicates failure or abstention.
+            Fast deterministic check for obvious agent failures.
             A negative finding ('no papers found') is NOT a failure — it's valid evidence.
-            Only true failures (None, error, crash) count as failed.
+            Only true failures (None, empty, explicit failure messages) count as failed.
             """
             low = output_str.lower().strip()
             # Exact match for empty/null outputs
             if low in ("none", "null", "", "failed"):
                 return True
-            # Explicit failure patterns
+            # Explicit failure patterns — only unambiguous agent-level messages
             _hard_fail_patterns = [
                 "i cannot help",
                 "agent could not complete",
                 "call budget exceeded",
-                "error:",
-                "traceback",
             ]
             return any(pat in low for pat in _hard_fail_patterns)
-        
+
+        def _is_agent_failed_llm(output_str, agent_name):
+            """
+            LLM-based check for ambiguous cases where the fast path returns False
+            but the output might still indicate a true failure (e.g., wall of tracebacks).
+            Uses a fast, cheap model. Defaults to False (not failed) on any error.
+            """
+            try:
+                # Truncate to first 1000 + last 1000 chars for efficiency
+                if len(output_str) > 2000:
+                    excerpt = output_str[:1000] + "\n...[truncated]...\n" + output_str[-1000:]
+                else:
+                    excerpt = output_str
+
+                judge_model = os.getenv("AGENT_FAILURE_JUDGE_LLM", "gpt-4.1-nano")
+                judge_prompt = AGENT_FAILURE_JUDGE_PROMPT.format(
+                    agent_name=agent_name,
+                    output_excerpt=excerpt
+                )
+                result = chat_completion(judge_prompt, model=judge_model, temperature=0, reasoning_effort="low")
+                is_failed = "FAILED" in result.upper().strip()
+                if is_failed:
+                    print(f"[Evidence Grading] LLM judge determined {agent_name}: FAILED", flush=True)
+                return is_failed
+            except Exception as e:
+                print(f"[Evidence Grading] LLM failure judge error for {agent_name}: {e}. Defaulting to not-failed.", flush=True)
+                return False  # Safe default: preserve evidence
+
         coding_failed = _is_agent_failed(safe_executed_output)
+        if not coding_failed:
+            coding_failed = _is_agent_failed_llm(safe_executed_output, "Analysis Agent")
+
         reasoning_failed = _is_agent_failed(safe_reasoning_output)
+        if not reasoning_failed:
+            reasoning_failed = _is_agent_failed_llm(safe_reasoning_output, "Literature Reasoning Agent")
 
         # Build raw hypothesis text for each agent
         experiment_hypothesis = (
@@ -603,24 +649,45 @@ def multi_round_discussion(
         if safe_reasoning_citation != "None":
             literature_hypothesis += f"\n[Literature Reasoning Agent] Citations:\n{safe_reasoning_citation}"
 
-        # Only normalize through HYPOTHESOS_NORMALIZER if agent succeeded;
-        # failed/abstained outputs get explicit labels instead of speculative normalization
+        # Normalize agent outputs; for failed agents, preserve partial evidence via summarization
         if coding_failed:
-            coding_hypothesis = (
-                "[Analysis Agent] [STATUS: FAILED/ABSTAINED] "
-                "The analysis agent could not produce results. No empirical evidence from this agent."
-            )
-            print("[Evidence Grading] Analysis agent: FAILED/ABSTAINED", flush=True)
+            print("[Evidence Grading] Analysis agent: NO CONCLUSION", flush=True)
+            if len(safe_executed_output) > 200:
+                summarizer_model = os.getenv("AGENT_FAILURE_JUDGE_LLM", "gpt-4.1-mini")
+                evidence_summary = chat_completion(
+                    FAILED_AGENT_EVIDENCE_SUMMARIZER.format(user_query=safe_query, raw_output=safe_executed_output[:6000]),
+                    model=summarizer_model, reasoning_effort="low"
+                )
+                coding_hypothesis = (
+                    f"[Analysis Agent] [STATUS: NO CONCLUSION] "
+                    f"The agent did not reach a conclusion, but collected the following evidence:\n{evidence_summary}"
+                )
+            else:
+                coding_hypothesis = (
+                    "[Analysis Agent] [STATUS: NO CONCLUSION] "
+                    "The analysis agent could not produce results. No empirical evidence from this agent."
+                )
         else:
-            coding_hypothesis = HYPOTHESOS_NORMALIZER.format(user_query=safe_query, agent_hypo=experiment_hypothesis)
+            coding_hypothesis = ANALYSIS_AGENT_NORMALIZER.format(user_query=safe_query, agent_hypo=experiment_hypothesis)
         
         if reasoning_failed:
-            reasoning_hypothesis = (
-                "[Literature Reasoning Agent] [STATUS: FAILED/ABSTAINED] "
-                "The literature reasoning agent found no relevant papers or could not complete analysis. "
-                "No literature evidence from this agent."
-            )
-            print("[Evidence Grading] Literature reasoning agent: FAILED/ABSTAINED", flush=True)
+            print("[Evidence Grading] Literature reasoning agent: NO CONCLUSION", flush=True)
+            if len(safe_reasoning_output) > 200:
+                summarizer_model = os.getenv("AGENT_FAILURE_JUDGE_LLM", "gpt-4.1-mini")
+                evidence_summary = chat_completion(
+                    FAILED_AGENT_EVIDENCE_SUMMARIZER.format(user_query=safe_query, raw_output=safe_reasoning_output[:6000]),
+                    model=summarizer_model, reasoning_effort="low"
+                )
+                reasoning_hypothesis = (
+                    f"[Literature Reasoning Agent] [STATUS: NO CONCLUSION] "
+                    f"The agent did not reach a conclusion, but collected the following evidence:\n{evidence_summary}"
+                )
+            else:
+                reasoning_hypothesis = (
+                    "[Literature Reasoning Agent] [STATUS: NO CONCLUSION] "
+                    "The literature reasoning agent found no relevant papers or could not complete analysis. "
+                    "No literature evidence from this agent."
+                )
         else:
             reasoning_hypothesis = HYPOTHESOS_NORMALIZER.format(user_query=safe_query, agent_hypo=literature_hypothesis)
 
@@ -636,7 +703,7 @@ def multi_round_discussion(
         if include_llm:
             print(f"----- Hypothesis from Backbone LLM: {os.getenv('BACKBONE_LLM')} -----", flush=True)
             backbone_query = BACKBONE_QUERY_PROMPT.format(query=safe_query)
-            llm_hypothesis = chat_completion(backbone_query, model=os.getenv("BACKBONE_LLM"))
+            llm_hypothesis = chat_completion(backbone_query, model=os.getenv("BACKBONE_LLM"), reasoning_effort="medium")
             safe_llm_hypothesis = sanitize_prompt_content(str(llm_hypothesis))
             backbone_hypothesis = BACKBONE_NORMALIZER.format(user_query=safe_query, agent_hypo=safe_llm_hypothesis)
             print(f"{llm_hypothesis}\n", flush=True)
@@ -670,7 +737,7 @@ def multi_round_discussion(
                 reasoning_output=reasoning_hypothesis,
                 backbone_output=backbone_hypothesis,
             )
-            audit_report = chat_completion(audit_prompt, model=auditor_model, temperature=0)
+            audit_report = chat_completion(audit_prompt, model=auditor_model, temperature=0, reasoning_effort="medium")
             audit_report = sanitize_prompt_content(str(audit_report))
             print(f"{audit_report}\n", flush=True)
 
@@ -685,22 +752,29 @@ def multi_round_discussion(
             debate_query_parts.append("\n[Evidence Audit Report]\n" + audit_report)
         debate_query = "\n".join(debate_query_parts)
 
-    # Phase1: Initial round for pannel discussion
-    panelist_1, panelist_2, panelist_3 = panelist_llms
-    tmp['llm_0_output_0'] = gpt_gen_ans(debate_query, model=panelist_1, additional_instruc=None, intervene=False)
-    tmp['llm_1_output_0'] = gpt_gen_ans(debate_query, model=panelist_2, additional_instruc=None, intervene=False)
-    tmp['llm_2_output_0'] = gpt_gen_ans(debate_query, model=panelist_3, additional_instruc=None, intervene=False)
+    # Phase1: Initial round for panel discussion — 3 panelists in parallel
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {
+            executor.submit(gpt_gen_ans, debate_query, model=p, additional_instruc=None, intervene=False): f'llm_{i}_output_0'
+            for i, p in enumerate(panelist_llms)
+        }
+        for fut in as_completed(futures):
+            tmp[futures[fut]] = fut.result()
 
     tmp = clean_output(tmp, 0)
     tmp = parse_output(tmp, query, 0, vote_merge=vote_merge)
 
 
-    # Phase2: Multi-Round Discussion
+    # Phase2: Multi-Round Discussion — 3 panelists in parallel per round
     for r in range(1, round+1):
         print(f"----- Round {r} Discussion -----", flush=True)
-        tmp = llm_debate(debate_query, tmp, llm_name='llm_0', rounds=r, model_name=panelist_1)
-        tmp = llm_debate(debate_query, tmp, llm_name='llm_1', rounds=r, model_name=panelist_2)
-        tmp = llm_debate(debate_query, tmp, llm_name='llm_2', rounds=r, model_name=panelist_3)
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = [
+                executor.submit(llm_debate, debate_query, tmp, llm_name=f'llm_{i}', rounds=r, model_name=p)
+                for i, p in enumerate(panelist_llms)
+            ]
+            for fut in as_completed(futures):
+                fut.result()  # Each call updates tmp in place with unique keys
         
         tmp = clean_output(tmp, r)
         tmp = parse_output(tmp, query, r, vote_merge=vote_merge)
@@ -731,21 +805,57 @@ def multi_round_discussion(
     if confidence_count > 0:
         avg_confidence /= confidence_count
     
-    # Check if both agents failed (variable from evidence grading above)
+    # --- Evidence grounding: deterministic provenance tracking ---
     both_agents_failed = (mod == "diff_context" and coding_failed and reasoning_failed)
-    
-    if both_agents_failed and avg_confidence < 0.5:
+
+    evidence_grounding = {
+        "analysis_agent": "FAILED" if coding_failed else "SUCCEEDED",
+        "literature_agent": "FAILED" if reasoning_failed else "SUCCEEDED",
+        "llm_backbone": "SUCCEEDED" if llm_hypothesis else "NOT_INCLUDED",
+        "grounding_level": "full",
+        "warning": None,
+        "avg_panelist_confidence": _round(avg_confidence, 2),
+    }
+    if both_agents_failed:
+        evidence_grounding["grounding_level"] = "llm_only"
+        evidence_grounding["warning"] = (
+            "Both the analysis agent and literature reasoning agent failed to produce results. "
+            "Conclusion is based entirely on LLM prior knowledge with no empirical grounding."
+        )
+    elif coding_failed:
+        evidence_grounding["grounding_level"] = "partial"
+        evidence_grounding["warning"] = (
+            "Analysis agent failed. Conclusion lacks computational/database evidence "
+            "and relies on literature reasoning and LLM knowledge only."
+        )
+    elif reasoning_failed:
+        evidence_grounding["grounding_level"] = "partial"
+        evidence_grounding["warning"] = (
+            "Literature reasoning agent failed. Conclusion lacks literature-grounded evidence "
+            "and relies on computational analysis and LLM knowledge only."
+        )
+
+    # Uncertainty propagation: tag panel_conclusion when agent(s) failed
+    if both_agents_failed:
         print(
-            f"[Uncertainty Propagation] Both agents failed + avg panelist confidence={avg_confidence:.2f} < 0.5. "
-            f"Marking output as insufficient evidence.",
+            f"[Uncertainty Propagation] Both agents failed (avg panelist confidence={avg_confidence:.2f}). "
+            f"Tagging panel conclusion.",
             flush=True
         )
         panel_conclusion = (
-            "Insufficient evidence: both the analysis agent and literature reasoning agent failed to produce results. "
-            "The panel discussion was based on general LLM knowledge only, without empirical support. "
-            f"Original panel vote (low confidence {avg_confidence:.2f}): {panel_conclusion}"
+            "[CAUTION: No empirical evidence — both agents failed] " + panel_conclusion
         )
-    
+    elif coding_failed or reasoning_failed:
+        failed_name = "analysis" if coding_failed else "literature reasoning"
+        print(
+            f"[Uncertainty Propagation] {failed_name.capitalize()} agent failed "
+            f"(avg panelist confidence={avg_confidence:.2f}). Tagging panel conclusion.",
+            flush=True
+        )
+        panel_conclusion = (
+            f"[NOTE: {failed_name} agent failed — partial evidence only] " + panel_conclusion
+        )
+
     # Build agent evidence summary for the formulator
     original_ans = experiment_hypothesis + "\n\n" + literature_hypothesis
     if llm_hypothesis:
@@ -758,8 +868,20 @@ def multi_round_discussion(
     
     # Use a separate formulator model if configured, otherwise use backbone
     formulator_model = os.getenv("FORMULATOR_LLM", os.getenv("BACKBONE_LLM"))
-    formulated = chat_completion(hypo_prompt, model=formulator_model)
-    
+    formulated = chat_completion(hypo_prompt, model=formulator_model, reasoning_effort="medium")
+
+    # Deterministic grounding block — appended by code, not LLM-generated
+    if evidence_grounding["warning"]:
+        formulated += (
+            f"\n\n---\n"
+            f"Evidence Grounding: {evidence_grounding['grounding_level'].upper()}\n"
+            f"- Analysis Agent: {evidence_grounding['analysis_agent']}\n"
+            f"- Literature Agent: {evidence_grounding['literature_agent']}\n"
+            f"- LLM Backbone: {evidence_grounding['llm_backbone']}\n"
+            f"- Warning: {evidence_grounding['warning']}\n"
+            f"---"
+        )
+
     if include_llm:
-        return formulated, llm_hypothesis
-    return formulated, None
+        return formulated, llm_hypothesis, evidence_grounding
+    return formulated, None, evidence_grounding
