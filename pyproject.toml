@@ -138,9 +138,9 @@ jupyter = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mims-harvard/Medea-1.0"
-Repository = "https://github.com/mims-harvard/Medea-1.0"
-Documentation = "https://github.com/mims-harvard/Medea-1.0#readme"
+Homepage = "https://github.com/mims-harvard/Medea"
+Repository = "https://github.com/mims-harvard/Medea"
+Documentation = "https://github.com/mims-harvard/Medea#readme"
 
 [project.scripts]
 medea-eval = "medea.cli:main"

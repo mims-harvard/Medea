@@ -16,7 +16,7 @@ setup(
     description="Multi-Agent Research Planning System for Single-Cell Analysis and Therapeutic Discovery",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/mims-harvard/Medea-1.0",
+    url="https://github.com/mims-harvard/Medea",
     packages=find_packages(exclude=["evaluation", "evaluation.*", "results", "results.*", "plots", "plots.*"]),
     classifiers=[
         "Development Status :: 4 - Beta",
