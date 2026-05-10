@@ -368,6 +368,27 @@ python main.py --task immune_response --patient-tpm-root /path/to/tpm/data
 python main.py --task immune_response --immune-dataset IMVigor210 --patient-tpm-root /path/to/tpm/data
 ```
 
+For a custom immune therapy cohort, place the task files under the evaluation
+folder using the dataset name passed to `--immune-dataset`:
+
+```text
+evaluation/
+  immune_response/
+    source/<dataset-name>-patient.csv
+    evaluation_samples/<dataset-name>-<prompt-setting>-query-<seed>.csv
+```
+
+The source CSV should follow the IMVigor210 patient-table style and include
+patient metadata columns such as `Sample_id`, `response_label`, `cohort`,
+`cancer_type`, `ICI`, `ICI_target`, and the patient identifier used to locate
+the transcriptomic TPM file. Query CSVs should include `user_question` and
+`full_query`; the bundled examples also include clinical context columns such
+as `cancer_type`, `TMB (FMOne mutation burden per MB)`,
+`Neoantigen burden per MB`, `Immune phenotype`, and `response_label`.
+
+`--patient-tpm-root` should point to the directory containing the per-patient
+TPM files referenced by the generated query text.
+
 #### Agent Configuration
 
 ```bash
