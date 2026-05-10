@@ -59,6 +59,23 @@ uv pip install -e .
 uv pip install openai==1.82.1  # Ensure correct OpenAI version
 ```
 
+### Credential-light smoke test
+
+Before downloading MedeaDB or configuring model-provider credentials, verify that
+the package imports correctly in the active environment:
+
+```bash
+python - <<'PY'
+import medea
+
+print("Medea import OK")
+print(medea.__file__)
+PY
+```
+
+This check is intentionally limited to package import health. Full agent runs
+still require `MEDEADB_PATH` and at least one configured LLM provider key.
+
 ### Download MedeaDB
 
 Download required datasets from Hugging Face:
