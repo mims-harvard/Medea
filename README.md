@@ -348,6 +348,21 @@ python main.py --task targetID --scfm TranscriptFormer --disease ss
 python main.py --task targetID --disease blastoma --scfm PINNACLE --sample-seed 44
 ```
 
+TargetID evaluation files are loaded from:
+
+```text
+evaluation/
+  targetID/
+    source/targetid-<disease>-<seed>.csv
+    evaluation_samples/targetid-<disease>-query-<seed>.csv
+```
+
+The source CSVs include `disease`, `celltype`, `candidate_genes`, and `y`.
+The query CSVs add `user_question` and `full_query` prompts generated from
+those inputs. Disease-specific embeddings and processed single-cell resources
+are expected to come from MedeaDB and the selected single-cell foundation model
+configuration, such as `PINNACLE` or `TranscriptFormer`.
+
 ##### Synthetic Lethality Task
 
 ```bash
