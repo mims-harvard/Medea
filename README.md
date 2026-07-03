@@ -59,7 +59,8 @@ python main.py --task sl --sl-source yeast --condition BLEO --sample-seed 42
 python main.py --task sl --sl-source yeast --condition DMS --sample-seed 42
 ```
 
-🔗 **Download the dataset:** [Yeast E-MAP Screen on figshare](https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446) 
+🔗 **Download the dataset:** [Yeast E-MAP Screen on figshare](https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446)
+
 📄 **Benchmark construction details:** [docs/yeast_sl_benchmark.md](docs/yeast_sl_benchmark.md)
 
 ## 📋 Table of Contents
