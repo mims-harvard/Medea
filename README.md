@@ -34,14 +34,33 @@ Medea consists of three specialized agentic modules that collaborate with each o
 
 ## 🧬 S. cerevisiae E-MAP Synthetic Lethality Benchmark
 
-We release an **unpublished** high-density **Epistatic MiniArray Profile (E-MAP)** screen that systematically maps genetic interactions in *S. cerevisiae*. Each 6,144-colony plate profiles a query gene against the full yeast single-deletion library, yielding a **5,806 × 41** matrix across **41 query genes**. By screening with and without DNA-damaging treatments, the benchmark distinguishes constitutive functional relationships from those that emerge specifically under DNA damage stress, and provides a testbed for predicting synthetic lethal interactions.
+We release an **unpublished** high-density **Epistatic MiniArray Profile (E-MAP)** screen that systematically maps genetic interactions in *S. cerevisiae* — a major new contribution accompanying Medea. Each 6,144-colony plate profiles a query gene against the full yeast single-deletion library, yielding a **5,806 × 41** matrix across **41 query genes**. Comparing the fitness of double-mutant strains against the expected fitness of single mutants reveals functional relationships, where strongly negative scores indicate synthetic lethality. By screening **with and without DNA-damaging treatments**, the benchmark distinguishes constitutive functional relationships from those that emerge specifically under DNA damage stress.
 
-| Condition | Synthetic lethal pairs | Non-synthetic lethal pairs |
-|-----------|:----------------------:|:--------------------------:|
-| Bleomycin (BLEO) | 86 | 172 |
-| Dimethyl sulfate (DMS) | 114 | 228 |
+**Benchmark detail (labeled gene pairs per condition):**
 
-🔗 **Download the dataset:** [Yeast E-MAP Screen on figshare](https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446)
+| Condition | Synthetic lethal (SL) | Non-synthetic lethal | Total |
+|-----------|:---------------------:|:--------------------:|:-----:|
+| Bleomycin (BLEO) — DNA-damaging | 86 | 172 | 258 |
+| Dimethyl sulfate (DMS) | 114 | 228 | 342 |
+
+**What's included.** Each labeled gene pair is provided as a row with the genetic-interaction score (`pi`), false discovery rate (`fdr`), Z-score (`z`), standard deviation (`sd`), a binary `label` (`SL` / `non_SL`), the experimental `condition`, and negative-sampling metadata. 
+
+```text
+array_gene, query_gene, pi, fdr, z, sd, label, condition, neg_sample_type, related_sl_pair
+```
+
+**Run Medea on the yeast benchmark:**
+
+```bash
+# Bleomycin (DNA-damaging) condition
+python main.py --task sl --sl-source yeast --condition BLEO --sample-seed 42
+
+# Dimethyl sulfate condition
+python main.py --task sl --sl-source yeast --condition DMS --sample-seed 42
+```
+
+🔗 **Download the dataset:** [Yeast E-MAP Screen on figshare](https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446) 
+📄 **Benchmark construction details:** [docs/yeast_sl_benchmark.md](docs/yeast_sl_benchmark.md)
 
 ## 📋 Table of Contents
 
