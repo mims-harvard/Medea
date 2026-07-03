@@ -13,8 +13,3 @@ Essential documentation for Memdea.
 - [Examples](../examples/README.md) - Code examples
 - [Environment Template](../env_template.txt) - Config reference
 
-## 🆘 Help
-
-- Issues: [GitHub Issues](https://github.com/mims-harvard/Medea/issues)
-- Website: [mims-harvard.github.io/Medea](https://mims-harvard.github.io/Medea/)
-

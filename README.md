@@ -14,6 +14,7 @@
   <a href="https://www.biorxiv.org/content/10.64898/2026.01.16.696667v1"><img src="https://img.shields.io/badge/Paper_on-arXiv-4A90E2?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=2C3E50" alt="arXiv"></a>
   <a href="https://medea.openscientist.ai/"><img src="https://img.shields.io/badge/Project-Website-4A90E2?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2C3E50" alt="Website"></a>
   <a href="https://huggingface.co/datasets/mims-harvard/MedeaDB"><img src="https://img.shields.io/badge/Datasets-Hugging_Face-4A90E2?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=2C3E50" alt="HuggingFace"></a>
+  <a href="https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446"><img src="https://img.shields.io/badge/Yeast_E--MAP_Screen-figshare-C6242C?style=for-the-badge&logo=figshare&logoColor=white&labelColor=2C3E50" alt="figshare"></a>
 </p> 
 
 -----
@@ -30,6 +31,17 @@ Medea consists of three specialized agentic modules that collaborate with each o
   <br>
   <em>Overview of Medea</em>
 </p>
+
+## 🧬 S. cerevisiae E-MAP Synthetic Lethality Benchmark
+
+We release an **unpublished** high-density **Epistatic MiniArray Profile (E-MAP)** screen that systematically maps genetic interactions in *S. cerevisiae*. Each 6,144-colony plate profiles a query gene against the full yeast single-deletion library, yielding a **5,806 × 41** matrix across **41 query genes**. By screening with and without DNA-damaging treatments, the benchmark distinguishes constitutive functional relationships from those that emerge specifically under DNA damage stress, and provides a testbed for predicting synthetic lethal interactions.
+
+| Condition | Synthetic lethal pairs | Non-synthetic lethal pairs |
+|-----------|:----------------------:|:--------------------------:|
+| Bleomycin (BLEO) | 86 | 172 |
+| Dimethyl sulfate (DMS) | 114 | 228 |
+
+🔗 **Download the dataset:** [Yeast E-MAP Screen on figshare](https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446)
 
 ## 📋 Table of Contents
 
