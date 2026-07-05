@@ -24,7 +24,7 @@ BACKBONE_LLM=gpt-4o
 OPENROUTER_API_KEY=your-key-here
 ```
 
-**Get MedeaDB**: `huggingface-cli download psui3905/MedeaDB --local-dir ./MedeaDB`  
+**Get MedeaDB**: `git clone https://huggingface.co/datasets/mims-harvard/MedeaDB`  
 **Get API key**: https://openrouter.ai/keys
 
 ## Run
@@ -76,8 +76,11 @@ uv pip install openai==1.82.1 # Make sure correct version of OpenAI package inst
 
 **Missing MedeaDB?**  
 ```bash
-huggingface-cli download psui3905/MedeaDB --local-dir ./MedeaDB
+git clone https://huggingface.co/datasets/mims-harvard/MedeaDB
 ```
+
+**Want to validate the install before running a full agent?**
+Run the credential-light checks in [LOCAL_SMOKE_TESTS.md](LOCAL_SMOKE_TESTS.md).
 
 **API key not working?**  
 Check `.env` file exists and has correct format.
