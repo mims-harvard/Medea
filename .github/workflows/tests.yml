@@ -26,10 +26,13 @@ jobs:
           cache: pip
 
       - name: Install test tooling
-        run: python -m pip install pytest
+        run: python -m pip install pytest ruff
 
       - name: Compile Python sources
-        run: python -m compileall medea main.py utils.py
+        run: python -m compileall -q medea main.py utils.py
+
+      - name: Lint Python sources
+        run: ruff check medea main.py setup.py utils.py --select E9,F63,F7,F82
 
       - name: Run unit tests
         run: |
