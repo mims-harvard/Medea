@@ -1,7 +1,7 @@
-<!-- <h1 align="center">Medea: An omics AI agent for therapeutics</h1> -->
+<!-- <h1 align="center">Medea: An AI agent for therapeutic reasoning across biological contexts</h1> -->
 
 <p align="center">
-  <img src="assets/images/medea.png" alt="Medea System Overview" style="max-width: 100%; height: auto;">
+  <img src="assets/images/medea.png" alt="Medea" style="max-width: 100%; height: auto;">
 </p>
 
 <p align="center">
@@ -11,20 +11,21 @@
 </p>
 
 <p align="center">
-  <a href="https://www.biorxiv.org/content/10.64898/2026.01.16.696667v1"><img src="https://img.shields.io/badge/Paper_on-arXiv-4A90E2?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=2C3E50" alt="arXiv"></a>
+  <a href="https://www.biorxiv.org/content/10.64898/2026.01.16.696667v2"><img src="https://img.shields.io/badge/Paper_on-bioRxiv-4A90E2?style=for-the-badge&labelColor=2C3E50" alt="bioRxiv"></a>
   <a href="https://medea.openscientist.ai/"><img src="https://img.shields.io/badge/Project-Website-4A90E2?style=for-the-badge&logo=readthedocs&logoColor=white&labelColor=2C3E50" alt="Website"></a>
   <a href="https://huggingface.co/datasets/mims-harvard/MedeaDB"><img src="https://img.shields.io/badge/Datasets-Hugging_Face-4A90E2?style=for-the-badge&logo=huggingface&logoColor=white&labelColor=2C3E50" alt="HuggingFace"></a>
   <a href="https://figshare.com/articles/dataset/Yeast_EMAP_Screen/32782446"><img src="https://img.shields.io/badge/Yeast_E--MAP_Screen-figshare-C6242C?style=for-the-badge&logo=figshare&logoColor=white&labelColor=2C3E50" alt="figshare"></a>
 </p> 
 
 -----
-**Medea**, an AI agent to accelerate therapeutic discovery through multi-omics analysis. Built on the AgentLite framework, Medea addresses a fundamental challenge in biomedical research: how to effectively integrate diverse data modalities, computational resources, and scientific knowledge to identify therapeutic targets and predict drug responses.
+**Medea**, an AI agent for therapeutic reasoning across biological contexts. Built on the AgentLite framework, Medea addresses a fundamental challenge in biomedical research: how to effectively integrate diverse data modalities, computational resources, and scientific knowledge to identify therapeutic targets and predict drug responses.
 
-Medea consists of three specialized agentic modules that collaborate with each other:
+Medea consists of four specialized modules that collaborate with each other:
 
-1. **Research Planning module** - Formulates experimental plans, verifies biological context (diseases, cell types, genes), and ensures analytical feasibility
-2. **Analysis module** - Generates and executes Python code for single-cell data analysis, including quality checks and debugging
-3. **Literature Reasoning module** - Searches, filters, and synthesizes relevant scientific papers using LLM-based relevance assessment
+1. **ResearchPlanning module** - Formulates experimental plans, verifies biological context (diseases, cell types, genes), and audits plan integrity/feasibility
+2. **Analysis module** -  Executes biological tools and generated code across single-cell, cell-line, and patient-level data, with pre-run checks and post-run verification
+3. **LiteratureReasoning module** - Retrieves, filters, and synthesizes scientific papers with LLM-based relevance and evidence-strength assessment
+4. **MultiRoundDiscussion module** — A multi-LLM deliberation panel that reconciles evidence across the other modules and abstains when support is insufficient
 
 <p align="center">
   <img src="assets/images/figure1-medeaOverview.png" alt="Medea System Overview" style="max-width: 80%; height: auto;">
@@ -34,7 +35,7 @@ Medea consists of three specialized agentic modules that collaborate with each o
 
 ## 🧬 S. cerevisiae E-MAP Synthetic Lethality Benchmark
 
-We release an **unpublished** high-density **Epistatic MiniArray Profile (E-MAP)** screen that systematically maps genetic interactions in *S. cerevisiae* — a major new contribution accompanying Medea. Each 6,144-colony plate profiles a query gene against the full yeast single-deletion library, yielding a **5,806 × 41** matrix across **41 query genes**. Comparing the fitness of double-mutant strains against the expected fitness of single mutants reveals functional relationships, where strongly negative scores indicate synthetic lethality. By screening **with and without DNA-damaging treatments**, the benchmark distinguishes constitutive functional relationships from those that emerge specifically under DNA damage stress.
+We release a **previously unpublished** high-density **Epistatic MiniArray Profile (E-MAP)** screen that systematically maps genetic interactions in *S. cerevisiae* — a major new contribution accompanying Medea. Each 6,144-colony plate profiles a query gene against the full yeast single-deletion library, yielding a **5,806 × 41** matrix across **41 query genes**. Comparing the fitness of double-mutant strains against the expected fitness of single mutants reveals functional relationships, where strongly negative scores indicate synthetic lethality. By screening **with and without DNA-damaging treatments**, the benchmark distinguishes constitutive functional relationships from those that emerge specifically under DNA damage stress.
 
 **Benchmark detail (labeled gene pairs per condition):**
 
@@ -70,6 +71,7 @@ python main.py --task sl --sl-source yeast --condition DMS --sample-seed 42
 - [Using Medea as a Library](#using-medea-as-a-library)
 - [Command-Line Interface (CLI) Usage](#command-line-interface-cli-usage)
 - [Documentation](#documentation)
+- [Cite](#cite)
 
 
 ## Installation
@@ -151,7 +153,7 @@ GEMINI_MODEL=gemini-2.0-flash-exp
 **Anthropic Claude**:
 ```bash
 ANTHROPIC_API_KEY=your-key
-ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+ANTHROPIC_MODEL=claude-3-7-sonnet-20250219
 ```
 
 **NVIDIA DeepSeek**:
@@ -168,7 +170,7 @@ Once installed, you can use Medea in your own Python scripts. Here are three sim
 
 ### 🚀 Option 1: Full Medea Agent (Recommended)
 
-Run the complete Medea agent with research planning, analysis, and literature reasoning modules:
+Run the complete Medea agent with all four modules — ResearchPlanning, Analysis, LiteratureReasoning, and the MultiRoundDiscussion panel:
 
 ```python
 import os
@@ -403,6 +405,9 @@ python main.py --task sl --sl-source samson --cell-line CAL27
 
 # Custom seed
 python main.py --task sl --sl-source samson --cell-line CAL27 --sample-seed 44
+
+# Yeast E-MAP SL (source: yeast) — see the E-MAP benchmark section above
+python main.py --task sl --sl-source yeast --condition BLEO --sample-seed 42
 ```
 
 ##### Immune Therapy Response Task
@@ -425,7 +430,7 @@ evaluation/
     evaluation_samples/<dataset-name>-<prompt-setting>-query-<seed>.csv
 ```
 
-The source CSV should follow the IMVigor210 patient-table style and include
+The source CSV should follow the IMvigor210 patient-table style and include
 patient metadata columns such as `Sample_id`, `response_label`, `cohort`,
 `cancer_type`, `ICI`, `ICI_target`, and the patient identifier used to locate
 the transcriptomic TPM file. Query CSVs should include `user_question` and
@@ -493,15 +498,16 @@ python main.py \
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
-| `--disease` | str | `ra` | Disease context (ra, t1dm, ss, blastoma, fl) |
+| `--disease` | str | `ra` | Disease context (ra, t1dm, ss, blastoma [hepatoblastoma], fl) |
 | `--scfm` | str | `PINNACLE` | Single-cell foundation model (PINNACLE, TranscriptFormer) |
 
 #### Synthetic Lethality Task
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
-| `--cell-line` | str | `MCF7` | Cell line (for samson source, e.g., MCF7, CAL27, A549) |
-| `--sl-source` | str | `samson` | SL data source (samson) |
+| `--cell-line` | str | `MCF7` | Cell line for samson source (MCF7, MCF10A, MDAMB231, CAL27, CAL33, A549, A427) |
+| `--sl-source` | str | `samson` | SL data source (samson, yeast) |
+| `--condition` | str | `BLEO` | Experimental condition for yeast SL data (BLEO, DMS); used only when `--sl-source yeast` |
 
 #### Immune Therapy Task
 
@@ -517,6 +523,7 @@ python main.py \
 | `--temperature` | float | `0.4` | LLM temperature for all modules |
 | `--quality-max-iter` | int | `2` | Max iterations for proposal quality checks |
 | `--code-quality-max-iter` | int | `2` | Max iterations for code quality checks |
+| `--reasoning-mode` | str | `strict` | Literature reasoning mode (strict, decomposition) |
 | `--debate-rounds` | int | `2` | Number of panel discussion rounds |
 | `--panelists` | str[] | `[gemini-2.5-flash, o3-mini-0131, BACKBONE_LLM]` | LLM models for panel |
 
@@ -589,12 +596,12 @@ Output changes based on your task and arguments.
 ## Cite
 
 ```bibtex
-@article {medea2026,
-	author = {Sui, Pengwei and Li, Michelle and Gao, Shanghua and Shen, Wanxiang and Giunchiglia, Valentina and Shen, Andrew and Huang, Yepeng and Kong, Zhenglun and Zitnik, Marinka},
-	title = {Medea: An omics AI agent for therapeutic discovery},
+@article {Sui2026.01.16.696667,
+	author = {Sui, Pengwei and Li, Michelle and Munson, Brenton P. and Gao, Shanghua and Shen, Wanxiang and Giunchiglia, Valentina and Shen, Andrew and Huang, Yepeng and Kong, Zhenglun and Licon, Katherine and Ideker, Trey and Zitnik, Marinka},
+	title = {Medea: An AI agent for therapeutic reasoning across biological contexts},
 	year = {2026},
 	doi = {10.64898/2026.01.16.696667},
-	URL = {https://www.biorxiv.org/content/early/2026/01/20/2026.01.16.696667},
+	URL = {https://www.biorxiv.org/content/early/2026/07/16/2026.01.16.696667},
 	journal = {bioRxiv}
 }
 ```
