@@ -138,7 +138,7 @@ jupyter = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mims-harvard/Medea"
+Homepage = "https://medea.openscientist.ai/"
 Repository = "https://github.com/mims-harvard/Medea"
 Documentation = "https://github.com/mims-harvard/Medea#readme"
 
